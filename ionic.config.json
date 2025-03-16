@@ -1,0 +1,8 @@
+{
+  "name": "Extinguidor",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular",
+  "id": "2399b419"
+}
