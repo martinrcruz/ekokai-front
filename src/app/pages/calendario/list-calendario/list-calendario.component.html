@@ -1,0 +1,139 @@
+<ion-header>
+  <ion-toolbar color="danger">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Calendario</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <!-- Barra de navegación para el calendario -->
+  <div class="calendar-nav">
+    <div class="left-buttons">
+      <ion-button fill="clear" (click)="previousMonth()">
+        <i class="bi bi-arrow-left-circle" style="margin-right: 15px !important;"></i>
+        Mes
+      </ion-button>
+    </div>
+
+    <div class="center-display">
+      <ion-button class="today-btn" fill="solid" color="danger" (click)="goToday()">Hoy</ion-button>
+      <div class="month-year-display">
+        {{ viewDate | date: 'MMMM yyyy' }}
+      </div>
+    </div>
+
+    <div class="right-buttons">
+      <ion-button fill="clear" (click)="nextMonth()">
+        Mes
+        <i class="bi bi-arrow-right-circle" style="margin-left: 15px !important;"></i>
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Plantilla para la celda del mes -->
+  <ng-template #monthCellTemplate let-day="day">
+    <div class="cal-cell" (click)="dayClicked(day)">
+      <div class="cal-date">{{ day.date | date:'d' }}</div>
+      <div class="cal-events">
+        <div class="event-icon" *ngFor="let event of day.events" (click)="handleEventClick(event, $event)">
+          <img src="assets/icon/extintor.png" alt="extintor" />
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Vista de mes con angular-calendar -->
+  <mwl-calendar-month-view [viewDate]="viewDate" [events]="events" [refresh]="refresh"
+    [cellTemplate]="monthCellTemplate">
+  </mwl-calendar-month-view>
+
+  <!-- Sección inferior -->
+  <ion-grid *ngIf="selectedDay">
+    <ion-row>
+      <!-- Lista de rutas del día (si dayClicked) -->
+      <ion-col size="6">
+        <h2>Rutas del {{ selectedDay | date:'dd-MM-yyyy' }}</h2>
+
+        <ion-list>
+          <ion-item *ngFor="let r of rutasDelDia" (click)="mostrarDetalleRuta(r)">
+            <ion-label>
+              <h3>{{ r.name?.name || 'Ruta sin nombre' }}</h3>
+              <p>{{ r.date }} - {{ r.type }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+
+        <!-- Si no hay rutas => botón para crear -->
+        <div >
+          <p *ngIf="(rutasDelDia?.length || 0) === 0">No existen rutas para este día.</p>
+          <ion-button (click)="createRutaParaDia()">
+            <ion-icon slot="start" name="add-outline"></ion-icon>
+            Crear Ruta
+          </ion-button>
+        </div>
+      </ion-col>
+
+      <!-- Detalle de la ruta seleccionada (cuando user hace click en event o en la lista de rutas) -->
+      <ion-col size="6" *ngIf="rutaSeleccionada">
+        <h2>Detalle de la Ruta</h2>
+        <h3>{{ rutaSeleccionada.name?.name || 'Ruta sin nombre' }}</h3>
+        <div class="tipo-ruta" [ngClass]="getTipoRutaClass(rutaSeleccionada.type)">
+          {{ rutaSeleccionada.type }}
+        </div>
+
+        <div>
+          <strong>Vehículo:</strong> {{ rutaSeleccionada.vehicle?.brand }} - {{ rutaSeleccionada.vehicle?.matricula }}
+        </div>
+        <div class="workers-info">
+          <strong>Trabajadores:</strong>
+          <ion-chip *ngFor="let t of rutaSeleccionada.users">
+            <ion-label>{{ t.name }}</ion-label>
+          </ion-chip>
+        </div>
+
+        <!-- IonAccordion para partes asignados -->
+        <ion-accordion-group>
+          <ion-accordion value="partsAssigned">
+            <ion-item slot="header">
+              <ion-label>Partes Asignados</ion-label>
+            </ion-item>
+            <ion-list slot="content">
+              <ion-item *ngFor="let p of partesAsignadosARuta">
+                <ion-label>{{ p.description }}</ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-accordion>
+        </ion-accordion-group>
+
+        <!-- Botón para habilitar “asignar partes” en la columna de no asignados (checkbox y aceptar) -->
+        <ion-button fill="solid" color="primary" (click)="enableAssignPartes()">
+          <ion-icon slot="start" name="checkbox-outline"></ion-icon>
+          Asignar Partes
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+    <!-- Partes No Asignados, con checkboxes solo si enableCheckParts=true -->
+    <ion-row *ngIf="selectedDay">
+      <ion-col>
+        <h2>Partes No Asignados</h2>
+        <ion-list>
+          <ion-item *ngFor="let p of partesNoAsignados">
+            <ion-checkbox slot="start" [(ngModel)]="p.selected" *ngIf="enableCheckParts"></ion-checkbox>
+            <ion-label>{{ p.description }}</ion-label>
+          </ion-item>
+        </ion-list>
+
+        <!-- Botón para asignar partes seleccionados a la rutaSeleccionada -->
+        <ion-button [disabled]="!rutaSeleccionada" *ngIf="enableCheckParts"
+          (click)="asignarPartesARuta(getSelectedNoAsignados())">
+          <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>
+          Aceptar Partes Seleccionados
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

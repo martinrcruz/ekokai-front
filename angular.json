@@ -15,6 +15,7 @@
           "options": {
             "outputPath": "www",
             "index": "src/index.html",
+            
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
@@ -31,7 +32,7 @@
                 "output": "./svg"
               }
             ],
-            "styles": ["src/global.scss", "src/theme/variables.scss"],
+            "styles": ["src/global.scss", "src/theme/variables.scss", "node_modules/angular-calendar/css/angular-calendar.css"],
             "scripts": []
           },
           "configurations": {
@@ -136,7 +137,8 @@
   "cli": {
     "schematicCollections": [
       "@ionic/angular-toolkit"
-    ]
+    ],
+    "analytics": "303040a0-cc18-4e34-bf45-60ff3efa9b86"
   },
   "schematics": {
     "@ionic/angular-toolkit:component": {

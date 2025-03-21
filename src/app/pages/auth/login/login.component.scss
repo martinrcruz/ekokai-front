@@ -1,0 +1,27 @@
+.login-content {
+  /* Ajusta el color de fondo a tu gusto */
+  --background: #f6f6f6; 
+}
+
+.login-container {
+  max-width: 400px;
+  margin: auto;
+  text-align: center;
+  padding-top: 5rem; /* Para que quede centrado verticalmente */
+}
+
+.logo {
+  width: 320px;
+  margin-bottom: 1rem;
+}
+
+.brand-name {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.brand-subtitle {
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+  color: #666;
+}

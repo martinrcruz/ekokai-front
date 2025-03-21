@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? 'Editar Ruta' : 'Nueva Ruta' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="rutaForm" (ngSubmit)="guardar()">
+    <ion-list>
+
+      <ion-item>
+        <ion-label position="stacked">Nombre</ion-label>
+        <!-- Podrías poner un ion-select si "name" se asocia a RutaN -->
+        <ion-input formControlName="name" type="text"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Fecha</ion-label>
+        <ion-datetime formControlName="date" display-format="yyyy-MM-dd" picker-format="yyyy-MM-dd"></ion-datetime>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Estado</ion-label>
+        <ion-select formControlName="state">
+          <ion-select-option value="Pendiente">Pendiente</ion-select-option>
+          <ion-select-option value="EnProceso">En Proceso</ion-select-option>
+          <ion-select-option value="Finalizado">Finalizado</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Vehículo</ion-label>
+        <!-- Podrías mostrar un select con la lista de vehicles -->
+        <ion-input formControlName="vehicle" type="text"></ion-input>
+      </ion-item>
+
+      <!-- Ejemplo: si quisieras seleccionar usuarios -->
+      <!--
+      <ion-item>
+        <ion-label>Usuarios</ion-label>
+        <ion-select formControlName="users" multiple="true">
+          <ion-select-option *ngFor="let user of listaUsuarios" [value]="user._id">
+            {{ user.name }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+      -->
+
+    </ion-list>
+
+    <ion-button expand="block" class="ion-margin-top" type="submit" [disabled]="rutaForm.invalid">
+      {{ isEdit ? 'Actualizar' : 'Crear' }}
+    </ion-button>
+  </form>
+</ion-content>

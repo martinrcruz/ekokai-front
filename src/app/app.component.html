@@ -1,33 +1,83 @@
 <ion-app>
-  <ion-split-pane contentId="main-content">
+  <!-- Menú lateral, solo visible si showMenu === true -->
+  <ion-split-pane *ngIf="showMenu" contentId="main-content">
     <ion-menu contentId="main-content" type="overlay">
-      <ion-content>
-        <ion-list id="inbox-list">
-          <ion-list-header>Inbox</ion-list-header>
-          <ion-note>hi&#64;ionicframework.com</ion-note>
+      <ion-header>
+        <ion-toolbar color="danger">
+          <ion-title>
+            <i class="bi bi-menu-button-wide"></i> Menú
+          </ion-title>
+        </ion-toolbar>
+      </ion-header>
 
-          @for (p of appPages; track p; let i = $index) {
-            <ion-menu-toggle auto-hide="false">
-              <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+      <ion-content>
+        <ion-list>
+          <ion-list-header>Secciones</ion-list-header>
+
+          <!-- Recorremos appPages -->
+          <ng-container *ngFor="let p of appPages">
+            
+            <!-- Si NO tiene subpages, es un item normal -->
+            <ion-menu-toggle auto-hide="false" *ngIf="!p.subpages">
+              <ion-item
+                [routerLink]="[p.url]"
+                routerDirection="root"
+                lines="none"
+                detail="false">
+                <i [class]="p.icon" style="margin-right:8px;"></i>
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>
             </ion-menu-toggle>
-          }
-        </ion-list>
 
-        <ion-list id="labels-list">
-          <ion-list-header>Labels</ion-list-header>
+            <!-- Si TIENE subpages, es un menú desplegable -->
+            <div *ngIf="p.subpages">
+              <!-- Item principal del submenú -->
+              <ion-item lines="none" detail="false" (click)="toggleSubMenu(p)">
+                <i [class]="p.icon" style="margin-right:8px;"></i>
+                <ion-label>{{ p.title }}</ion-label>
+                <!-- Icono que cambia según expandido o no -->
+                <ion-icon
+                  [name]="p.expanded ? 'chevron-up-outline' : 'chevron-down-outline'"
+                  slot="end">
+                </ion-icon>
+              </ion-item>
 
-          @for (label of labels; track label) {
-            <ion-item lines="none">
-              <ion-icon aria-hidden="true" slot="start" ios="bookmark-outline" md="bookmark-sharp"></ion-icon>
-              <ion-label>{{ label }}</ion-label>
-            </ion-item>
-          }
+              <!-- Sub-items, visibles si expanded = true -->
+              <ion-list *ngIf="p.expanded">
+                <ion-menu-toggle auto-hide="false" *ngFor="let sp of p.subpages">
+                  <ion-item
+                    [routerLink]="[sp.url]"
+                    routerDirection="root"
+                    lines="none"
+                    detail="false"
+                    style="padding-left: 36px;"
+                  >
+                    <i [class]="sp.icon" style="margin-right:8px;"></i>
+                    <ion-label>{{ sp.title }}</ion-label>
+                  </ion-item>
+                </ion-menu-toggle>
+              </ion-list>
+            </div>
+          </ng-container>
+
         </ion-list>
       </ion-content>
+
+      <ion-footer>
+        <ion-toolbar>
+          <ion-item lines="none" detail="false" (click)="logout()" style="cursor:pointer !important">
+            <i class="bi bi-box-arrow-right" style="margin-right:8px;"></i>
+            <ion-label>Cerrar Sesión</ion-label>
+          </ion-item>
+        </ion-toolbar>
+      </ion-footer>
     </ion-menu>
+
+    <!-- Contenido principal -->
     <ion-router-outlet id="main-content"></ion-router-outlet>
   </ion-split-pane>
+
+  <!-- Si showMenu === false, igual se muestra la pantalla de login 
+       mediante <ion-router-outlet>, pero sin el menú. -->
+  <ion-router-outlet *ngIf="!showMenu"></ion-router-outlet>
 </ion-app>

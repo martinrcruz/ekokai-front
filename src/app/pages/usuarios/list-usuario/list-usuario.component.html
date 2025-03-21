@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Usuarios</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="nuevoUsuario()">
+        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <!-- Searchbar (sin ngModel), filtrado manual -->
+  <ion-searchbar
+    (ionInput)="filtrar($event)"
+    placeholder="Buscar usuario"
+    showCancelButton="focus">
+  </ion-searchbar>
+
+  <!-- Refresher -->
+  <ion-refresher (ionRefresh)="cargarUsuarios()">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- IonGrid para mostrar columnas: Nombre, Email, Rol, Acciones -->
+  <ion-grid>
+    <ion-row class="header-row">
+      <ion-col><strong>Nombre</strong></ion-col>
+      <ion-col><strong>Email</strong></ion-col>
+      <ion-col><strong>Rol</strong></ion-col>
+      <ion-col size="2"><strong>Acciones</strong></ion-col>
+    </ion-row>
+
+    <ion-row *ngFor="let u of filteredUsuarios">
+      <ion-col>
+        {{ u.name }} ({{ u.code }})
+      </ion-col>
+      <ion-col>
+        {{ u.email }}
+      </ion-col>
+      <ion-col>
+        {{ u.role }}
+      </ion-col>
+      <ion-col size="2">
+        <ion-button size="small" (click)="editarUsuario(u._id)">  <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+        <ion-button size="small" color="danger" (click)="eliminarUsuario(u._id)">  <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-content>

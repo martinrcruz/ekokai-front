@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? 'Editar Vehículo' : 'Nuevo Vehículo' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="vehicleForm" (ngSubmit)="guardar()">
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Marca</ion-label>
+        <ion-input formControlName="brand"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Modelo</ion-label>
+        <ion-input formControlName="modelo"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Matrícula</ion-label>
+        <ion-input formControlName="matricula"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Combustible</ion-label>
+        <ion-select formControlName="fuel">
+          <ion-select-option value="Diesel">Diesel</ion-select-option>
+          <ion-select-option value="Gasolina">Gasolina</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Tipo</ion-label>
+        <ion-select formControlName="type">
+          <ion-select-option value="Furgon">Furgon</ion-select-option>
+          <ion-select-option value="Turismo">Turismo</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Foto (URL)</ion-label>
+        <ion-input formControlName="photo"></ion-input>
+      </ion-item>
+    </ion-list>
+
+    <ion-button expand="block" class="ion-margin-top" type="submit" [disabled]="vehicleForm.invalid">
+      {{ isEdit ? 'Actualizar' : 'Crear' }}
+    </ion-button>
+  </form>
+</ion-content>

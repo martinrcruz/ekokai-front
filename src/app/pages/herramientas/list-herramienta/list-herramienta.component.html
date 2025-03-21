@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Herramientas</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="nuevaHerramienta()">
+        <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-searchbar
+    (ionInput)="filtrar($event)"
+    placeholder="Buscar herramienta"
+    showCancelButton="focus">
+  </ion-searchbar>
+
+  <ion-refresher (ionRefresh)="cargarHerramientas()">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-grid>
+    <ion-row class="header-row">
+      <ion-col><strong>Nombre</strong></ion-col>
+      <ion-col><strong>Código</strong></ion-col>
+      <ion-col><strong>Descripción</strong></ion-col>
+      <ion-col size="2"><strong>Acciones</strong></ion-col>
+    </ion-row>
+
+    <ion-row *ngFor="let h of filteredHerr">
+      <ion-col>
+        {{ h.name }}
+      </ion-col>
+      <ion-col>
+        {{ h.code }}
+      </ion-col>
+      <ion-col>
+        {{ h.description }}
+      </ion-col>
+      <ion-col size="2">
+        <ion-button size="small" (click)="editarHerramienta(h._id)">  <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+        <ion-button size="small" color="danger" (click)="eliminarHerramienta(h._id)">  <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

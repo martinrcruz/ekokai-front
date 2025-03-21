@@ -1,0 +1,80 @@
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px;
+
+  .left-buttons, .right-buttons {
+    display: flex;
+    gap: 4px;
+  }
+
+  .center-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .today-btn {
+      margin-bottom: 4px;
+    }
+    .month-year-display {
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+  }
+}
+
+.cal-cell {
+  padding: 4px;
+  min-height: 75px;
+  border-radius: 4px;
+  background-color: #fff;
+
+  &:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+  }
+
+  .cal-date {
+    font-weight: bold;
+    margin-bottom: 4px;
+    font-size: 1rem;
+  }
+  .cal-events {
+    display: flex;
+    gap: 4px;
+
+    .event-icon img {
+      width: 30px;
+      height: 30px;
+    }
+  }
+}
+
+.tipo-ruta {
+  padding: 4px 8px;
+  border-radius: 8px;
+  color: #fff;
+  margin: 6px 0;
+  display: inline-block;
+}
+
+.tag-mant { background-color: #007bff; }
+.tag-corr { background-color: #dc3545; }
+.tag-visit { background-color: #28a745; }
+.tag-other { background-color: #6c757d; }
+
+.workers-info {
+  margin: 8px 0;
+  ion-chip {
+    margin-right: 4px;
+  }
+}
+
+ion-accordion-group {
+  margin: 8px 0;
+}
+
+ion-button {
+  margin-top: 6px;
+}

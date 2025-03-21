@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <!-- Botón para volver -->
+      <ion-back-button defaultHref="/calendario"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Partes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-segment (ionChange)="seleccionarTab($event.detail.value)" value="{{tabSelected}}">
+    <ion-segment-button value="asignados">
+      <ion-label>Asignados</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="noasignados">
+      <ion-label>No Asignados</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <div *ngIf="tabSelected === 'asignados'">
+    <ion-list>
+      <ion-item *ngFor="let p of partesAsignados">
+        <ion-label>
+          <h2>{{ p.description }}</h2>
+          <p>Estado: {{ p.state }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <div *ngIf="tabSelected === 'noasignados'">
+    <ion-list>
+      <ion-item *ngFor="let p of partesNoAsignados">
+        <ion-label>
+          <h2>{{ p.description }}</h2>
+          <p>Estado: {{ p.state }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>

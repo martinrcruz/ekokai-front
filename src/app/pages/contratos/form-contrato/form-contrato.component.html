@@ -1,0 +1,85 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? 'Editar Contrato' : 'Nuevo Contrato' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="contractForm" (ngSubmit)="guardar()">
+    <ion-list>
+
+      <ion-item>
+        <ion-label position="stacked">Código</ion-label>
+        <ion-input formControlName="code"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Cliente (ID)</ion-label>
+        <ion-input formControlName="customerId"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Nombre Contrato</ion-label>
+        <ion-input formControlName="name"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Fecha Inicio</ion-label>
+        <ion-datetime formControlName="startDate" display-format="yyyy-MM-dd"></ion-datetime>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Fecha Fin</ion-label>
+        <ion-datetime formControlName="endDate" display-format="yyyy-MM-dd"></ion-datetime>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Tipo</ion-label>
+        <ion-select formControlName="type">
+          <ion-select-option value="F">F</ion-select-option>
+          <ion-select-option value="E">E</ion-select-option>
+          <ion-select-option value="R">R</ion-select-option>
+          <ion-select-option value="C">C</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Tiempo Promedio</ion-label>
+        <ion-input formControlName="averageTime" type="number"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Delegación</ion-label>
+        <ion-input formControlName="delegation"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Frecuencia Revisión</ion-label>
+        <ion-input formControlName="revisionFrequency"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Dirección</ion-label>
+        <ion-input formControlName="address"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Zona (ID)</ion-label>
+        <ion-input formControlName="zone"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Total (€)</ion-label>
+        <ion-input formControlName="total" type="number"></ion-input>
+      </ion-item>
+
+    </ion-list>
+
+    <ion-button expand="block" class="ion-margin-top" type="submit" [disabled]="contractForm.invalid">
+      {{ isEdit ? 'Actualizar' : 'Crear' }}
+    </ion-button>
+  </form>
+</ion-content>

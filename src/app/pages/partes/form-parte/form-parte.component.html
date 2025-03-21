@@ -1,0 +1,99 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? 'Editar Parte' : 'Nuevo Parte' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="parteForm" (ngSubmit)="guardar()">
+    <ion-list>
+
+      <ion-item>
+        <ion-label position="stacked">Descripción</ion-label>
+        <ion-textarea formControlName="description"></ion-textarea>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Facturación (€)</ion-label>
+        <ion-input formControlName="facturacion" type="number"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Estado</ion-label>
+        <ion-select formControlName="state">
+          <ion-select-option value="Pendiente">Pendiente</ion-select-option>
+          <ion-select-option value="EnProceso">EnProceso</ion-select-option>
+          <ion-select-option value="Finalizado">Finalizado</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Tipo</ion-label>
+        <ion-select formControlName="type">
+          <ion-select-option value="Obra">Obra</ion-select-option>
+          <ion-select-option value="Mantenimiento">Mantenimiento</ion-select-option>
+          <ion-select-option value="Correctivo">Correctivo</ion-select-option>
+          <ion-select-option value="Visitas">Visitas</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Categoría</ion-label>
+        <ion-select formControlName="categoria">
+          <ion-select-option value="Extintores">Extintores</ion-select-option>
+          <ion-select-option value="Incendio">Incendio</ion-select-option>
+          <ion-select-option value="Robo">Robo</ion-select-option>
+          <ion-select-option value="CCTV">CCTV</ion-select-option>
+          <ion-select-option value="Pasiva">Pasiva</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Asignado</ion-label>
+        <ion-toggle formControlName="asignado"></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Fecha</ion-label>
+        <ion-datetime formControlName="date" display-format="yyyy-MM-dd"></ion-datetime>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Zona (ID)</ion-label>
+        <ion-input formControlName="zone" type="text"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Cliente (ID)</ion-label>
+        <ion-input formControlName="customer" type="text"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Ruta (ID)</ion-label>
+        <ion-input formControlName="ruta" type="text"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Documentos</ion-label>
+        <input type="file" multiple (change)="onFileSelected($event)" />
+      </ion-item>
+      <ion-list>
+        <ion-item *ngFor="let doc of documentos">
+          <ion-label>
+            {{ doc.name }}
+          </ion-label>
+          <ion-button color="danger" (click)="removeDoc(doc)">X</ion-button>
+        </ion-item>
+      </ion-list>
+      
+
+    </ion-list>
+
+    <ion-button expand="block" class="ion-margin-top" type="submit" [disabled]="parteForm.invalid">
+      {{ isEdit ? 'Actualizar' : 'Crear' }}
+    </ion-button>
+  </form>
+</ion-content>

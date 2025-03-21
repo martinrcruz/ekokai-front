@@ -1,3 +1,30 @@
+/**********************************************************
+ * Variables de color principal
+ **********************************************************/
+ :root {
+  --ion-color-primary: #BD1E1E;
+  --ion-color-primary-rgb: 189,30,30;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255,255,255;
+  --ion-color-primary-shade: #a51b1b;
+  --ion-color-primary-tint: #c83b3b;
+}
+
+/* Para la mayoría de los botones (no los de editar/eliminar) */
+ion-button:not(.edit-btn):not(.delete-btn) {
+  background: var(--ion-color-primary) !important; 
+  color: #fff !important;
+  border-radius: 6px;
+}
+
+/* Un ejemplo de forzar background en IonToolbar si lo requieres */
+.ext-background {
+  background: var(--ion-color-primary) !important;
+}
+
+/**********************************************************
+ * Menú Lateral
+ **********************************************************/
 ion-menu ion-content {
   --background: var(--ion-item-background, var(--ion-background-color, #fff));
 }
@@ -29,17 +56,13 @@ ion-menu.md ion-list#inbox-list {
 ion-menu.md ion-list#inbox-list ion-list-header {
   font-size: 22px;
   font-weight: 600;
-
   min-height: 20px;
 }
 
 ion-menu.md ion-list#labels-list ion-list-header {
   font-size: 16px;
-
   margin-bottom: 18px;
-
   color: #757575;
-
   min-height: 26px;
 }
 
@@ -110,10 +133,56 @@ ion-menu.ios ion-note {
 ion-note {
   display: inline-block;
   font-size: 16px;
-
   color: var(--ion-color-medium-shade);
 }
 
 ion-item.selected {
   --color: var(--ion-color-primary);
 }
+
+/**********************************************************
+ * Calendario (angular-calendar) celdas
+ **********************************************************/
+.cal-cell {
+  padding: 4px;
+  position: relative;
+  min-height: 80px;
+}
+
+.cal-date {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.cal-events {
+  display: grid;
+  grid-template-columns: repeat(5, auto);
+  gap: 4px;
+}
+
+.event-icon {
+  cursor: pointer;
+}
+
+.event-icon img {
+  width: 35px;
+  height: 35px;
+  border-radius: 4px;
+}
+
+/**********************************************************
+ * Rutas: estilo de tipo de ruta con recuadros redondeados
+ **********************************************************/
+.tipo-ruta {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 8px;
+  color: #fff;
+  margin-right: 8px;
+  font-size: 0.9em;
+}
+
+.tag-mant { background-color: #007bff; }
+.tag-corr { background-color: #dc3545; }
+.tag-visit { background-color: #28a745; }
+.tag-other { background-color: #6c757d; }
