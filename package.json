@@ -6,8 +6,8 @@
   "scripts": {
     "ng": "ng",
     "start": "serve -s www -l tcp://0.0.0.0:$PORT",
-    "build": "ionic build --prod",
-    "watch": "ionic build --watch --configuration development",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint"
   },
