@@ -17,6 +17,7 @@ export class ListCalendarioComponent implements OnInit {
   events: CalendarEvent[] = [];
   refresh: Subject<any> = new Subject();
 
+
   @ViewChild('monthCellTemplate', { static: true }) monthCellTemplate!: TemplateRef<any>;
 
   // Variables para la lógica
@@ -30,7 +31,7 @@ export class ListCalendarioComponent implements OnInit {
   constructor(private apiService: ApiService, private navCtrl: NavController
   ) { }
 
-  ngOnInit(): void {
+ async  ngOnInit() {
     this.loadEvents();
   }
 

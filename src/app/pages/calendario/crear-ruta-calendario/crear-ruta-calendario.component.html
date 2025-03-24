@@ -1,35 +1,30 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Crear Ruta</ion-title>
-    <ion-buttons slot="start">
-      <ion-button (click)="cancelar()">Cancelar</ion-button>
+    <ion-buttons  style="color: white !important" slot="start">
+      <ion-button style="color: white !important" (click)="cancelar()">Cancelar</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<!-- <div class="breadcrumb">
-  <ion-icon name="home-outline" color="gray"></ion-icon>
-  <span>/</span>
-  <span>Calendario</span>
-  <span>/</span>
-  <span class="breadcrumb-current">Crear</span>
-</div> -->
-
 <ion-content class="ion-padding">
-
-  <!-- Campo de fecha (solo lectura si quieres que no se cambie) -->
+  <!-- Fecha (read-only) -->
   <ion-item>
     <ion-label position="stacked">Fecha</ion-label>
     <ion-input [(ngModel)]="date" readonly></ion-input>
   </ion-item>
 
-  <!-- Campo de nombre -->
+  <!-- Nombre de Ruta (RutaN) -->
   <ion-item>
-    <ion-label position="stacked">Nombre de la Ruta</ion-label>
-    <ion-input [(ngModel)]="name"></ion-input>
+    <ion-label>Nombre de Ruta (RutaN)</ion-label>
+    <ion-select [(ngModel)]="rutaNId" placeholder="Selecciona Nombre Ruta">
+      <ion-select-option *ngFor="let rn of rutasN" [value]="rn._id">
+        {{ rn.name }}
+      </ion-select-option>
+    </ion-select>
   </ion-item>
 
-  <!-- Campo de tipo de ruta -->
+  <!-- Tipo de ruta -->
   <ion-item>
     <ion-label>Tipo de Ruta</ion-label>
     <ion-select [(ngModel)]="type" placeholder="Selecciona un tipo">
@@ -39,8 +34,62 @@
     </ion-select>
   </ion-item>
 
+  <!-- Estado de la ruta -->
+  <ion-item>
+    <ion-label>Estado</ion-label>
+    <ion-select [(ngModel)]="state" placeholder="Selecciona estado">
+      <ion-select-option value="Pendiente">Pendiente</ion-select-option>
+      <ion-select-option value="EnProceso">En Proceso</ion-select-option>
+      <ion-select-option value="Finalizado">Finalizado</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Vehículo -->
+  <ion-item>
+    <ion-label>Vehículo</ion-label>
+    <ion-select [(ngModel)]="selectedVehicle" placeholder="Selecciona un Vehículo">
+      <ion-select-option 
+        *ngFor="let v of vehicles" 
+        [value]="v._id"
+      >
+        {{ v.brand }} - {{ v.matricula }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Trabajadores (users) -->
+  <ion-item>
+    <ion-label>Trabajadores</ion-label>
+    <ion-select [(ngModel)]="selectedUsers" multiple="true" placeholder="Selecciona trabajadores">
+      <ion-select-option 
+        *ngFor="let u of users" 
+        [value]="u._id"
+      >
+        {{ u.name }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Partes No Asignados -->
+  <ion-list>
+    <ion-list-header>Partes No Asignados</ion-list-header>
+    <ion-item *ngFor="let p of partesNoAsignados">
+      <!-- Checkbox para seleccionar el parte -->
+      <ion-checkbox slot="start" [(ngModel)]="p.selected"></ion-checkbox>
+      <ion-label>
+        <!-- Muestra la descripción, tipo, etc. como quieras -->
+        {{ p.description }} - {{ p.type }} - {{ p.state }}
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
   <!-- Botón para crear la ruta -->
-  <ion-button expand="full" class="ion-margin-top" (click)="onCreateRuta()">
+  <ion-button 
+    expand="full" 
+    class="ion-margin-top" 
+    (click)="onCreateRuta()"
+  >
     Crear Ruta
   </ion-button>
+
 </ion-content>

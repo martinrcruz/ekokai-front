@@ -112,8 +112,8 @@
           </ng-container>
         </ion-list>
       
-        <div *ngIf="(rutasDelDia?.length || 0) === 0">
-          <p>No existen rutas para este día.</p>
+        <div>
+          <p *ngIf="(rutasDelDia?.length || 0) === 0">No existen rutas para este día.</p>
           <ion-button (click)="createRutaParaDia()">
             <ion-icon slot="start" name="add-outline"></ion-icon>
             Crear Ruta
