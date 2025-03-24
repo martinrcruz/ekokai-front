@@ -1,28 +1,41 @@
 .calendar-nav {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin: 8px;
+  align-items: center;
+  padding: 8px;
+  background: #f8f8f8;
+  border-bottom: 1px solid #ddd;
 
-  .left-buttons, .right-buttons {
-    display: flex;
-    gap: 4px;
+  .today-btn {
+    --background: #BA392B;
+    color: #ffffff;
   }
 
-  .center-display {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    .today-btn {
-      margin-bottom: 4px;
-    }
-    .month-year-display {
-      font-weight: bold;
-      font-size: 1.2rem;
-    }
+  .month-year-display {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #3E363F;
+    margin-top: 4px;
   }
 }
+
+.breadcrumb {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  color: #3E363F;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  ion-icon {
+    font-size: 16px;
+  }
+
+  .breadcrumb-current {
+    font-weight: bold;
+  }
+}
+
 
 .cal-cell {
   padding: 4px;
@@ -50,31 +63,50 @@
     }
   }
 }
+.ruta-expanded {
+  --background: #BA392B;
+  color: #ffffff;
 
-.tipo-ruta {
-  padding: 4px 8px;
-  border-radius: 8px;
-  color: #fff;
-  margin: 6px 0;
-  display: inline-block;
-}
+  p {
+    color: white;
+  }
 
-.tag-mant { background-color: #007bff; }
-.tag-corr { background-color: #dc3545; }
-.tag-visit { background-color: #28a745; }
-.tag-other { background-color: #6c757d; }
+  ion-label {
+    color: #ffffff !important;
+    p {
+      color: white;
+    }
+  }
 
-.workers-info {
-  margin: 8px 0;
-  ion-chip {
-    margin-right: 4px;
+  ion-icon {
+    color: #ffffff;
   }
 }
 
-ion-accordion-group {
-  margin: 8px 0;
+.ruta-detalle {
+  margin-top: 5px;
+  padding: 12px;
+  background-color: #f8f8f8;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+
+  .tipo-ruta {
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+
+  .workers-info {
+    margin-top: 8px;
+  }
 }
 
-ion-button {
-  margin-top: 6px;
+ion-grid {
+  padding-top: 15px;
+
+  h2 {
+    margin-bottom: 12px;
+    color: #3E363F;
+  }
 }

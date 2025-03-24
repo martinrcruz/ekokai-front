@@ -3,7 +3,7 @@
   <ion-split-pane *ngIf="showMenu" contentId="main-content">
     <ion-menu contentId="main-content" type="overlay">
       <ion-header>
-        <ion-toolbar color="danger">
+        <ion-toolbar>
           <ion-title>
             <i class="bi bi-menu-button-wide"></i> Menú
           </ion-title>
@@ -64,13 +64,14 @@
       </ion-content>
 
       <ion-footer>
-        <ion-toolbar>
-          <ion-item lines="none" detail="false" (click)="logout()" style="cursor:pointer !important">
-            <i class="bi bi-box-arrow-right" style="margin-right:8px;"></i>
+        <ion-toolbar class="footer-toolbar">
+          <ion-item lines="none" detail="false" (click)="logout()" class="logout-item">
+            <i class="bi bi-box-arrow-right icon-logout"></i>
             <ion-label>Cerrar Sesión</ion-label>
           </ion-item>
         </ion-toolbar>
       </ion-footer>
+      
     </ion-menu>
 
     <!-- Contenido principal -->

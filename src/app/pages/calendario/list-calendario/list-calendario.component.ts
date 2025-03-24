@@ -170,6 +170,15 @@ export class ListCalendarioComponent implements OnInit {
     });
   }
 
+  toggleRuta(ruta: any) {
+    if (this.rutaSeleccionada === ruta) {
+      this.rutaSeleccionada = null;
+    } else {
+      this.mostrarDetalleRuta(ruta);
+    }
+  }
+  
+
   getSelectedNoAsignados(): any[] {
     return this.partesNoAsignados?.filter((p) => p.selected) || [];
   }

@@ -1,0 +1,77 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ customerId ? 'Editar Contrato' : 'Crear Contrato' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<!-- <div class="breadcrumb">
+  <ion-icon name="home-outline" color="gray"></ion-icon>
+  <span>/</span>
+  <span>Contratos</span>
+  <span>/</span>
+  <span class="breadcrumb-current">{{ customerId ? 'Editar' : 'Crear' }}</span>
+</div> -->
+
+<ion-content>
+  <form [formGroup]="customerForm" (ngSubmit)="saveCustomer()">
+    <ion-list>
+
+      <!-- Vista previa -->
+      <div *ngIf="previewImage" class="image-preview">
+        <img [src]="previewImage" alt="Vista previa de imagen" />
+      </div>
+
+      <!-- Selector de archivos -->
+      <ion-item>
+        <ion-label position="stacked">Seleccionar Imagen</ion-label>
+        <input type="file" accept="image/*" (change)="onFileSelected($event)">
+      </ion-item>
+
+      <ion-item>
+        <ion-input class="ion-text-end" label="Nombre" formControlName="name"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input class="ion-text-end" label="Email" type="email" formControlName="email"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input class="ion-text-end" label="NIF/CIF" formControlName="nifCif"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-select label="Zona" formControlName="zone">
+          <ion-select-option *ngFor="let z of zones" [value]="z._id">
+            {{ z.name }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-input class="ion-text-end" label="Teléfono" formControlName="phone"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input class="ion-text-end" label="Nombre de Contacto" formControlName="contactName"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input class="ion-text-end" label="Dirección" formControlName="address"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input class="ion-text-end" label="Código" formControlName="code"></ion-input>
+      </ion-item>
+
+
+
+    </ion-list>
+
+    <ion-button expand="block" type="submit">
+      Guardar Contrato
+    </ion-button>
+  </form>
+</ion-content>

@@ -10,20 +10,26 @@ import { ApiService } from 'src/app/services/api.service';
   templateUrl: './form-ruta.component.html',
   styleUrls: ['./form-ruta.component.scss'],
 })
-export class FormRutaComponent  implements OnInit {
+export class FormRutaComponent implements OnInit {
   rutaForm!: FormGroup;
   isEdit = false;
   rutaId: string | null = null;
+
+  listaRutaN: any[] = [];
+  listaVehicles: any[] = [];
+  listaClientes: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private navCtrl: NavController,
     private apiService: ApiService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.initForm();
+    this.cargarListas();
+
     this.route.paramMap.subscribe(params => {
       this.rutaId = params.get('id');
       if (this.rutaId) {
@@ -33,14 +39,38 @@ export class FormRutaComponent  implements OnInit {
     });
   }
 
+  async cargarListas() {
+    const rnReq = await this.apiService.getRutasN();
+    rnReq.subscribe((res: any) => {
+      if (res.ok) {
+        this.listaRutaN = res.rutas; // ajusta según JSON
+      }
+    });
+    // GET /vehicle => [{ _id, brand, ...}, ...]
+    const vReq = await this.apiService.getVehicles();
+    vReq.subscribe((res: any) => {
+      if (res.ok) {
+        this.listaVehicles = res.vehicles;
+      }
+    });
+
+    const cReq = await this.apiService.getCustomers();
+    cReq.subscribe((res: any) => {
+      console.log(res)
+      if (res.ok) {
+        this.listaClientes = res.customers;
+      }
+    });
+  }
+
   initForm() {
     this.rutaForm = this.fb.group({
       // Ajusta campos según tu modelo de Rutas
-      name:      ['', Validators.required],   // o ID a RutaN
-      date:      ['', Validators.required],   // Ej: Fecha
-      state:     ['Pendiente', Validators.required],
-      vehicle:   [''],  // Podrías usar un select para vehicles
-      // users:   []  -> array de user IDs, depende de tu lógica
+      name: ['', Validators.required],   // o ID a RutaN
+      date: ['', Validators.required],   // Ej: Fecha
+      state: ['Pendiente', Validators.required],
+      vehicle: [''],  // Podrías usar un select para vehicles
+      users: []
     });
   }
 
@@ -50,10 +80,11 @@ export class FormRutaComponent  implements OnInit {
       req.subscribe((res: any) => {
         if (res.ok && res.ruta) {
           this.rutaForm.patchValue({
-            name:    res.ruta.name?._id || res.ruta.name, 
-            date:    res.ruta.date,
-            state:   res.ruta.state,
+            name: res.ruta.name?._id || res.ruta.name,
+            date: res.ruta.date,
+            state: res.ruta.state,
             vehicle: res.ruta.vehicle,
+            users: res.ruta.users
             // users: ...
           });
         }

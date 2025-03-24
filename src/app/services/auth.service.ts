@@ -35,20 +35,15 @@ export class AuthService {
     const store = await this.storage.create();
     this._storage = store;
     const token = await this._storage?.get('token');
-    console.log(" token 1 ")
     if (token) {
-      console.log(" token 2 ")
       // decodificar
       const decoded: any = jwtDecode(token);
       const now = Math.floor(Date.now() / 1000); // en segundos
-      console.log(" token 3 ")
 
       if (decoded.exp && decoded.exp > now) {
-        console.log(" token 4 ")
         this.isLoggedInSubject.next(true);
         this.router.navigateByUrl('/calendario');
       } else {
-        console.log(" token 5 ")
         // Token expirado
         await this.removeToken();
       }

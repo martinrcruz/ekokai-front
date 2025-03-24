@@ -27,8 +27,8 @@ export class AppComponent {
   public appPages: AppPage[] = [
     // { title: 'Home',       url: '/home',        icon: 'bi-house' },
     { title: 'Calendario', url: '/calendario',  icon: 'bi-calendar-check' },
-    { title: 'Usuarios',   url: '/usuarios',    icon: 'bi-people' },
     { title: 'Partes',     url: '/partes',      icon: 'bi-file-text' },
+    { title: 'Contratos',   url: '/clientes',    icon: 'bi-people-fill' },
     { title: 'Facturación',url: '/facturacion', icon: 'bi-cash-stack' },
     // Sección con submenú
     {
@@ -40,6 +40,7 @@ export class AppComponent {
         { title: 'Herramientas', url: '/herramientas', icon: 'bi-tools' },
         { title: 'Zonas',        url: '/zonas',        icon: 'bi-geo-alt' },
         { title: 'Rutas',        url: '/rutas',        icon: 'bi-map' },
+        { title: 'Usuarios',   url: '/usuarios',    icon: 'bi-people' },
       ]
     }
   ];

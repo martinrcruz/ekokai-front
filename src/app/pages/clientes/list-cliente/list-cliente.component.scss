@@ -1,19 +1,13 @@
-ion-content {
-  /* Para que IonContent no bloquee desplazamiento horizontal */
-  --overflow: visible;
-}
-
-.table-wrapper {
-  /* Hace que si la tabla excede el ancho, aparezca scroll horizontal */
+.table-responsive {
+  display: block;
   width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow-x: auto; /* scroll horizontal */
+  overflow-y: hidden; 
 }
 
 .parts-table {
-  min-width: 900px; /* Ajusta a gusto: forza que supere el ancho del contenedor */
+  min-width: 800px;   /* forza que la tabla sea más ancha que 100% en pantallas pequeñas */
   border-collapse: collapse;
-  margin: 0 auto;     /* Centra la tabla si quieres */
   text-align: center;
 }
 
@@ -23,8 +17,8 @@ ion-content {
   border-bottom: 1px solid #ccc;
 }
 
+/* Estilos para el “type” */
 .tipo-parte {
-  /* para colorear el “tipo” (Mantenimiento, Correctivo, etc.) */
   display: inline-block;
   padding: 3px 6px;
   border-radius: 4px;
@@ -32,6 +26,7 @@ ion-content {
   font-size: 0.9em;
 }
 
+/* Clases de color según el type */
 .tag-mant { background-color: #28a745; }
 .tag-corr { background-color: #dc3545; }
 .tag-visit { background-color: #007bff; }

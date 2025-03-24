@@ -35,3 +35,94 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+
+// Colores principales del proyecto
+:root {
+  --primary-color: #BA392B; // headers y botones principales
+  --highlight-color: #3E363F; // resaltados sobrios
+}
+
+// Personalizar header (ion-toolbar)
+ion-toolbar {
+  --background: var(--primary-color);
+  --color: #ffffff;
+
+  ion-title {
+    font-weight: bold;
+  }
+
+  ion-back-button {
+    --color: #ffffff;
+  }
+}
+
+.button-primary {
+  --background: var(--primary-color);
+  --color: #ffffff;
+}
+
+// Breadcrumb
+.breadcrumb {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  color: var(--highlight-color);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  ion-icon {
+    font-size: 16px;
+    color: white !important;
+  }
+
+  span {
+    opacity: 0.8;
+  }
+
+  .breadcrumb-current {
+    font-weight: bold;
+  }
+}
+
+::ng-deep .button-native {
+  color: white !important;
+}
+
+
+.button-inner {
+  color: white !important;
+}
+
+ion-menu-button {
+  color: white !important;
+}
+
+.footer-toolbar {
+  --background: var(--primary-color);
+  color: #ffffff;
+
+  .logout-item {
+    --background: transparent;
+    color: #ffffff;
+    cursor: pointer !important;
+
+    .icon-logout {
+      margin-right: 8px;
+      font-size: 1.2rem;
+    }
+
+    ion-label {
+      font-weight: 500;
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
+.big-icon {
+  font-size: 32px;
+  color: white !important;
+}

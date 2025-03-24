@@ -7,6 +7,14 @@
   </ion-toolbar>
 </ion-header>
 
+<!-- <div class="breadcrumb">
+  <ion-icon name="home-outline" color="gray"></ion-icon>
+  <span>/</span>
+  <span>Herramientas</span>
+  <span>/</span>
+  <span class="breadcrumb-current">{{ isEdit ? 'Editar' : 'Crear' }}</span>
+</div> -->
+
 <ion-content class="ion-padding">
   <form [formGroup]="herramientaForm" (ngSubmit)="guardar()">
     <ion-list>

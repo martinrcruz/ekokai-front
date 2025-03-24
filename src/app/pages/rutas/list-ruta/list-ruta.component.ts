@@ -6,9 +6,9 @@ import { ApiService } from 'src/app/services/api.service';
   selector: 'app-list-ruta',
   standalone: false,
   templateUrl: './list-ruta.component.html',
-  styleUrls: ['./list-ruta.component.scss'],
+  styleUrls: ['./list-ruta.component.scss']
 })
-export class ListRutaComponent  implements OnInit {
+export class ListRutaComponent implements OnInit {
   rutas: any[] = [];
   filteredRutas: any[] = [];
 
@@ -31,7 +31,6 @@ export class ListRutaComponent  implements OnInit {
       default:              return 'tag-other';
     }
   }
-  
 
   async cargarRutas() {
     try {
@@ -53,7 +52,6 @@ export class ListRutaComponent  implements OnInit {
       this.filteredRutas = [...this.rutas];
       return;
     }
-    // Filtrar en name, state
     this.filteredRutas = this.rutas.filter(r => {
       const nombre = r.name?.name?.toLowerCase() || r.name?.toLowerCase() || '';
       const state  = r.state?.toLowerCase() || '';
@@ -78,7 +76,7 @@ export class ListRutaComponent  implements OnInit {
         {
           text: 'Eliminar',
           handler: () => {
-            // this.apiService.deleteRuta(id) ...
+            // Llama al endpoint de eliminar
             this.mostrarToast('Ruta eliminada (simulado).');
           }
         }

@@ -56,6 +56,12 @@ const routes: Routes = [
       import('./pages/calendario/calendario.module').then(m => m.CalendarioModule),
     canActivate: [AuthGuard]
   },
+  {
+    path: 'clientes',
+    loadChildren: () =>
+      import('./pages/clientes/clientes.module').then(m => m.ClientesModule),
+    canActivate: [AuthGuard]
+  },
 
   // ---------------------------------
   // Módulos nuevos

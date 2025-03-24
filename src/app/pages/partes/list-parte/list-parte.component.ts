@@ -6,9 +6,9 @@ import { ApiService } from 'src/app/services/api.service';
   selector: 'app-list-parte',
   standalone: false,
   templateUrl: './list-parte.component.html',
-  styleUrls: ['./list-parte.component.scss'],
+  styleUrls: ['./list-parte.component.scss']
 })
-export class ListParteComponent  implements OnInit {
+export class ListParteComponent implements OnInit {
 
   partes: any[] = [];
   filteredPartes: any[] = [];
@@ -26,7 +26,7 @@ export class ListParteComponent  implements OnInit {
 
   async cargarPartes() {
     try {
-      const req = await this.apiService.getPartes();
+      const req = await this.apiService.getPartes(); // GET /partes
       req.subscribe((res: any) => {
         if (res.ok) {
           this.partes = res.partes;
@@ -39,15 +39,22 @@ export class ListParteComponent  implements OnInit {
   }
 
   filtrar(event: any) {
-    const texto = event.detail.value?.toLowerCase() || '';
+    const texto = (event.detail.value || '').toLowerCase();
     if (!texto.trim()) {
       this.filteredPartes = [...this.partes];
       return;
     }
     this.filteredPartes = this.partes.filter(p => {
       const desc = p.description?.toLowerCase() || '';
-      const code = p.code?.toLowerCase() || '';
-      return desc.includes(texto) || code.includes(texto);
+      const type = p.type?.toLowerCase() || '';
+      const state= p.state?.toLowerCase() || '';
+      const customer = p.customer?.name?.toLowerCase() || '';
+      return (
+        desc.includes(texto) ||
+        type.includes(texto) ||
+        state.includes(texto) ||
+        customer.includes(texto)
+      );
     });
   }
 
@@ -68,7 +75,7 @@ export class ListParteComponent  implements OnInit {
         {
           text: 'Eliminar',
           handler: () => {
-            // this.apiService.deleteParte(id) ...
+            // Llama a this.apiService.deleteParte(id)
             this.mostrarToast('Parte eliminada (simulado).');
           }
         }
@@ -84,5 +91,15 @@ export class ListParteComponent  implements OnInit {
       position: 'bottom'
     });
     toast.present();
+  }
+
+  getTipoParteClass(tipo: string): string {
+    switch (tipo) {
+      case 'Mantenimiento': return 'tag-mant';
+      case 'Correctivo':    return 'tag-corr';
+      case 'Visitas':       return 'tag-visit';
+      case 'Obra':          return 'tag-obra';
+      default:              return 'tag-other';
+    }
   }
 }

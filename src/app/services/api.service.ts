@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
+import { Observable } from 'rxjs';
 
 /**
  * ApiService
@@ -209,7 +210,7 @@ export class ApiService {
   /**
    * Obtener todos los clientes (GET /customers)
    */
-  async getCustomers() {
+  async getCustomers(){
     const opts = await this.getHeaders();
     return this.http.get(`${this.baseUrl}/customers`, opts);
   }
@@ -711,5 +712,15 @@ async getRutasPorFecha(fecha: string) {
     return this.http.delete(`${this.baseUrl}/herramientas/${id}`, opts);
   }
 
+  async getParteById(id: string) {
+    const opts = await this.getHeaders();
+    return this.http.get(`${this.baseUrl}/partes/${id}`, opts);
+  }
+
+  // Rutas Disponibles
+async getRutasDisponibles() {
+  const opts = await this.getHeaders();
+  return this.http.get(`${this.baseUrl}/rutas/disponibles`, opts);
+}
 
 }

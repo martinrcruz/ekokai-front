@@ -25,7 +25,7 @@
         <ion-label>Estado</ion-label>
         <ion-select formControlName="state">
           <ion-select-option value="Pendiente">Pendiente</ion-select-option>
-          <ion-select-option value="EnProceso">EnProceso</ion-select-option>
+          <ion-select-option value="EnProceso">En Proceso</ion-select-option>
           <ion-select-option value="Finalizado">Finalizado</ion-select-option>
         </ion-select>
       </ion-item>
@@ -56,43 +56,70 @@
         <ion-toggle formControlName="asignado"></ion-toggle>
       </ion-item>
 
+      <!-- Fecha month-year -->
       <ion-item>
-        <ion-label position="stacked">Fecha</ion-label>
-        <ion-datetime formControlName="date" display-format="yyyy-MM-dd"></ion-datetime>
+        <ion-label position="stacked">Fecha (Mes/Año)</ion-label>
+        <ion-datetime 
+          formControlName="date"
+          presentation="month-year"
+        ></ion-datetime>
       </ion-item>
 
+      <!-- Customer (unificado) -->
       <ion-item>
-        <ion-label position="stacked">Zona (ID)</ion-label>
-        <ion-input formControlName="zone" type="text"></ion-input>
+        <ion-label>Cliente</ion-label>
+        <ion-select formControlName="customer" placeholder="Seleccione un cliente">
+          <ion-select-option *ngFor="let c of customersList" [value]="c._id">
+            {{ c.name }} - {{ c.nifCif }}
+          </ion-select-option>
+        </ion-select>
       </ion-item>
 
+      <!-- Ruta (opcional) -->
       <ion-item>
-        <ion-label position="stacked">Cliente (ID)</ion-label>
-        <ion-input formControlName="customer" type="text"></ion-input>
+        <ion-label>Ruta (opcional)</ion-label>
+        <ion-select formControlName="ruta">
+          <ion-select-option *ngFor="let r of rutasDisponibles" [value]="r._id">
+            {{ r.name?.name }} - {{ r.date | date:'shortDate' }}
+          </ion-select-option>
+        </ion-select>
       </ion-item>
 
+      <!-- Campos de periodicidad -->
       <ion-item>
-        <ion-label position="stacked">Ruta (ID)</ion-label>
-        <ion-input formControlName="ruta" type="text"></ion-input>
+        <ion-label>¿Parte Periódico?</ion-label>
+        <ion-toggle formControlName="periodico"></ion-toggle>
+      </ion-item>
+      <ion-item *ngIf="parteForm.value.periodico">
+        <ion-label>Frecuencia</ion-label>
+        <ion-select formControlName="frequency">
+          <ion-select-option value="Mensual">Mensual</ion-select-option>
+          <ion-select-option value="Trimestral">Trimestral</ion-select-option>
+          <ion-select-option value="Semestral">Semestral</ion-select-option>
+          <ion-select-option value="Anual">Anual</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item *ngIf="parteForm.value.periodico">
+        <ion-label position="stacked">Fecha Fin</ion-label>
+        <ion-datetime formControlName="endDate" presentation="month-year"></ion-datetime>
       </ion-item>
 
+      <!-- Documentos (multifile) -->
       <ion-item>
         <ion-label>Documentos</ion-label>
         <input type="file" multiple (change)="onFileSelected($event)" />
       </ion-item>
       <ion-list>
         <ion-item *ngFor="let doc of documentos">
-          <ion-label>
-            {{ doc.name }}
-          </ion-label>
+          <ion-label>{{ doc.name }}</ion-label>
           <ion-button color="danger" (click)="removeDoc(doc)">X</ion-button>
         </ion-item>
       </ion-list>
-      
 
     </ion-list>
 
     <ion-button expand="block" class="ion-margin-top" type="submit" [disabled]="parteForm.invalid">
+      <ion-icon slot="start" [name]="isEdit ? 'save-outline' : 'add-outline'"></ion-icon>
       {{ isEdit ? 'Actualizar' : 'Crear' }}
     </ion-button>
   </form>

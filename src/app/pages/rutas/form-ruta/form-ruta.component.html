@@ -7,14 +7,25 @@
   </ion-toolbar>
 </ion-header>
 
+<!-- <div class="breadcrumb">
+  <ion-icon name="home-outline" color="gray"></ion-icon>
+  <span>/</span>
+  <span>Rutas</span>
+  <span>/</span>
+  <span class="breadcrumb-current">{{ isEdit ? 'Editar' : 'Crear' }}</span>
+</div> -->
+
 <ion-content class="ion-padding">
   <form [formGroup]="rutaForm" (ngSubmit)="guardar()">
     <ion-list>
 
       <ion-item>
-        <ion-label position="stacked">Nombre</ion-label>
-        <!-- Podrías poner un ion-select si "name" se asocia a RutaN -->
-        <ion-input formControlName="name" type="text"></ion-input>
+        <ion-label>Ruta</ion-label>
+        <ion-select formControlName="name">
+          <ion-select-option *ngFor="let rn of listaRutaN" [value]="rn._id">
+            {{ rn.name }}
+          </ion-select-option>
+        </ion-select>
       </ion-item>
 
       <ion-item>
@@ -32,22 +43,25 @@
       </ion-item>
 
       <ion-item>
-        <ion-label position="stacked">Vehículo</ion-label>
-        <!-- Podrías mostrar un select con la lista de vehicles -->
-        <ion-input formControlName="vehicle" type="text"></ion-input>
+        <ion-label>Vehículo</ion-label>
+        <ion-select formControlName="vehicle">
+          <ion-select-option *ngFor="let v of listaVehicles" [value]="v._id">
+            {{ v.brand }} - {{ v.matricula }}
+          </ion-select-option>
+        </ion-select>
       </ion-item>
 
       <!-- Ejemplo: si quisieras seleccionar usuarios -->
-      <!--
+      
       <ion-item>
-        <ion-label>Usuarios</ion-label>
+        <ion-label>Contrato</ion-label>
         <ion-select formControlName="users" multiple="true">
-          <ion-select-option *ngFor="let user of listaUsuarios" [value]="user._id">
+          <ion-select-option *ngFor="let user of listaClientes" [value]="user._id">
             {{ user.name }}
           </ion-select-option>
         </ion-select>
       </ion-item>
-      -->
+     
 
     </ion-list>
 

@@ -1,12 +1,38 @@
+/* Contenedor para forzar el scroll horizontal */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto; /* Scroll horizontal si IonGrid excede ancho */
+  overflow-y: hidden;
+}
+
+/* Forzar IonGrid a un ancho mínimo que supere la pantalla en móviles */
+ion-grid {
+  min-width: 900px; 
+  /* Ajusta a gusto (600, 800, 1000...) */
+}
+
+/* Encabezado */
+.header-row {
+  background: #f0f0f0;
+  font-weight: bold;
+}
+
+/* Alineación centrada */
+.td-center {
+  text-align: center;
+}
+
+/* Tag para el "type" */
 .tipo-ruta {
-  padding: 4px;
-  border-radius: 8px;
-  color: #fff;
   display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: #fff;
   font-size: 0.9em;
 }
 
-.tag-mant { background-color: #007bff; }
-.tag-corr { background-color: #dc3545; }
-.tag-visit { background-color: #28a745; }
-.tag-other { background-color: #6c757d; }
+/* Ejemplos de colores */
+.tag-mant { background-color: #28a745; }   /* Mantenimiento => verde */
+.tag-corr { background-color: #dc3545; }   /* Correctivo => rojo */
+.tag-visit { background-color: #007bff; }  /* Visitas => azul */
+.tag-other { background-color: #6c757d; }  /* Gris */
