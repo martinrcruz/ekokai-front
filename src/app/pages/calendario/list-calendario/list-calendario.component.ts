@@ -1,8 +1,8 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, Input } from '@angular/core';
 import { CalendarMonthViewDay, CalendarEvent } from 'angular-calendar';
 import { Subject } from 'rxjs';
-import { ApiService } from 'src/app/services/api.service';
 import { subMonths, addMonths, subYears, addYears } from 'date-fns';
+import { ApiService } from 'src/app/services/api.service';
 import { NavController } from '@ionic/angular';
 
 @Component({
@@ -13,31 +13,75 @@ import { NavController } from '@ionic/angular';
 })
 export class ListCalendarioComponent implements OnInit {
 
+  @ViewChild('monthCellTemplate', { static: true }) monthCellTemplate!: TemplateRef<any>;
+
+  // (4) interfaz worker => si role=worker => no puede crear rutas ni asignar partes
+  @Input() isWorker: boolean = false;
+
   viewDate: Date = new Date();
   events: CalendarEvent[] = [];
   refresh: Subject<any> = new Subject();
 
+  // Para mostrar sumatoria de facturación finalizada
+  factSumDay: { [key: string]: number } = {};
 
-  @ViewChild('monthCellTemplate', { static: true }) monthCellTemplate!: TemplateRef<any>;
-
-  // Variables para la lógica
+  // Variables existentes
   selectedDay: Date | null = null;
-  rutasDelDia: any[] = [];          // Al hacer click en día => se cargan las rutas
-  rutaSeleccionada: any = null;     // Ruta cuyo detalle se muestra
-  partesNoAsignados: any[] = [];    // Partes no asignados del mes o del día
-  partesAsignadosARuta: any[] = []; // Partes de la rutaSeleccionada
-  enableCheckParts = false;         // Flag para mostrar checkboxes y botón de asignar
+  rutasDelDia: any[] = [];
+  rutaSeleccionada: any = null;
+  partesNoAsignados: any[] = [];
+  partesAsignadosARuta: any[] = [];
+  enableCheckParts = false;
 
-  constructor(private apiService: ApiService, private navCtrl: NavController
-  ) { }
+  // Filtro en partes no asignados
+  filterZona: string = '';
+  filterTipo: string = '';
+  filterFactRange: string = '';
+  // Lista de zonas (para select de zona)
+  zonas: any[] = []; 
 
- async  ngOnInit() {
+  constructor(
+    private apiService: ApiService,
+    private navCtrl: NavController
+  ) {}
+
+  async ngOnInit() {
     this.loadEvents();
+    this.loadZones();  // cargar la lista de zonas
+    this.cargarFacturacionFinalMes(); // cargar sumatoria de facturación final
   }
 
   ionViewDidEnter(){
     this.loadEvents();
     this.selectedDay = null;
+  }
+
+  // (3) Cargar la sumatoria de facturación finalizada
+  async cargarFacturacionFinalMes() {
+    const dateStr = this.viewDate.toISOString().split('T')[0];
+    const req = await this.apiService.getPartesFinalizadasMonth(dateStr);
+    req.subscribe((res: any) => {
+      if (res.ok) {
+
+        const partes = res.partes;
+        partes.forEach((p: any) => {
+          const d = new Date(p.date);
+          const dayStr = this.toDateString(d);
+          if (!this.factSumDay[dayStr]) this.factSumDay[dayStr] = 0;
+          this.factSumDay[dayStr] += (p.facturacion || 0);
+        });
+      }
+    });
+  }
+
+  async loadZones() {
+    // Podrías tener un endpoint: GET /zone
+    const req = await this.apiService.getZones();
+    req.subscribe((res: any) => {
+      if (res.ok) {
+        this.zonas = res.zone; 
+      }
+    });
   }
 
   async loadEvents() {
@@ -55,55 +99,36 @@ export class ListCalendarioComponent implements OnInit {
   }
 
   previousMonth() { this.viewDate = subMonths(this.viewDate, 1); }
-  nextMonth() { this.viewDate = addMonths(this.viewDate, 1); }
-  previousYear() { this.viewDate = subYears(this.viewDate, 1); }
-  nextYear() { this.viewDate = addYears(this.viewDate, 1); }
-  goToday() { this.viewDate = new Date(); }
+  nextMonth()     { this.viewDate = addMonths(this.viewDate, 1); }
+  previousYear()  { this.viewDate = subYears(this.viewDate, 1); }
+  nextYear()      { this.viewDate = addYears(this.viewDate, 1); }
+  goToday()       { this.viewDate = new Date(); }
 
-  /**
-   * Al hacer click en un día vacío
-   * Debe mostrar la lista de rutas de ese día
-   */
   dayClicked(day: CalendarMonthViewDay): void {
     this.selectedDay = day.date;
     const dateStr = this.toDateString(day.date);
-    // Buscar las rutas de ese día => se guardan en rutasDelDia
+    // Cargar rutas, partes no asignados
     this.cargarRutasDelDia(dateStr);
-
-    // Cargar partes no asignados en mes
     this.cargarPartesNoAsignadosEnMes(dateStr);
 
-    // Limpiar la rutaSeleccionada
     this.rutaSeleccionada = null;
     this.partesAsignadosARuta = [];
     this.enableCheckParts = false;
   }
 
-  /**
-   * Al hacer click en un evento => ver DETALLE de la ruta
-   */
   handleEventClick(event: CalendarEvent, $event: MouseEvent) {
     $event.stopPropagation();
     const ruta = event.meta.ruta;
     this.selectedDay = event.start;
-
-    // Asumimos que si hay un event => 1 ruta
-    this.rutasDelDia = [ruta]; // o podrías tener más de una
-
-    // Ruta seleccionada => su detalle
+    this.rutasDelDia = [ruta];
     this.mostrarDetalleRuta(ruta);
 
-    // Cargar partes no asignados
     const dateStr = this.toDateString(event.start);
     this.cargarPartesNoAsignadosEnMes(dateStr);
   }
 
-  /**
-   * Cargar todas las rutas de un día
-   */
   async cargarRutasDelDia(dateStr: string) {
     const req = await this.apiService.getRutasPorFecha(dateStr);
-    // => un endpoint: /rutas/porFecha/:fecha => retorna { ok:true, rutas:[...] }
     req.subscribe((res: any) => {
       if (res.ok) {
         this.rutasDelDia = res.rutas;
@@ -113,14 +138,10 @@ export class ListCalendarioComponent implements OnInit {
     });
   }
 
-  /**
-   * Mostrar detalle de la ruta => se setea en rutaSeleccionada
-   * y se cargan sus partes
-   */
   mostrarDetalleRuta(ruta: any) {
     this.rutaSeleccionada = ruta;
     this.cargarPartesDeLaRuta(ruta._id);
-    this.enableCheckParts = false; // ocultar check
+    this.enableCheckParts = false;
   }
 
   async cargarPartesDeLaRuta(rutaId: string) {
@@ -137,6 +158,8 @@ export class ListCalendarioComponent implements OnInit {
     req.subscribe((res: any) => {
       if (res.ok) {
         this.partesNoAsignados = res.partes;
+        // Aplicar filtro
+        this.filtrarPartesPendientes();
       }
     });
   }
@@ -144,7 +167,6 @@ export class ListCalendarioComponent implements OnInit {
   createRutaParaDia() {
     if (!this.selectedDay) return;
     const dateStr = this.toDateString(this.selectedDay);
-    // Navegamos a /crear-ruta/:date
     this.navCtrl.navigateForward(['/calendario/crear-ruta', dateStr]);
   }
 
@@ -162,7 +184,7 @@ export class ListCalendarioComponent implements OnInit {
     );
     req.subscribe((res: any) => {
       if (res.ok) {
-        // removerlos de partesNoAsignados
+        // Removerlos de partesNoAsignados
         this.partesNoAsignados = this.partesNoAsignados.filter((p: any) => !p.selected);
         // agregarlos a partesAsignadosARuta
         this.partesAsignadosARuta.push(...parteSeleccionados);
@@ -178,19 +200,41 @@ export class ListCalendarioComponent implements OnInit {
       this.mostrarDetalleRuta(ruta);
     }
   }
-  
 
   getSelectedNoAsignados(): any[] {
     return this.partesNoAsignados?.filter((p) => p.selected) || [];
   }
 
+  filtrarPartesPendientes() {
+    // Aplica el filtro localmente
+    let temp = [...this.partesNoAsignados];
+
+    // Filtro por zona (p.customer.zone == filterZona)
+    if (this.filterZona) {
+      temp = temp.filter(p => p.customer?.zone === this.filterZona);
+    }
+    // Filtro por tipo
+    if (this.filterTipo) {
+      temp = temp.filter(p => p.type === this.filterTipo);
+    }
+    // Filtro por facturación
+    if (this.filterFactRange) {
+      temp = temp.filter(p => {
+        const f = p.facturacion || 0;
+        if (this.filterFactRange === 'lt100') return f < 100;
+        if (this.filterFactRange === 'bt100_500') return (f >= 100 && f <= 500);
+        if (this.filterFactRange === 'gt500') return f > 500;
+        return true;
+      });
+    }
+    this.partesNoAsignados = temp;
+  }
+
   parseDateAsUTC(dateStr: string): Date {
-    const d = new Date(dateStr); // Esto parsea en local, pero...
-    // Extraemos el año, mes y día en UTC:
+    const d = new Date(dateStr);
     const year = d.getUTCFullYear();
     const month = d.getUTCMonth();
     const day = d.getUTCDate();
-    // Creamos un Date local con esos valores, sin shift de zona horaria
     return new Date(year, month, day, 0, 0, 0);
   }
 
@@ -204,9 +248,15 @@ export class ListCalendarioComponent implements OnInit {
   getTipoRutaClass(tipo: string): string {
     switch (tipo) {
       case 'Mantenimiento': return 'tag-mant';
-      case 'Correctivo': return 'tag-corr';
-      case 'Visitas': return 'tag-visit';
-      default: return 'tag-other';
+      case 'Correctivo':    return 'tag-corr';
+      case 'Visitas':       return 'tag-visit';
+      default:              return 'tag-other';
     }
+  }
+
+  getFactSum(d: Date): number {
+    if (!d) return 0; // o chequeo extra si fuera necesario
+    const dayStr = this.toDateString(d); // asumes ya tienes un método toDateString(d)
+    return this.factSumDay[dayStr] || 0; 
   }
 }

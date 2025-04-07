@@ -305,6 +305,16 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/partes/upload`, formData, opts);
   }
 
+   /**
+   * Llama a /partes/finalizadasEnMes?date=YYYY-MM-DD
+   * para obtener las partes finalizadas en ese mes.
+   * Útil para sumar facturación finalizada en cada día.
+   */
+   async getPartesFinalizadasMonth(dateStr: string) {
+    const opts = await this.getHeaders();
+    return this.http.get(`${this.baseUrl}/partes/finalizadasEnMes?date=${dateStr}`, opts);
+  }
+
   // -----------------------------------------------------
   // MATERIAL
   // -----------------------------------------------------
@@ -718,9 +728,9 @@ async getRutasPorFecha(fecha: string) {
   }
 
   // Rutas Disponibles
-async getRutasDisponibles() {
+async getRutasDisponibles(dateStr: string) {
   const opts = await this.getHeaders();
-  return this.http.get(`${this.baseUrl}/rutas/disponibles`, opts);
+  return this.http.get(`${this.baseUrl}/rutas/disponibles?date=${dateStr}`, opts);
 }
 
 }

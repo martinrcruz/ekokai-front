@@ -102,4 +102,14 @@ export class ListParteComponent implements OnInit {
       default:              return 'tag-other';
     }
   }
+
+  stateColor(state: string) {
+    switch(state){
+      case 'Finalizado': return 'finalizado';
+      case 'Pendiente': return 'pendiente';
+      case 'EnProceso': return 'enproceso';
+      default: return '';
+    }
+  }
+  
 }

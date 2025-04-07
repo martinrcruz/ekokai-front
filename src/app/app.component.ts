@@ -1,16 +1,17 @@
+// app.component.ts (extracto)
+import { registerLocaleData } from '@angular/common';
 import { Component } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthService } from './services/auth.service';
-import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 
 interface AppPage {
   title: string;
-  url?: string;          // opcional si es un submenú principal sin URL
+  url?: string;   // si es un submenú principal sin URL, lo omites
   icon?: string;
-  subpages?: AppPage[];  // submenús
-  expanded?: boolean;    // para el toggle de submenú
+  subpages?: AppPage[];
+  expanded?: boolean;
 }
 
 @Component({
@@ -21,16 +22,15 @@ interface AppPage {
 })
 export class AppComponent {
 
-  public showMenu = true;  // Controla si se muestra o no el menú
+  public showMenu = false;  // Controla si se muestra o no el menú
+  public userRole: 'admin' | 'worker' | '' = '';  // almacenar el rol
 
-  // Definimos el menú con posible submenú
-  public appPages: AppPage[] = [
-    // { title: 'Home',       url: '/home',        icon: 'bi-house' },
+  // Definimos un conjunto completo de opciones
+  private fullAppPages: AppPage[] = [
     { title: 'Calendario', url: '/calendario',  icon: 'bi-calendar-check' },
     { title: 'Partes',     url: '/partes',      icon: 'bi-file-text' },
-    { title: 'Contratos',   url: '/clientes',    icon: 'bi-people-fill' },
+    { title: 'Contratos',  url: '/clientes',    icon: 'bi-people-fill' },
     { title: 'Facturación',url: '/facturacion', icon: 'bi-cash-stack' },
-    // Sección con submenú
     {
       title: 'Administración',
       icon: 'bi-briefcase',
@@ -40,13 +40,23 @@ export class AppComponent {
         { title: 'Herramientas', url: '/herramientas', icon: 'bi-tools' },
         { title: 'Zonas',        url: '/zonas',        icon: 'bi-geo-alt' },
         { title: 'Rutas',        url: '/rutas',        icon: 'bi-map' },
-        { title: 'Usuarios',   url: '/usuarios',    icon: 'bi-people' },
+        { title: 'Usuarios',     url: '/usuarios',     icon: 'bi-people' },
       ]
     }
   ];
 
-  constructor(private router: Router, private authService: AuthService) {
-    // Suscribirse a eventos de navegación
+  // Para el rol worker, solo dejamos Calendario
+  private workerAppPages: AppPage[] = [
+    { title: 'Calendario', url: '/calendario',  icon: 'bi-calendar-check' }
+  ];
+
+  // Este es el array que se renderiza en la plantilla:
+  public appPages: AppPage[] = [];
+
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {
@@ -61,30 +71,43 @@ export class AppComponent {
 
       registerLocaleData(localeEs, 'es');
 
+    // Suscribirse a un observable del AuthService que retorne la info del usuario
+    this.authService.user$.subscribe(user => {
+      if (user && user.role) {
+        this.userRole = user.role;
+      } else {
+        this.userRole = '';
+      }
+      this.updateMenuByRole();
+    });
   }
 
   /**
-   * Toggle para expandir/colapsar submenús.
+   * Ajusta el menú según el rol:
+   */
+  updateMenuByRole() {
+    if (this.userRole === 'worker') {
+      this.appPages = this.workerAppPages;
+    } else {
+      // Admin o cualquiera => menú completo
+      this.appPages = this.fullAppPages;
+    }
+  }
+
+  /**
+   * Toggle para expandir/colapsar submenús
    */
   toggleSubMenu(page: AppPage) {
-    // Solo si tiene subpages, alternamos expanded
     if (page.subpages) {
       page.expanded = !page.expanded;
     }
   }
 
-
   /**
-   * Método para cerrar sesión
+   * Logout
    */
   async logout() {
-    try {
-      // Llamar al servicio de logout
-      await this.authService.logout(); 
-      // Navegar a login
-      this.router.navigate(['/auth/login']);
-    } catch (error) {
-      console.error('Error al hacer logout:', error);
-    }
+    await this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

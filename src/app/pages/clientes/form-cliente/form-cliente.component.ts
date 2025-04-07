@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
+import { NavController, ToastController } from '@ionic/angular';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
@@ -17,11 +17,12 @@ export class FormClienteComponent implements OnInit {
   zones: any[] = [];
   selectedFile!: File | null;
   previewImage: any = null;
-
+  isEdit = false;
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService,
     private route: ActivatedRoute,
+    private navCtrl: NavController,
     private router: Router,
     private toastCtrl: ToastController
   ) { }
@@ -38,7 +39,9 @@ export class FormClienteComponent implements OnInit {
       phone: [''],
       contactName: [''],
       code: [''],
-      photo: ['']
+      photo: [''],
+      MI: [0],
+      tipo: ['Normal']
     });
 
     if (this.customerId) {
@@ -75,33 +78,16 @@ export class FormClienteComponent implements OnInit {
   }
 
   async saveCustomer() {
-    // if (this.customerForm.invalid) return;
+    if (this.customerForm.invalid) return;
+    const data = this.customerForm.value;
 
-    // const customerData = new FormData();
-
-    // Object.entries(this.customerForm.value).forEach(([key, value]) => {
-    //   customerData.append(key, value as string);
-    // });
-
-    // if (this.selectedFile) {
-    //   customerData.append('photo', this.selectedFile);
-    // }
-
-    // if (this.customerId) {
-    //   const res = await this.apiService.updateCustomer(this.customerId, customerData);
-    //   res.subscribe(async () => {
-    //     const toast = await this.toastCtrl.create({ message: 'Cliente actualizado', duration: 2000 });
-    //     toast.present();
-    //     this.router.navigate(['/list-customer']);
-    //   });
-    // } else {
-    //   const res = await this.apiService.createCustomer(customerData);
-    //   res.subscribe(async () => {
-    //     const toast = await this.toastCtrl.create({ message: 'Cliente creado', duration: 2000 });
-    //     toast.present();
-    //     this.router.navigate(['/list-customer']);
-    //   });
-    // }
+    if (!this.isEdit) {
+      const req = await this.apiService.createCustomer(data);
+      req.subscribe((resp: any) => {
+        if (resp.ok) {
+          this.navCtrl.navigateRoot('/customers');
+        }
+      });
+    }
   }
-
 }

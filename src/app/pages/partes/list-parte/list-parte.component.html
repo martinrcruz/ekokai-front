@@ -41,7 +41,10 @@
               {{ p.type }}
             </span>
           </td>
-          <td>{{ p.state }}</td>
+          <td>
+            <span [ngClass]="stateColor(p.state)">{{ p.state }}</span>
+          </td>
+          
           <td>{{ p.customer?.name || 'Sin cliente' }}</td>
           <td>{{ p.ruta ? (p.ruta.name?.name || p.ruta.name) : 'No asignada' }}</td>
           <td>

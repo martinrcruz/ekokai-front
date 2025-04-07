@@ -18,6 +18,9 @@ export class AuthService {
   // BehaviorSubject para indicar si el usuario está logueado
   private isLoggedInSubject = new BehaviorSubject<boolean>(false);
 
+  private userSubject = new BehaviorSubject<any>(null);
+  user$ = this.userSubject.asObservable();
+
   constructor(
     private http: HttpClient,
     private storage: Storage,
@@ -39,6 +42,8 @@ export class AuthService {
       // decodificar
       const decoded: any = jwtDecode(token);
       const now = Math.floor(Date.now() / 1000); // en segundos
+      this.userSubject.next(decoded.user)
+
 
       if (decoded.exp && decoded.exp > now) {
         this.isLoggedInSubject.next(true);
@@ -65,6 +70,12 @@ export class AuthService {
    */
   async setToken(token: string) {
     await this._storage?.set('token', token);
+    if (token) {
+      // decodificar
+      const decoded: any = jwtDecode(token);
+      const now = Math.floor(Date.now() / 1000); // en segundos
+      this.userSubject.next(decoded.user)
+    }
     this.isLoggedInSubject.next(true);
   }
 
@@ -98,11 +109,33 @@ export class AuthService {
       .pipe(
         map(async (resp: any) => {
           if (resp.ok && resp.tokenU) {
+
+            const token = await this._storage?.get('token');
+            if (token) {
+              const decoded: any = jwtDecode(token);
+              console.log(decoded)
+              this.userSubject.next(decoded.user)
+            }
+
             await this.setToken(resp.tokenU);
           }
           return resp;
         })
       );
+  }
+
+
+  getUser() {
+    return this.userSubject.value;
+  }
+
+
+  getRole() {
+    console.log(this.userSubject.value)
+    const user = this.getUser();
+    console.log(user)
+
+    return null;
   }
 
   /**
@@ -122,6 +155,7 @@ export class AuthService {
 
   // Logout
   async logout() {
+    this.userSubject.next(null);
     await this.removeToken();
   }
 }

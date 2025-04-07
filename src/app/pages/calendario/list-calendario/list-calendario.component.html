@@ -8,7 +8,7 @@
 </ion-header>
 
 <ion-content>
- 
+
   <!-- Barra de navegación para el calendario -->
   <div class="calendar-nav">
     <div class="left-buttons">
@@ -39,10 +39,16 @@
     [cellTemplate]="monthCellTemplate">
   </mwl-calendar-month-view>
 
-  <!-- Template celda calendario -->
+  <!-- Template celda calendario (monthCellTemplate) -->
   <ng-template #monthCellTemplate let-day="day">
     <div class="cal-cell" (click)="dayClicked(day)">
       <div class="cal-date">{{ day.date | date:'d' }}</div>
+      
+      <!-- Mostramos la facturación final en la esquina superior derecha -->
+      <div class="fact-sum">
+        {{ getFactSum(day.date) }} €
+      </div>
+
       <div class="cal-events">
         <div class="event-icon" *ngFor="let event of day.events" (click)="handleEventClick(event, $event)">
           <img src="assets/icon/extintor.png" alt="extintor" />
@@ -65,7 +71,6 @@
                 <h3>{{ r.name?.name || 'Ruta sin nombre' }}</h3>
                 <p *ngIf="rutaSeleccionada !== r">{{ r.date }} - {{ r.type }}</p>
                 <p *ngIf="rutaSeleccionada === r" style="color: white">{{ r.date }} - {{ r.type }}</p>
-
               </ion-label>
               <ion-icon slot="end"
                 [name]="rutaSeleccionada === r ? 'chevron-up-outline' : 'chevron-down-outline'">
@@ -103,8 +108,8 @@
                 </ion-accordion>
               </ion-accordion-group>
       
-              <!-- Botón para habilitar asignación -->
-              <ion-button fill="solid" color="primary" (click)="enableAssignPartes()">
+              <!-- Botón para habilitar asignación, se oculta si role=worker -->
+              <ion-button fill="solid" color="primary" (click)="enableAssignPartes()" *ngIf="!isWorker">
                 <ion-icon slot="start" name="checkbox-outline"></ion-icon>
                 Asignar Partes
               </ion-button>
@@ -114,7 +119,9 @@
       
         <div>
           <p *ngIf="(rutasDelDia?.length || 0) === 0">No existen rutas para este día.</p>
-          <ion-button (click)="createRutaParaDia()">
+          
+          <!-- Botón crear ruta, oculto si role=worker -->
+          <ion-button (click)="createRutaParaDia()" *ngIf="!isWorker">
             <ion-icon slot="start" name="add-outline"></ion-icon>
             Crear Ruta
           </ion-button>
@@ -122,18 +129,51 @@
       </ion-col>
       
 
-      <!-- Columna Derecha: Partes No Asignados -->
+      <!-- Columna Derecha: Partes No Asignados + Filtro -->
       <ion-col size="6">
         <h2>Partes No Asignados</h2>
+        
+        <!-- Filtro (Zona, Tipo, Facturación) -->
+        <ion-item>
+          <ion-label>Zona</ion-label>
+          <ion-select [(ngModel)]="filterZona" placeholder="Todas" (ionChange)="filtrarPartesPendientes()">
+            <ion-select-option value="">(Todas)</ion-select-option>
+            <ion-select-option *ngFor="let z of zonas" [value]="z._id">
+              {{ z.name }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label>Tipo</ion-label>
+          <ion-select [(ngModel)]="filterTipo" placeholder="Todos" (ionChange)="filtrarPartesPendientes()">
+            <ion-select-option value="">(Todos)</ion-select-option>
+            <ion-select-option value="Obra">Obra</ion-select-option>
+            <ion-select-option value="Mantenimiento">Mantenimiento</ion-select-option>
+            <ion-select-option value="Correctivo">Correctivo</ion-select-option>
+            <ion-select-option value="Visitas">Visitas</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label>Facturación</ion-label>
+          <ion-select [(ngModel)]="filterFactRange" placeholder="Todos" (ionChange)="filtrarPartesPendientes()">
+            <ion-select-option value="">(Todos)</ion-select-option>
+            <ion-select-option value="lt100">Menos de 100€</ion-select-option>
+            <ion-select-option value="bt100_500">100€ - 500€</ion-select-option>
+            <ion-select-option value="gt500">Más de 500€</ion-select-option>
+          </ion-select>
+        </ion-item>
+
         <ion-list>
           <ion-item *ngFor="let p of partesNoAsignados">
-            <ion-checkbox slot="start" [(ngModel)]="p.selected" *ngIf="enableCheckParts"></ion-checkbox>
-            <ion-label>{{ p.description }}</ion-label>
+            <!-- Checkboxes, solo si enableCheckParts y no isWorker -->
+            <ion-checkbox slot="start" [(ngModel)]="p.selected" *ngIf="enableCheckParts && !isWorker"></ion-checkbox>
+            <ion-label>{{ p.description }} ({{ p.facturacion }} €)</ion-label>
           </ion-item>
         </ion-list>
 
-        <ion-button [disabled]="!rutaSeleccionada || !enableCheckParts"
-                    *ngIf="enableCheckParts"
+        <!-- Botón para asignar, si hay una ruta seleccionada y habilitado check, oculto si worker -->
+        <ion-button [disabled]="!rutaSeleccionada || !enableCheckParts" 
+                    *ngIf="enableCheckParts && !isWorker"
                     (click)="asignarPartesARuta(getSelectedNoAsignados())">
           <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>
           Aceptar Partes Seleccionados

@@ -21,6 +21,13 @@ export class FormParteComponent implements OnInit {
   customersList: any[] = [];   // “Customer” unificado
   rutasDisponibles: any[] = [];
 
+  customers: any[] = []; // lista de clientes
+  minDate: string = '';  // p.ej. '2023-08-01'
+
+  clientModalOpen = false;
+  filteredCustomers: any[] = [];
+  searchClientTxt: string = '';
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -30,7 +37,8 @@ export class FormParteComponent implements OnInit {
 
   ngOnInit() {
     this.initForm();
-    this.loadLists();
+    this.loadRutas();
+    this.loadCustomers();
 
     this.route.paramMap.subscribe(params => {
       this.parteId = params.get('id');
@@ -43,17 +51,16 @@ export class FormParteComponent implements OnInit {
 
   initForm() {
     this.parteForm = this.fb.group({
-      description:  ['', Validators.required],
-      facturacion:  [0],
-      state:        ['Pendiente', Validators.required],
-      type:         ['Mantenimiento', Validators.required],
-      categoria:    ['Extintores', Validators.required],
-      asignado:     [false],
-      date:         ['', Validators.required], // mes/año
-      // Apunta al modelo unificado “Customer”.
-      customer:     ['', Validators.required],
-      // Ruta (opcional)
-      ruta:         [''],
+  description: ['', Validators.required],
+      facturacion: [0],
+      state: ['Pendiente', Validators.required],
+      type: ['Mantenimiento', Validators.required],
+      categoria: ['Extintores', Validators.required], // añade “Venta”
+      date: ['', Validators.required],
+      customer: ['', Validators.required],
+      ruta: [''],
+      coordinationMethod: ['Coordinar según horarios'],
+      gestiona: [0],
       // Parte periódico
       periodico:    [false],
       frequency:    ['Mensual'], // default
@@ -61,17 +68,25 @@ export class FormParteComponent implements OnInit {
     });
   }
 
-  async loadLists() {
-    // 1. Cargar Customers unificados
-    const cReq = await this.apiService.getCustomers(); 
-    cReq.subscribe((res: any) => {
-      if (res.ok && res.customers) {
-        this.customersList = res.customers;
+  async loadCustomers() {
+    const req = await this.apiService.getCustomers();
+    req.subscribe((resp: any) => {
+      if (resp.ok) {
+        this.customersList = resp.customers;
+        this.filteredCustomers = [...this.customersList];
       }
     });
+  }
 
-    // 2. Cargar Rutas disponibles
-    const rReq = await this.apiService.getRutasDisponibles();
+  async loadRutas() {
+    // Generamos la fecha "YYYY-MM-01" para el mes actual
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const firstDayOfMonth = `${year}-${month}-01`;
+
+    // Llamamos a getRutasDisponibles(firstDayOfMonth)
+    const rReq = await this.apiService.getRutasDisponibles(firstDayOfMonth);
     rReq.subscribe((res: any) => {
       if (res.ok && res.rutas) {
         this.rutasDisponibles = res.rutas;
@@ -101,34 +116,32 @@ export class FormParteComponent implements OnInit {
     });
   }
 
-  async guardar() {
+  async onSave() {
     if (this.parteForm.invalid) return;
 
     const data = this.parteForm.value;
-    // Forzar day=1 => no, el backend ya lo forza. 
-    // Pero si deseas hacerlo en front, podrías parsear.
+    // Verificar en front date >= minDate
+    if (new Date(data.date) < new Date(this.minDate)) {
+      console.error('Fecha anterior al mes actual');
+      return;
+    }
 
-    try {
-      if (!this.isEdit) {
-        // Crear
-        const req = await this.apiService.createParte(data);
-        req.subscribe((resp: any) => {
-          if (resp.ok) {
-            this.navCtrl.navigateRoot('/partes');
-          }
-        });
-      } else {
-        // Actualizar
-        data._id = this.parteId;
-        const req = await this.apiService.updateParte(data);
-        req.subscribe((resp: any) => {
-          if (resp.ok) {
-            this.navCtrl.navigateRoot('/partes');
-          }
-        });
-      }
-    } catch (error) {
-      console.error('Error al guardar parte:', error);
+    if (!this.isEdit) {
+      // Crear parte
+      const req = await this.apiService.createParte(data);
+      req.subscribe((resp: any) => {
+        if (resp.ok) {
+          this.navCtrl.navigateRoot('/partes');
+        }
+      });
+    } else {
+      // Actualizar parte
+      const req = await this.apiService.updateParte(data);
+      req.subscribe((resp: any) => {
+        if (resp.ok) {
+          this.navCtrl.navigateRoot('/partes');
+        }
+      });
     }
   }
 
@@ -140,5 +153,31 @@ export class FormParteComponent implements OnInit {
   }
   removeDoc(doc: File) {
     this.documentos = this.documentos.filter(d => d !== doc);
+  }
+
+  openClientModal() {
+    this.clientModalOpen = true;
+  }
+  closeClientModal() {
+    this.clientModalOpen = false;
+  }
+
+  filterCustomers(event: any) {
+    const txt = this.searchClientTxt.toLowerCase().trim();
+    this.filteredCustomers = this.customersList.filter(c =>
+      c.name.toLowerCase().includes(txt) ||
+      c.nifCif.toLowerCase().includes(txt)
+    );
+  }
+
+  selectCustomer(c: any) {
+    // Asignamos al form
+    this.parteForm.patchValue({ customer: c._id });
+    this.searchClientTxt = c.name; // para mostrarlo en el IonInput
+    this.clientModalOpen = false;
+  }
+
+  cancel() {
+    this.navCtrl.back();
   }
 }

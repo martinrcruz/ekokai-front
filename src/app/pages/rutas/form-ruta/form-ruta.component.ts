@@ -14,6 +14,7 @@ export class FormRutaComponent implements OnInit {
   rutaForm!: FormGroup;
   isEdit = false;
   rutaId: string | null = null;
+  users: any[] = [];
 
   listaRutaN: any[] = [];
   listaVehicles: any[] = [];
@@ -29,12 +30,22 @@ export class FormRutaComponent implements OnInit {
   ngOnInit() {
     this.initForm();
     this.cargarListas();
+    this.loadUsers();
 
     this.route.paramMap.subscribe(params => {
       this.rutaId = params.get('id');
       if (this.rutaId) {
         this.isEdit = true;
         this.cargarRuta(this.rutaId);
+      }
+    });
+  }
+
+  async loadUsers() {
+    const req = await this.apiService.getUsers();
+    req.subscribe((resp: any) => {
+      if (resp.ok) {
+        this.users = resp.users;
       }
     });
   }
@@ -70,7 +81,10 @@ export class FormRutaComponent implements OnInit {
       date: ['', Validators.required],   // Ej: Fecha
       state: ['Pendiente', Validators.required],
       vehicle: [''],  // Podrías usar un select para vehicles
-      users: []
+      users: [[]],
+      comentarios: [''],
+      encargado: ['', Validators.required],
+      herramientas: [[]]
     });
   }
 
@@ -84,8 +98,10 @@ export class FormRutaComponent implements OnInit {
             date: res.ruta.date,
             state: res.ruta.state,
             vehicle: res.ruta.vehicle,
-            users: res.ruta.users
-            // users: ...
+            users: res.ruta.users,
+            comentarios: res.ruta.comentarios,
+            encargado: res.ruta.encargado,
+            herramientas: res.ruta.herramientas
           });
         }
       });
@@ -94,31 +110,36 @@ export class FormRutaComponent implements OnInit {
     }
   }
 
-  async guardar() {
+  async onSave() {
     if (this.rutaForm.invalid) return;
-
     const data = this.rutaForm.value;
-    try {
-      if (!this.isEdit) {
-        // Crear ruta
-        const req = await this.apiService.createRuta(data);
-        req.subscribe((resp: any) => {
-          if (resp.ok) {
-            this.navCtrl.navigateRoot('/rutas');
-          }
-        });
-      } else {
-        // Actualizar ruta
-        data._id = this.rutaId;
-        const req = await this.apiService.updateRuta(data);
-        req.subscribe((resp: any) => {
-          if (resp.ok) {
-            this.navCtrl.navigateRoot('/rutas');
-          }
-        });
-      }
-    } catch (error) {
-      console.error('Error al guardar ruta:', error);
+    // Check encargado
+    if (!data.encargado) {
+      console.error('Encargado es obligatorio');
+      return;
     }
+
+    if (!this.isEdit) {
+      // createRuta
+      const req = await this.apiService.createRuta(data);
+      req.subscribe((resp: any) => {
+        if (resp.ok) {
+          this.navCtrl.navigateRoot('/rutas');
+        }
+      });
+    } else {
+      // updateRuta
+      data._id = this.rutaId;
+      const req = await this.apiService.updateRuta(data);
+      req.subscribe((resp: any) => {
+        if (resp.ok) {
+          this.navCtrl.navigateRoot('/rutas');
+        }
+      });
+    }
+  }
+
+  cancel() {
+    this.navCtrl.back();
   }
 }

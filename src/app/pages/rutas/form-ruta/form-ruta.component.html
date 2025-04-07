@@ -16,8 +16,13 @@
 </div> -->
 
 <ion-content class="ion-padding">
-  <form [formGroup]="rutaForm" (ngSubmit)="guardar()">
+  <form [formGroup]="rutaForm" (ngSubmit)="onSave()">
     <ion-list>
+
+      <ion-item>
+        <ion-label position="stacked">Fecha</ion-label>
+        <ion-datetime formControlName="date" display-format="yyyy-MM-dd" picker-format="yyyy-MM-dd"></ion-datetime>
+      </ion-item>
 
       <ion-item>
         <ion-label>Ruta</ion-label>
@@ -28,10 +33,7 @@
         </ion-select>
       </ion-item>
 
-      <ion-item>
-        <ion-label position="stacked">Fecha</ion-label>
-        <ion-datetime formControlName="date" display-format="yyyy-MM-dd" picker-format="yyyy-MM-dd"></ion-datetime>
-      </ion-item>
+
 
       <ion-item>
         <ion-label>Estado</ion-label>
@@ -59,6 +61,29 @@
           <ion-select-option *ngFor="let user of listaClientes" [value]="user._id">
             {{ user.name }}
           </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Comentarios</ion-label>
+        <ion-textarea formControlName="comentarios"></ion-textarea>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Encargado</ion-label>
+        <ion-select formControlName="encargado" placeholder="Selecciona encargado">
+          <ion-select-option *ngFor="let u of users" [value]="u._id">
+            {{ u.name }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Herramientas</ion-label>
+        <ion-select formControlName="herramientas" multiple="true">
+          <ion-select-option value="Taladro">Taladro</ion-select-option>
+          <ion-select-option value="Escalera">Escalera</ion-select-option>
+          <!-- etc -->
         </ion-select>
       </ion-item>
      

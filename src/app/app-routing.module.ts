@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
+import { WorkerGuard } from './guards/worker.guard';
+import { AdminGuard } from './guards/admin.guard';
 
 const routes: Routes = [
   {
@@ -24,31 +26,31 @@ const routes: Routes = [
     path: 'home',
     loadChildren: () =>
       import('./pages/home/home.module').then(m => m.HomeModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, AdminGuard]
   },
   {
     path: 'partes',
     loadChildren: () =>
       import('./pages/partes/partes.module').then(m => m.PartesModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, AdminGuard]
   },
   {
     path: 'rutas',
     loadChildren: () =>
       import('./pages/rutas/rutas.module').then(m => m.RutasModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, AdminGuard]
   },
   {
     path: 'facturacion',
     loadChildren: () =>
       import('./pages/facturacion/facturacion.module').then(m => m.FacturacionModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, AdminGuard]
   },
   {
     path: 'usuarios',
     loadChildren: () =>
       import('./pages/usuarios/usuarios.module').then(m => m.UsuariosModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, AdminGuard]
   },
   {
     path: 'calendario',
@@ -60,7 +62,7 @@ const routes: Routes = [
     path: 'clientes',
     loadChildren: () =>
       import('./pages/clientes/clientes.module').then(m => m.ClientesModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, AdminGuard]
   },
 
   // ---------------------------------
@@ -70,31 +72,31 @@ const routes: Routes = [
     path: 'contratos',
     loadChildren: () =>
       import('./pages/contratos/contrato.module').then(m => m.ContratoModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, AdminGuard]
   },
   {
     path: 'materiales',
     loadChildren: () =>
       import('./pages/materiales/materiales.module').then(m => m.MaterialesModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, AdminGuard]
   },
   {
     path: 'vehiculos',
     loadChildren: () =>
       import('./pages/vehiculos/vehiculos.module').then(m => m.VehiculosModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, AdminGuard]
   },
   {
     path: 'herramientas',
     loadChildren: () =>
       import('./pages/herramientas/herramientas.module').then(m => m.HerramientasModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, AdminGuard]
   },
   {
     path: 'zonas',
     loadChildren: () =>
       import('./pages/zonas/zonas.module').then(m => m.ZonasModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, AdminGuard]
   },
 
   // ---------------------------------
