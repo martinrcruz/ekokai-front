@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
+import { ApiResponse } from '../models/api-response.model';
 
 export interface User {
   _id?: string;
@@ -31,47 +32,79 @@ export class UserService {
   /**
    * Crea un nuevo usuario.
    */
-  createUser(user: User): Observable<any> {
-    return this.http.post(`${this.baseUrl}/create`, user);
+  createUser(user: User): Observable<ApiResponse<User>> {
+    return this.http.post<ApiResponse<User>>(`${this.baseUrl}/create`, user);
   }
 
   /**
    * Actualiza un usuario existente.
    * Se envía el token en las cabeceras para la verificación.
    */
-  async updateUser(data: User){
+  async updateUser(data: User): Promise<Observable<ApiResponse<User>>> {
     const opts = await this.getHeaders();
-    return this.http.put(`${this.baseUrl}/update`, data, opts);
+    return this.http.put<ApiResponse<User>>(`${this.baseUrl}/update`, data, opts).pipe(
+      map(response => {
+        if (response.ok && response.data) {
+          return response;
+        }
+        throw new Error(response.error || 'Error al actualizar usuario');
+      })
+    );
   }
 
   /**
    * Obtiene un usuario por su ID.
    */
-  getUserById(id: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/${id}`);
+  getUserById(id: string): Observable<ApiResponse<User>> {
+    return this.http.get<ApiResponse<User>>(`${this.baseUrl}/${id}`).pipe(
+      map(response => {
+        if (response.ok && response.data) {
+          return response;
+        }
+        throw new Error(response.error || 'Error al obtener usuario');
+      })
+    );
   }
 
   /**
    * Obtiene el usuario logueado (según el token enviado).
    */
-  getLoggedUser(): Observable<any> {
-    const headers = new HttpHeaders({
-      'Authorization': 'Bearer ' + localStorage.getItem('token')
-    });
-    return this.http.get(`${this.baseUrl}`, { headers });
+  getLoggedUser(): Observable<ApiResponse<User>> {
+    return this.http.get<ApiResponse<User>>(`${this.baseUrl}`).pipe(
+      map(response => {
+        if (response.ok && response.data) {
+          return response;
+        }
+        throw new Error(response.error || 'Error al obtener usuario logueado');
+      })
+    );
   }
 
   /**
    * Obtiene la lista de todos los usuarios.
    */
-  getAllUsers(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/list`);
+  getAllUsers(): Observable<ApiResponse<User[]>> {
+    return this.http.get<ApiResponse<User[]>>(`${this.baseUrl}/list`).pipe(
+      map(response => {
+        if (response.ok && response.data) {
+          return response;
+        }
+        throw new Error(response.error || 'Error al obtener usuarios');
+      })
+    );
   }
 
   /**
    * Obtiene los usuarios cuyo role es "worker".
    */
-  getWorkers(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/worker`);
+  getWorkers(): Observable<ApiResponse<User[]>> {
+    return this.http.get<ApiResponse<User[]>>(`${this.baseUrl}/worker`).pipe(
+      map(response => {
+        if (response.ok && response.data) {
+          return response;
+        }
+        throw new Error(response.error || 'Error al obtener trabajadores');
+      })
+    );
   }
 }

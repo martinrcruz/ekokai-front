@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, AlertController, ToastController } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api.service';
+import { Router } from '@angular/router';
+import { LoadingController, ToastController } from '@ionic/angular';
+import { ContratoService } from '../../../services/contrato.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-list-contrato',
@@ -8,15 +10,18 @@ import { ApiService } from 'src/app/services/api.service';
   templateUrl: './list-contrato.component.html',
   styleUrls: ['./list-contrato.component.scss'],
 })
-export class ListContratoComponent  implements OnInit {
-
+export class ListContratoComponent implements OnInit {
   contracts: any[] = [];
   filteredContracts: any[] = [];
+  errorMessage: string = '';
+  searchTerm: string = '';
+  selectedType: string = '';
+  selectedDate: string = '';
 
   constructor(
-    private apiService: ApiService,
-    private navCtrl: NavController,
-    private alertCtrl: AlertController,
+    private contratoService: ContratoService,
+    private router: Router,
+    private loadingCtrl: LoadingController,
     private toastCtrl: ToastController
   ) {}
 
@@ -25,64 +30,92 @@ export class ListContratoComponent  implements OnInit {
   }
 
   async cargarContratos() {
+    const loading = await this.loadingCtrl.create({
+      message: 'Cargando contratos...'
+    });
+    await loading.present();
+
     try {
-      const req = await this.apiService.getContracts();
-      req.subscribe((res: any) => {
-        // Ajusta si tu backend retorna { ok:true, contracts: [...] }
-        this.contracts = res;
-        this.filteredContracts = [...this.contracts];
-      });
+      const response = await firstValueFrom(this.contratoService.getContracts());
+      this.contracts = response || [];
+      this.filteredContracts = [...this.contracts];
     } catch (error) {
       console.error('Error al cargar contratos:', error);
+      this.errorMessage = 'Error al cargar los contratos. Por favor, intente nuevamente.';
+    } finally {
+      await loading.dismiss();
     }
   }
 
   filtrar(event: any) {
-    const txt = event.detail.value?.toLowerCase() || '';
-    if (!txt.trim()) {
-      this.filteredContracts = [...this.contracts];
-      return;
-    }
-    // Filtrar por code, name o lo que necesites
-    this.filteredContracts = this.contracts.filter(c => {
-      const code = c.code?.toLowerCase() || '';
-      const name = c.name?.toLowerCase() || '';
-      return code.includes(txt) || name.includes(txt);
+    const searchTerm = event.target.value.toLowerCase();
+    this.searchTerm = searchTerm;
+    this.aplicarFiltros();
+  }
+
+  aplicarFiltros() {
+    this.filteredContracts = this.contracts.filter(contrato => {
+      const matchesSearch = contrato.name?.toLowerCase().includes(this.searchTerm) ||
+                          contrato.code?.toLowerCase().includes(this.searchTerm) ||
+                          contrato.customerId?.toLowerCase().includes(this.searchTerm);
+      
+      const matchesType = !this.selectedType || contrato.type === this.selectedType;
+      
+      const matchesDate = !this.selectedDate || 
+                         new Date(contrato.startDate).toISOString().split('T')[0] === this.selectedDate;
+      
+      return matchesSearch && matchesType && matchesDate;
     });
   }
 
   nuevoContrato() {
-    this.navCtrl.navigateForward('/contracts/create');
+    this.router.navigate(['/contratos/create']);
   }
 
   editarContrato(id: string) {
-    this.navCtrl.navigateForward(`/contracts/edit/${id}`);
+    this.router.navigate(['/contratos/edit', id]);
   }
 
   async eliminarContrato(id: string) {
-    const alert = await this.alertCtrl.create({
-      header: 'Confirmar',
-      message: '¿Deseas eliminar este contrato?',
+    const toast = await this.toastCtrl.create({
+      message: '¿Está seguro de eliminar este contrato?',
+      position: 'bottom',
       buttons: [
-        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
         {
           text: 'Eliminar',
-          handler: () => {
-            // this.apiService.deleteContract(id)...
-            this.mostrarToast('Contrato eliminado (simulado).');
+          handler: async () => {
+            try {
+              await firstValueFrom(this.contratoService.deleteContract(id));
+              this.contracts = this.contracts.filter(c => c._id !== id);
+              this.aplicarFiltros();
+              const successToast = await this.toastCtrl.create({
+                message: 'Contrato eliminado correctamente',
+                duration: 2000,
+                position: 'bottom'
+              });
+              await successToast.present();
+            } catch (error) {
+              console.error('Error al eliminar contrato:', error);
+              const errorToast = await this.toastCtrl.create({
+                message: 'Error al eliminar el contrato',
+                duration: 2000,
+                position: 'bottom'
+              });
+              await errorToast.present();
+            }
           }
         }
       ]
     });
-    await alert.present();
+    await toast.present();
   }
 
-  async mostrarToast(msg: string) {
-    const toast = await this.toastCtrl.create({
-      message: msg,
-      duration: 1500,
-      position: 'top'
-    });
-    toast.present();
+  onDateChange(date: string) {
+    this.selectedDate = date;
+    this.aplicarFiltros();
   }
 }

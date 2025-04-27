@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api.service';
+import { RutasService } from 'src/app/services/rutas.service';
 
 @Component({
   selector: 'app-ruta-detalle',
@@ -21,7 +21,7 @@ export class RutaDetalleComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private apiService: ApiService
+    private _rutas : RutasService
   ) {}
 
   ngOnInit() {
@@ -32,7 +32,7 @@ export class RutaDetalleComponent implements OnInit {
   }
 
   async cargarRuta(id: string) {
-    const req = await this.apiService.getRutaById(id);
+    const req = await this._rutas.getRutaById(id);
     req.subscribe((res: any) => {
       if (res.ok) {
         this.ruta = res.ruta;

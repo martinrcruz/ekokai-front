@@ -1,0 +1,87 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Dashboard</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Navegación de fechas -->
+  <div class="date-navigation">
+    <ion-item>
+      <ion-button slot="start" (click)="previousMonth()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+      <ion-label class="ion-text-center">
+        {{ formattedDate }}
+      </ion-label>
+      <ion-button slot="end" (click)="nextMonth()">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </ion-button>
+      <ion-button slot="end" (click)="goToCurrentMonth()">
+        <ion-icon name="today-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </div>
+
+  <!-- Contenido principal -->
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12">
+        <div *ngIf="rutas.length > 0; else emptyState">
+          <ion-card class="ruta-card" *ngFor="let ruta of rutas">
+            <ion-card-header>
+              <ion-card-title>
+                <ion-icon name="map-outline"></ion-icon>
+                {{ ruta.name.name }}
+              </ion-card-title>
+              <ion-card-subtitle>
+                <ion-icon name="calendar-outline"></ion-icon>
+                {{ ruta.date | date:'dd/MM/yyyy' }}
+              </ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content>
+              <div class="ruta-info">
+                <ion-icon name="car-outline"></ion-icon>
+                <span>{{ ruta.vehicle.brand }} {{ ruta.vehicle.modelo }} ({{ ruta.vehicle.matricula }})</span>
+              </div>
+              
+              <div class="parte-list" *ngIf="ruta.expanded">
+                <ion-item *ngFor="let parte of getPartesDeRuta(ruta._id)">
+                  <ion-label class="parte-info">
+                    <h3>{{ parte.title }}</h3>
+                    <p>{{ parte.description }}</p>
+                    <p>Estado: {{ parte.state }}</p>
+                  </ion-label>
+                  <ion-button slot="end" (click)="updateParteStatus(parte._id, 'Finalizado')" *ngIf="parte.state !== 'Finalizado'">
+                    <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+                    Finalizar
+                  </ion-button>
+                </ion-item>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </div>
+
+        <ng-template #emptyState>
+          <div class="empty-state">
+            <ion-icon name="document-text-outline"></ion-icon>
+            <h3>No hay rutas asignadas</h3>
+            <p>No tienes rutas asignadas para este mes</p>
+          </div>
+        </ng-template>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Error -->
+  <ion-toast [isOpen]="!!error" message="{{ error }}" duration="3000" (didDismiss)="error = ''"></ion-toast>
+</ion-content> 

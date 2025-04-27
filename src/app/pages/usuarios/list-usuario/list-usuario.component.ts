@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController, AlertController, ToastController } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api.service';
+import { UsuariosService } from 'src/app/services/usuarios.service';
 
 @Component({
   selector: 'app-list-usuario',
@@ -12,9 +12,10 @@ export class ListUsuarioComponent  implements OnInit {
   
   usuarios: any[] = [];          // lista original
   filteredUsuarios: any[] = [];  // lista filtrada para la vista
+  selectedStatus: string = '';
 
   constructor(
-    private apiService: ApiService,
+    private _usuarios: UsuariosService,
     private navCtrl: NavController,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController
@@ -30,11 +31,11 @@ export class ListUsuarioComponent  implements OnInit {
 
   async cargarUsuarios() {
     try {
-      const req = await this.apiService.getUsers();
+      const req = await this._usuarios.getUsers();
       req.subscribe((res: any) => {
         if (res.ok) {
           this.usuarios = res.users;
-          this.filteredUsuarios = [...this.usuarios];
+          this.applyFilters();
         }
       });
     } catch (error) {
@@ -43,17 +44,23 @@ export class ListUsuarioComponent  implements OnInit {
   }
 
   filtrar(event: any) {
-    const texto = event.detail.value?.toLowerCase() || '';
-    if (!texto.trim()) {
-      this.filteredUsuarios = [...this.usuarios];
+    const txt = event.detail.value?.toLowerCase() || '';
+    if (!txt.trim()) {
+      this.applyFilters();
       return;
     }
-    // Ejemplo: Filtrar por name, email, code
     this.filteredUsuarios = this.usuarios.filter(u => {
-      const name  = u.name?.toLowerCase()  || '';
+      const nombre = u.name?.toLowerCase() || '';
       const email = u.email?.toLowerCase() || '';
-      const code  = u.code?.toLowerCase()  || '';
-      return name.includes(texto) || email.includes(texto) || code.includes(texto);
+      const role = u.role?.toLowerCase() || '';
+      return nombre.includes(txt) || email.includes(txt) || role.includes(txt);
+    });
+  }
+
+  applyFilters() {
+    this.filteredUsuarios = this.usuarios.filter(u => {
+      const matchesStatus = !this.selectedStatus || u.status === this.selectedStatus;
+      return matchesStatus;
     });
   }
 
@@ -71,13 +78,13 @@ export class ListUsuarioComponent  implements OnInit {
   async eliminarUsuario(id: string) {
     const alert = await this.alertCtrl.create({
       header: 'Confirmar',
-      message: '¿Deseas eliminar este usuario?',
+      message: '¿Eliminar este usuario?',
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {
           text: 'Eliminar',
-          handler: async () => {
-            // Llamada real: this.apiService.deleteUser(id)...
+          handler: () => {
+            // Llama al endpoint de eliminar
             this.mostrarToast('Usuario eliminado (simulado).');
           }
         }

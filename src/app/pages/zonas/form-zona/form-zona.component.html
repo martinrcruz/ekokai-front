@@ -15,27 +15,39 @@
   <span class="breadcrumb-current">{{ isEdit ? 'Editar' : 'Crear' }}</span>
 </div> -->
 
-<ion-content class="ion-padding">
-  <form [formGroup]="zonaForm" (ngSubmit)="guardar()">
-    <ion-list>
-      <ion-item>
-        <ion-label position="stacked">Nombre</ion-label>
-        <ion-input formControlName="name"></ion-input>
-      </ion-item>
+<ion-content>
+  <div class="page-container">
+    <div class="header">
+      <h1>{{ isEdit ? 'Editar Zona' : 'Nueva Zona' }}</h1>
+    </div>
 
-      <ion-item>
-        <ion-label position="stacked">Código</ion-label>
-        <ion-input formControlName="code"></ion-input>
-      </ion-item>
+    <form [formGroup]="zonaForm" (ngSubmit)="guardar()" class="form-container">
+      <div class="form-section">
+        <h2>Información de la Zona</h2>
+        <ion-item>
+          <ion-label position="stacked">Nombre</ion-label>
+          <ion-input formControlName="name" placeholder="Nombre de la zona"></ion-input>
+        </ion-item>
 
-      <ion-item>
-        <ion-label position="stacked">ZipCode (ID)</ion-label>
-        <ion-input formControlName="codezip"></ion-input>
-      </ion-item>
-    </ion-list>
+        <ion-item>
+          <ion-label position="stacked">Código</ion-label>
+          <ion-input formControlName="code" placeholder="Código de identificación"></ion-input>
+        </ion-item>
 
-    <ion-button expand="block" class="ion-margin-top" type="submit" [disabled]="zonaForm.invalid">
-      {{ isEdit ? 'Actualizar' : 'Crear' }}
-    </ion-button>
-  </form>
+        <ion-item>
+          <ion-label position="stacked">ZipCode (ID)</ion-label>
+          <ion-input formControlName="codezip" placeholder="Código postal o ZIP"></ion-input>
+        </ion-item>
+      </div>
+
+      <div class="form-actions">
+        <ion-button expand="block" type="submit" [disabled]="zonaForm.invalid">
+          {{ isEdit ? 'Actualizar' : 'Crear' }}
+        </ion-button>
+        <ion-button expand="block" fill="outline" (click)="cancel()">
+          Cancelar
+        </ion-button>
+      </div>
+    </form>
+  </div>
 </ion-content>

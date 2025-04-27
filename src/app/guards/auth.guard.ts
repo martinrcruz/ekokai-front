@@ -2,7 +2,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { NavController } from '@ionic/angular';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -12,7 +11,7 @@ export class AuthGuard implements CanActivate {
 
   constructor(
     private authService: AuthService,
-    private navCtrl: NavController
+    private router: Router
   ) {}
 
   canActivate() {
@@ -20,7 +19,7 @@ export class AuthGuard implements CanActivate {
       .pipe(
         map((loggedIn: boolean) => {
           if (!loggedIn) {
-            this.navCtrl.navigateRoot('/login');
+            this.router.navigate(['/auth/login']);
             return false;
           }
           return true;

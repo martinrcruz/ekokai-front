@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api.service';
+import { PartesService } from 'src/app/services/partes.service';
+import { UsuariosService } from 'src/app/services/usuarios.service';
 
 @Component({
   selector: 'app-usuario-detalle',
@@ -18,7 +19,8 @@ export class UsuarioDetalleComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private apiService: ApiService,
+    private _usuario: UsuariosService,
+    private _parte: PartesService,
     private navCtrl: NavController
   ) {}
 
@@ -31,7 +33,7 @@ export class UsuarioDetalleComponent implements OnInit {
   }
 
   async cargarUsuario(id: string) {
-    const req = await this.apiService.getUserById(id);
+    const req = await this._usuario.getUserById(id);
     req.subscribe((res: any) => {
       if (res.ok) {
         this.usuario = res.user;
@@ -41,7 +43,7 @@ export class UsuarioDetalleComponent implements OnInit {
 
   async cargarPartesAsignados(userId: string) {
     // Ajusta según tu backend para obtener los partes que tengan userId = X y asignado = true
-    const req = await this.apiService.getPartes();
+    const req = await this._parte.getPartes();
     req.subscribe((res: any) => {
       if (res.ok) {
         this.partesAsignados = res.partes;

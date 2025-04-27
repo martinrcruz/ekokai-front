@@ -8,14 +8,14 @@ const routes: Routes = [
     path: '',
     component: ListFacturacionComponent
   },
-    {
-      path: 'create',
-      component: FormFacturacionComponent
-    },
-    {
-      path: 'edit/:id',
-      component: FormFacturacionComponent
-    }
+  {
+    path: 'create',
+    component: FormFacturacionComponent
+  },
+  {
+    path: 'edit/:id',
+    component: FormFacturacionComponent
+  }
 ];
 
 @NgModule({

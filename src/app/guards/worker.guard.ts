@@ -16,7 +16,7 @@ export class WorkerGuard implements CanActivate {
       return true;  // worker => OK
     }
     // si no es worker => fallback
-    this.router.navigate(['/login']);
+    this.router.navigate(['/auth/login']);
     return false;
   }
 }

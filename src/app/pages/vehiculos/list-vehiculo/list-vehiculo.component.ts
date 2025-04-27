@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, AlertController, ToastController } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api.service';
+import { Router } from '@angular/router';
+import { LoadingController, ToastController, NavController } from '@ionic/angular';
+import { VehiculosService } from '../../../services/vehiculos.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-list-vehiculo',
@@ -8,16 +10,20 @@ import { ApiService } from 'src/app/services/api.service';
   templateUrl: './list-vehiculo.component.html',
   styleUrls: ['./list-vehiculo.component.scss'],
 })
-export class ListVehiculoComponent  implements OnInit {
-
-  vehicles: any[] = [];
-  filteredVehicles: any[] = [];
+export class ListVehiculoComponent implements OnInit {
+  vehiculos: any[] = [];
+  filteredVehiculos: any[] = [];
+  errorMessage: string = '';
+  searchTerm: string = '';
+  selectedStatus: string = '';
+  selectedDate: string = '';
 
   constructor(
-    private apiService: ApiService,
-    private navCtrl: NavController,
-    private alertCtrl: AlertController,
-    private toastCtrl: ToastController
+    private vehiculoService: VehiculosService,
+    private router: Router,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController,
+    private navCtrl: NavController
   ) {}
 
   ngOnInit() {
@@ -25,66 +31,92 @@ export class ListVehiculoComponent  implements OnInit {
   }
 
   async cargarVehiculos() {
+    const loading = await this.loadingCtrl.create({
+      message: 'Cargando vehículos...'
+    });
+    await loading.present();
+
     try {
-      const req = await this.apiService.getVehicles();
-      req.subscribe((res: any) => {
-        if (res.ok) {
-          this.vehicles = res.vehicles;
-          this.filteredVehicles = [...this.vehicles];
-        }
-      });
+      const response :any= await firstValueFrom(this.vehiculoService.getVehicles());
+      this.vehiculos = response.vehicles;
+      this.filteredVehiculos = [...this.vehiculos];
     } catch (error) {
-      console.error('Error al cargar vehiculos:', error);
+      console.error('Error al cargar vehículos:', error);
+      this.errorMessage = 'Error al cargar los vehículos. Por favor, intente nuevamente.';
+    } finally {
+      await loading.dismiss();
     }
   }
 
   filtrar(event: any) {
-    const txt = event.detail.value?.toLowerCase() || '';
-    if (!txt.trim()) {
-      this.filteredVehicles = [...this.vehicles];
-      return;
-    }
-    this.filteredVehicles = this.vehicles.filter(v => {
-      const brand   = v.brand?.toLowerCase()   || '';
-      const modelo  = v.modelo?.toLowerCase()  || '';
-      const matricula = v.matricula?.toLowerCase() || '';
-      return brand.includes(txt) || modelo.includes(txt) || matricula.includes(txt);
+    const searchTerm = event.target.value.toLowerCase();
+    this.searchTerm = searchTerm;
+    this.aplicarFiltros();
+  }
+
+  aplicarFiltros() {
+    this.filteredVehiculos = this.vehiculos.filter(vehiculo => {
+      const matchesSearch = vehiculo.matricula.toLowerCase().includes(this.searchTerm) ||
+                          vehiculo.marca.toLowerCase().includes(this.searchTerm) ||
+                          vehiculo.modelo.toLowerCase().includes(this.searchTerm);
+      
+      const matchesStatus = !this.selectedStatus || vehiculo.estado === this.selectedStatus;
+      
+      const matchesDate = !this.selectedDate || 
+                         new Date(vehiculo.fechaMantenimiento).toISOString().split('T')[0] === this.selectedDate;
+      
+      return matchesSearch && matchesStatus && matchesDate;
     });
   }
 
-  nuevoVehiculo() {
-    this.navCtrl.navigateForward('/vehicles/create');
+  navegarACrear() {
+    this.navCtrl.navigateForward('/vehiculos/create');
   }
 
-  editarVehiculo(id: string) {
-    this.navCtrl.navigateForward(`/vehicles/edit/${id}`);
+  navegarAEditar(id: string) {
+    this.navCtrl.navigateForward(`/vehiculos/edit/${id}`);
   }
 
   async eliminarVehiculo(id: string) {
-    const alert = await this.alertCtrl.create({
-      header: 'Confirmar',
-      message: '¿Eliminar este vehículo?',
+    const toast = await this.toastCtrl.create({
+      message: '¿Está seguro de eliminar este vehículo?',
+      position: 'bottom',
       buttons: [
-        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
         {
           text: 'Eliminar',
-          handler: () => {
-            // this.apiService.deleteVehicle(id) ...
-            this.mostrarToast('Vehículo eliminado (simulado).');
+          handler: async () => {
+            try {
+              await firstValueFrom(this.vehiculoService.deleteVehicle(id));
+              this.vehiculos = this.vehiculos.filter(v => v.id !== id);
+              this.aplicarFiltros();
+              const successToast = await this.toastCtrl.create({
+                message: 'Vehículo eliminado correctamente',
+                duration: 2000,
+                position: 'bottom'
+              });
+              await successToast.present();
+            } catch (error) {
+              console.error('Error al eliminar vehículo:', error);
+              const errorToast = await this.toastCtrl.create({
+                message: 'Error al eliminar el vehículo',
+                duration: 2000,
+                position: 'bottom'
+              });
+              await errorToast.present();
+            }
           }
         }
       ]
     });
-    await alert.present();
+    await toast.present();
   }
 
-  async mostrarToast(msg: string) {
-    const toast = await this.toastCtrl.create({
-      message: msg,
-      duration: 1500,
-      position: 'middle'
-    });
-    toast.present();
+  onDateChange(date: string) {
+    this.selectedDate = date;
+    this.aplicarFiltros();
   }
-
 }

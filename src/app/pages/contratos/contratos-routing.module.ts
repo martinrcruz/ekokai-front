@@ -8,18 +8,18 @@ const routes: Routes = [
     path: '',
     component: ListContratoComponent
   },
-    {
-      path: 'create',
-      component: FormContratoComponent
-    },
-    {
-      path: 'edit/:id',
-      component: FormContratoComponent
-    }
+  {
+    path: 'create',
+    component: FormContratoComponent
+  },
+  {
+    path: 'edit/:id',
+    component: FormContratoComponent
+  }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class ContratoRoutingModule { }
+export class ContratosRoutingModule { } 

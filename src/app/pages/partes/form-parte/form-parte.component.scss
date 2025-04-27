@@ -1,0 +1,18 @@
+@import 'src/app/shared/styles/form-styles.scss';
+
+// Estilos específicos para el modal de clientes
+ion-modal {
+  --height: 70%;
+  --border-radius: 16px;
+  --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+// Hacer que los elementos de lista en el modal sean más fáciles de tocar
+ion-modal ion-item {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  --min-height: 50px;
+  cursor: pointer;
+}

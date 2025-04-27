@@ -20,6 +20,7 @@ import { CrearRutaCalendarioComponent } from './crear-ruta-calendario/crear-ruta
     FullCalendarModule,
     ReactiveFormsModule,
     FormsModule,
+    SharedModule,
     CalendarModule.forRoot({
       provide: DateAdapter,
       useFactory: adapterFactory,

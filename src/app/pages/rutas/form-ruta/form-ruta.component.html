@@ -15,83 +15,104 @@
   <span class="breadcrumb-current">{{ isEdit ? 'Editar' : 'Crear' }}</span>
 </div> -->
 
-<ion-content class="ion-padding">
-  <form [formGroup]="rutaForm" (ngSubmit)="onSave()">
-    <ion-list>
+<ion-content>
+  <div class="page-container">
+    <div class="header">
+      <h1>{{ isEdit ? 'Editar Ruta' : 'Nueva Ruta' }}</h1>
+    </div>
 
-      <ion-item>
-        <ion-label position="stacked">Fecha</ion-label>
-        <ion-datetime formControlName="date" display-format="yyyy-MM-dd" picker-format="yyyy-MM-dd"></ion-datetime>
-      </ion-item>
+    <form [formGroup]="rutaForm" (ngSubmit)="onSave()" class="form-container">
+      <div class="form-section">
+        <h2>Información Básica</h2>
+        <ion-item>
+          <ion-label position="stacked">Fecha</ion-label>
+          <ion-datetime 
+            formControlName="date" 
+            display-format="yyyy-MM-dd" 
+            picker-format="yyyy-MM-dd"
+            class="datetime-custom"
+            placeholder="Seleccione fecha">
+          </ion-datetime>
+        </ion-item>
 
-      <ion-item>
-        <ion-label>Ruta</ion-label>
-        <ion-select formControlName="name">
-          <ion-select-option *ngFor="let rn of listaRutaN" [value]="rn._id">
-            {{ rn.name }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Ruta</ion-label>
+          <ion-select formControlName="name" placeholder="Seleccione una ruta">
+            <ion-select-option *ngFor="let rn of listaRutaN" [value]="rn._id">
+              {{ rn.name }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
 
+        <ion-item>
+          <ion-label position="stacked">Estado</ion-label>
+          <ion-select formControlName="state" placeholder="Seleccione estado">
+            <ion-select-option value="Pendiente">Pendiente</ion-select-option>
+            <ion-select-option value="EnProceso">En Proceso</ion-select-option>
+            <ion-select-option value="Finalizado">Finalizado</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
 
+      <div class="form-section">
+        <h2>Vehículos y Personal</h2>
+        <ion-item>
+          <ion-label position="stacked">Vehículo</ion-label>
+          <ion-select formControlName="vehicle" placeholder="Seleccione vehículo">
+            <ion-select-option *ngFor="let v of listaVehicles" [value]="v._id">
+              {{ v.brand }} - {{ v.matricula }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+        
+        <ion-item>
+          <ion-label position="stacked">Encargado</ion-label>
+          <ion-select formControlName="encargado" placeholder="Seleccione encargado">
+            <ion-select-option *ngFor="let u of users" [value]="u._id">
+              {{ u.name }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
 
-      <ion-item>
-        <ion-label>Estado</ion-label>
-        <ion-select formControlName="state">
-          <ion-select-option value="Pendiente">Pendiente</ion-select-option>
-          <ion-select-option value="EnProceso">En Proceso</ion-select-option>
-          <ion-select-option value="Finalizado">Finalizado</ion-select-option>
-        </ion-select>
-      </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Contratos</ion-label>
+          <ion-select formControlName="users" multiple="true" placeholder="Seleccione contratos">
+            <ion-select-option *ngFor="let user of listaClientes" [value]="user._id">
+              {{ user.name }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
 
-      <ion-item>
-        <ion-label>Vehículo</ion-label>
-        <ion-select formControlName="vehicle">
-          <ion-select-option *ngFor="let v of listaVehicles" [value]="v._id">
-            {{ v.brand }} - {{ v.matricula }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
+      <div class="form-section">
+        <h2>Detalles Adicionales</h2>
+        <ion-item>
+          <ion-label position="stacked">Herramientas</ion-label>
+          <ion-select formControlName="herramientas" multiple="true" placeholder="Seleccione herramientas">
+            <ion-select-option value="Taladro">Taladro</ion-select-option>
+            <ion-select-option value="Escalera">Escalera</ion-select-option>
+            <!-- etc -->
+          </ion-select>
+        </ion-item>
 
-      <!-- Ejemplo: si quisieras seleccionar usuarios -->
-      
-      <ion-item>
-        <ion-label>Contrato</ion-label>
-        <ion-select formControlName="users" multiple="true">
-          <ion-select-option *ngFor="let user of listaClientes" [value]="user._id">
-            {{ user.name }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Comentarios</ion-label>
+          <ion-textarea 
+            formControlName="comentarios" 
+            rows="4"
+            placeholder="Añada comentarios o instrucciones adicionales">
+          </ion-textarea>
+        </ion-item>
+      </div>
 
-      <ion-item>
-        <ion-label position="stacked">Comentarios</ion-label>
-        <ion-textarea formControlName="comentarios"></ion-textarea>
-      </ion-item>
-
-      <ion-item>
-        <ion-label>Encargado</ion-label>
-        <ion-select formControlName="encargado" placeholder="Selecciona encargado">
-          <ion-select-option *ngFor="let u of users" [value]="u._id">
-            {{ u.name }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-
-      <ion-item>
-        <ion-label>Herramientas</ion-label>
-        <ion-select formControlName="herramientas" multiple="true">
-          <ion-select-option value="Taladro">Taladro</ion-select-option>
-          <ion-select-option value="Escalera">Escalera</ion-select-option>
-          <!-- etc -->
-        </ion-select>
-      </ion-item>
-     
-
-    </ion-list>
-
-    <ion-button expand="block" class="ion-margin-top" type="submit" [disabled]="rutaForm.invalid">
-      {{ isEdit ? 'Actualizar' : 'Crear' }}
-    </ion-button>
-  </form>
+      <div class="form-actions">
+        <ion-button expand="block" type="submit" [disabled]="rutaForm.invalid">
+          {{ isEdit ? 'Actualizar' : 'Crear' }}
+        </ion-button>
+        <ion-button expand="block" fill="outline" (click)="cancel()">
+          Cancelar
+        </ion-button>
+      </div>
+    </form>
+  </div>
 </ion-content>

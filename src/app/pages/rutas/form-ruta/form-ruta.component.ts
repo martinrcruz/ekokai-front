@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api.service';
+import { CustomerService } from 'src/app/services/customer.service';
+import { RutasService } from 'src/app/services/rutas.service';
+import { UsuariosService } from 'src/app/services/usuarios.service';
+import { VehiculosService } from 'src/app/services/vehiculos.service';
 
 @Component({
   selector: 'app-form-ruta',
@@ -24,7 +27,10 @@ export class FormRutaComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private apiService: ApiService
+    private _usuarios: UsuariosService,
+    private _rutas: RutasService,
+    private _vehiculos: VehiculosService,
+    private _clientes: CustomerService
   ) { }
 
   ngOnInit() {
@@ -42,7 +48,7 @@ export class FormRutaComponent implements OnInit {
   }
 
   async loadUsers() {
-    const req = await this.apiService.getUsers();
+    const req = await this._usuarios.getUsers();
     req.subscribe((resp: any) => {
       if (resp.ok) {
         this.users = resp.users;
@@ -51,21 +57,21 @@ export class FormRutaComponent implements OnInit {
   }
 
   async cargarListas() {
-    const rnReq = await this.apiService.getRutasN();
+    const rnReq = await this._rutas.getRutasN();
     rnReq.subscribe((res: any) => {
       if (res.ok) {
         this.listaRutaN = res.rutas; // ajusta según JSON
       }
     });
     // GET /vehicle => [{ _id, brand, ...}, ...]
-    const vReq = await this.apiService.getVehicles();
+    const vReq = await this._vehiculos.getVehicles();
     vReq.subscribe((res: any) => {
       if (res.ok) {
         this.listaVehicles = res.vehicles;
       }
     });
 
-    const cReq = await this.apiService.getCustomers();
+    const cReq = await this._clientes.getCustomers();
     cReq.subscribe((res: any) => {
       console.log(res)
       if (res.ok) {
@@ -90,7 +96,7 @@ export class FormRutaComponent implements OnInit {
 
   async cargarRuta(id: string) {
     try {
-      const req = await this.apiService.getRutaById(id);
+      const req = await this._rutas.getRutaById(id);
       req.subscribe((res: any) => {
         if (res.ok && res.ruta) {
           this.rutaForm.patchValue({
@@ -121,7 +127,7 @@ export class FormRutaComponent implements OnInit {
 
     if (!this.isEdit) {
       // createRuta
-      const req = await this.apiService.createRuta(data);
+      const req = await this._rutas.createRuta(data);
       req.subscribe((resp: any) => {
         if (resp.ok) {
           this.navCtrl.navigateRoot('/rutas');
@@ -130,7 +136,7 @@ export class FormRutaComponent implements OnInit {
     } else {
       // updateRuta
       data._id = this.rutaId;
-      const req = await this.apiService.updateRuta(data);
+      const req = await this._rutas.updateRuta(this.rutaId!, data);
       req.subscribe((resp: any) => {
         if (resp.ok) {
           this.navCtrl.navigateRoot('/rutas');

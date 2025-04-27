@@ -11,7 +11,7 @@
 }
 
 /* Para la mayoría de los botones (no los de editar/eliminar) */
-ion-button:not(.edit-btn):not(.delete-btn) {
+ion-button:not(.edit-btn):not(.delete-btn):not(.cerrar-sesion-btn) {
   background: var(--ion-color-primary) !important; 
   color: #fff !important;
   border-radius: 6px;

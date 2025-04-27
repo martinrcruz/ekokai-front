@@ -3,8 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api.service';
-import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-form-usuario',
@@ -22,9 +20,7 @@ export class FormUsuarioComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private authService: AuthService,
-    private apiService: ApiService,
-    private userService: UserService
+    private _user: UserService
   ) {}
 
   ngOnInit() {
@@ -54,7 +50,7 @@ export class FormUsuarioComponent implements OnInit {
 
   async cargarUsuario(id: string) {
     try {
-      const req = await this.apiService.getUserById(id);
+      const req = await this._user.getUserById(id);
       req.subscribe((res: any) => {
         if (res.ok && res.user) {
           // Cargar datos en el form
@@ -81,7 +77,7 @@ export class FormUsuarioComponent implements OnInit {
     try {
       if (!this.isEdit) {
         // Crear usuario
-        const req = await this.userService.createUser(data);
+        const req = await this._user.createUser(data);
         req.subscribe((resp: any) => {
           if (resp.ok) {
             this.navCtrl.navigateRoot('/usuarios');
@@ -91,7 +87,7 @@ export class FormUsuarioComponent implements OnInit {
         // Actualizar usuario
         // Se suele incluir el id en el body, o como param en la API
         data._id = this.usuarioId;
-        const req = await this.userService.updateUser(data);
+        const req = await this._user.updateUser(data);
         req.subscribe((resp: any) => {
           if (resp.ok) {
             this.navCtrl.navigateRoot('/usuarios');
@@ -101,5 +97,10 @@ export class FormUsuarioComponent implements OnInit {
     } catch (error) {
       console.error('Error al guardar usuario:', error);
     }
+  }
+
+  cancelar() {
+    // Navegar de vuelta a la lista de usuarios
+    this.navCtrl.navigateBack('/usuarios');
   }
 }

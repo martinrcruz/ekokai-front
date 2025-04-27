@@ -99,7 +99,7 @@ ion-menu-button {
 }
 
 .footer-toolbar {
-  --background: var(--primary-color);
+  --background: #e74c3c !important;
   color: #ffffff;
 
   .logout-item {
@@ -120,9 +120,47 @@ ion-menu-button {
       opacity: 0.8;
     }
   }
+  
+  .logout-button {
+    --background: #e74c3c !important;
+    --border-radius: 0;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    margin: 0;
+    
+    .icon-logout {
+      margin-right: 8px;
+      font-size: 1.2rem;
+    }
+    
+    span {
+      font-weight: 500;
+    }
+    
+    &:hover {
+      --background: #a3332a;
+    }
+  }
 }
 
 .big-icon {
   font-size: 32px;
   color: white !important;
 }
+
+/*
+ * Clases comunes para formularios
+ * -----------------------------------------------------
+ * Para utilizar los estilos comunes de formularios, importa el archivo compartido:
+ * @import 'src/app/shared/styles/form-styles.scss';
+ *
+ * Clases disponibles:
+ * - page-container: Contenedor principal de la página
+ * - header: Cabecera con título de la página
+ * - form-container: Contenedor del formulario con fondo blanco y sombra
+ * - form-section: Sección del formulario con título
+ * - form-actions: Contenedor para botones de acción (guardar/cancelar)
+ * - file-input: Estilo para inputs de tipo archivo
+ * - image-preview: Contenedor para previsualización de imágenes
+ * - form-error: Estilo para mensajes de error en formularios
+ */

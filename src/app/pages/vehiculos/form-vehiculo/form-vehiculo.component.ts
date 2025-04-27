@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api.service';
+import { VehiculosService } from 'src/app/services/vehiculos.service';
 
 @Component({
   selector: 'app-form-vehiculo',
@@ -20,7 +20,7 @@ export class FormVehiculoComponent  implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private apiService: ApiService
+    private _vehiculo: VehiculosService
   ) {}
 
   ngOnInit() {
@@ -47,7 +47,7 @@ export class FormVehiculoComponent  implements OnInit {
 
   async cargarVehiculo(id: string) {
     try {
-      const req = await this.apiService.getVehicleById(id);
+      const req = await this._vehiculo.getVehicleById(id);
       req.subscribe((res: any) => {
         if (res.ok && res.vehicle) {
           this.vehicleForm.patchValue({
@@ -72,20 +72,25 @@ export class FormVehiculoComponent  implements OnInit {
     try {
       if (!this.isEdit) {
         // Crear
-        const req = await this.apiService.createVehicle(data);
+        const req = await this._vehiculo.createVehicle(data);
         req.subscribe(() => {
-          this.navCtrl.navigateRoot('/vehicles');
+          this.navCtrl.navigateRoot('/vehiculos');
         });
       } else {
         // Editar
         data._id = this.vehicleId;
-        const req = await this.apiService.updateVehicle(data);
+        const req = await this._vehiculo.updateVehicle(data);
         req.subscribe(() => {
-          this.navCtrl.navigateRoot('/vehicles');
+          this.navCtrl.navigateRoot('/vehiculos');
         });
       }
     } catch (error) {
       console.error('Error guardando vehículo:', error);
     }
+  }
+
+  cancelar() {
+    // Volver a la lista de vehículos
+    this.navCtrl.navigateBack('/vehiculos');
   }
 }

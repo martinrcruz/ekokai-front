@@ -1,0 +1,12 @@
+@import 'src/app/shared/styles/form-styles.scss';
+
+// Estilos específicos para el formulario de rutas
+.datetime-custom {
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+}
+
+// Estilo para selects múltiples
+ion-select[multiple="true"] {
+  min-height: 60px;
+}

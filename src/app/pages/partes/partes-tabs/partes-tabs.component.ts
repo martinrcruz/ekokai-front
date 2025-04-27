@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiService } from 'src/app/services/api.service';
+import { PartesService } from 'src/app/services/partes.service';
+import { Parte } from 'src/app/models/parte.model';
+import { SegmentValue } from '@ionic/core';
 
 @Component({
   selector: 'app-partes-tabs',
@@ -10,10 +12,10 @@ import { ApiService } from 'src/app/services/api.service';
 export class PartesTabsComponent implements OnInit {
 
   tabSelected = 'asignados'; // 'asignados' o 'noasignados'
-  partesAsignados: any[] = [];
-  partesNoAsignados: any[] = [];
+  partesAsignados: Parte[] = [];
+  partesNoAsignados: Parte[] = [];
 
-  constructor(private apiService: ApiService) {}
+  constructor(private _partes: PartesService) {}
 
   ngOnInit() {
     this.cargarPartes();
@@ -21,22 +23,20 @@ export class PartesTabsComponent implements OnInit {
 
   async cargarPartes() {
     // Ajusta tu backend para filtrar
-    const req1 = await this.apiService.getPartes();
-    req1.subscribe((res: any) => {
-      if (res.ok) {
-        this.partesAsignados = res.partes;
-      }
+    const req1 = await this._partes.getPartes();
+    req1.subscribe((partes: Parte[]) => {
+      this.partesAsignados = partes;
     });
 
-    const req2 = await this.apiService.getPartesNoAsignados();
-    req2.subscribe((res: any) => {
-      if (res.ok) {
-        this.partesNoAsignados = res.partes;
-      }
+    const req2 = await this._partes.getPartesNoAsignados();
+    req2.subscribe((partes: Parte[]) => {
+      this.partesNoAsignados = partes;
     });
   }
 
-  seleccionarTab(tab: any) {
-    this.tabSelected = tab;
+  seleccionarTab(tab: SegmentValue) {
+    if (tab) {
+      this.tabSelected = tab.toString();
+    }
   }
 }

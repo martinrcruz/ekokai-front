@@ -1,0 +1,181 @@
+.facturacion-list {
+  padding: 16px;
+}
+
+.facturacion-card {
+  margin-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --background: var(--color-white);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  ion-card-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  ion-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 8px;
+  }
+
+  ion-card-subtitle {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+  }
+
+  ion-card-content {
+    padding: 16px;
+  }
+
+  .facturacion-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+
+    .monto {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--color-success);
+    }
+
+    .fecha {
+      font-size: 0.9rem;
+      color: var(--color-text-light);
+    }
+  }
+
+  .ruta-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+
+    ion-icon {
+      margin-right: 8px;
+      color: var(--color-primary);
+    }
+
+    span {
+      color: var(--color-text);
+    }
+  }
+
+  .parte-info {
+    display: flex;
+    align-items: center;
+
+    ion-icon {
+      margin-right: 8px;
+      color: var(--color-accent);
+    }
+
+    span {
+      color: var(--color-text);
+    }
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  text-align: center;
+
+  ion-icon {
+    font-size: 64px;
+    color: var(--color-text-light);
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    color: var(--color-text);
+    margin-bottom: 8px;
+  }
+
+  p {
+    color: var(--color-text-light);
+  }
+}
+
+.filters {
+  background: var(--color-white);
+  padding: 16px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  ion-item {
+    --background: transparent;
+    --padding-start: 0;
+    --inner-padding-end: 0;
+  }
+
+  ion-label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  ion-button {
+    --background: var(--color-primary);
+    --color: var(--color-white);
+    --border-radius: 8px;
+    --box-shadow: none;
+    margin: 0 4px;
+
+    &:hover {
+      --background: var(--color-primary-dark);
+    }
+  }
+}
+
+.summary-card {
+  background: var(--color-white);
+  padding: 16px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .summary-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 12px;
+  }
+
+  .summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+
+    &:last-child {
+      margin-bottom: 0;
+      padding-top: 8px;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .label {
+      color: var(--color-text-light);
+    }
+
+    .value {
+      font-weight: 600;
+      color: var(--color-text);
+
+      &.total {
+        color: var(--color-success);
+        font-size: 1.2rem;
+      }
+    }
+  }
+} 

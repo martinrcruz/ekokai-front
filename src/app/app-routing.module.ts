@@ -23,6 +23,11 @@ const routes: Routes = [
   // Rutas protegidas (requieren AuthGuard)
   // ---------------------------------
   {
+    path: 'worker-dashboard',
+    loadChildren: () => import('./pages/worker-dashboard/worker-dashboard.module').then(m => m.WorkerDashboardModule),
+    canActivate: [AuthGuard, WorkerGuard]
+  },
+  {
     path: 'home',
     loadChildren: () =>
       import('./pages/home/home.module').then(m => m.HomeModule),
@@ -71,7 +76,7 @@ const routes: Routes = [
   {
     path: 'contratos',
     loadChildren: () =>
-      import('./pages/contratos/contrato.module').then(m => m.ContratoModule),
+      import('./pages/contratos/contratos.module').then(m => m.ContratosModule),
     canActivate: [AuthGuard, AdminGuard]
   },
   {

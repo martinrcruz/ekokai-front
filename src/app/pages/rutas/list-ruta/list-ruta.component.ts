@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController, AlertController, ToastController } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api.service';
+import { RutasService } from 'src/app/services/rutas.service';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @Component({
   selector: 'app-list-ruta',
@@ -11,9 +12,11 @@ import { ApiService } from 'src/app/services/api.service';
 export class ListRutaComponent implements OnInit {
   rutas: any[] = [];
   filteredRutas: any[] = [];
+  selectedStatus: string = '';
+  selectedDate: string = '';
 
   constructor(
-    private apiService: ApiService,
+    private _rutas: RutasService,
     private navCtrl: NavController,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController
@@ -34,11 +37,11 @@ export class ListRutaComponent implements OnInit {
 
   async cargarRutas() {
     try {
-      const req = await this.apiService.getRutas();
+      const req = await this._rutas.getRutas();
       req.subscribe((res: any) => {
         if (res.ok) {
           this.rutas = res.rutas;
-          this.filteredRutas = [...this.rutas];
+          this.applyFilters();
         }
       });
     } catch (error) {
@@ -49,13 +52,21 @@ export class ListRutaComponent implements OnInit {
   filtrar(event: any) {
     const txt = event.detail.value?.toLowerCase() || '';
     if (!txt.trim()) {
-      this.filteredRutas = [...this.rutas];
+      this.applyFilters();
       return;
     }
     this.filteredRutas = this.rutas.filter(r => {
       const nombre = r.name?.name?.toLowerCase() || r.name?.toLowerCase() || '';
-      const state  = r.state?.toLowerCase() || '';
+      const state = r.state?.toLowerCase() || '';
       return nombre.includes(txt) || state.includes(txt);
+    });
+  }
+
+  applyFilters() {
+    this.filteredRutas = this.rutas.filter(r => {
+      const matchesStatus = !this.selectedStatus || r.state === this.selectedStatus;
+      const matchesDate = !this.selectedDate || r.date === this.selectedDate;
+      return matchesStatus && matchesDate;
     });
   }
 
@@ -92,5 +103,10 @@ export class ListRutaComponent implements OnInit {
       position: 'top'
     });
     toast.present();
+  }
+
+  onDateChange(event: any) {
+    this.selectedDate = event;
+    this.applyFilters();
   }
 }

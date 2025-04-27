@@ -1,0 +1,14 @@
+@import 'src/app/shared/styles/form-styles.scss';
+
+// Cualquier estilo específico para vehículos puede ir aquí
+.photo-preview {
+  margin-top: 8px;
+  width: 100%;
+  text-align: center;
+
+  img {
+    max-width: 250px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+}

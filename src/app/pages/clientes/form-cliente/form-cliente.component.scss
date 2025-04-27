@@ -1,13 +1,6 @@
-.image-preview {
-  margin-top: 10px;
-  display: flex;
-  justify-content: center;
+@import 'src/app/shared/styles/form-styles.scss';
 
-  img {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  }
+// Estilos específicos para el formulario de clientes
+.cliente-specific {
+  // Cualquier estilo específico para clientes
 }

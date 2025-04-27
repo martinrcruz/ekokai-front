@@ -6,47 +6,105 @@
     <ion-title>Contratos</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="nuevoContrato()">
-        <ion-icon name="add-circle-outline" style="color: white !important"></ion-icon>
+        <ion-icon name="add-circle-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-searchbar
-    (ionInput)="filtrar($event)"
-    placeholder="Buscar contrato"
-    showCancelButton="focus">
-  </ion-searchbar>
+  <div class="page-container">
+    <div class="header">
+      <h1>Contratos</h1>
+    </div>
 
-  <ion-refresher (ionRefresh)="cargarContratos()">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
+    <!-- Barra de búsqueda -->
+    <div class="search-bar">
+      <ion-searchbar 
+        (ionInput)="filtrar($event)" 
+        placeholder="Buscar contrato..." 
+        animated>
+      </ion-searchbar>
+    </div>
 
-  <ion-grid>
-    <ion-row class="header-row">
-      <ion-col><strong>Código</strong></ion-col>
-      <ion-col><strong>Nombre</strong></ion-col>
-      <ion-col><strong>Cliente</strong></ion-col>
-      <ion-col size="2"><strong>Acciones</strong></ion-col>
-    </ion-row>
+    <!-- Filtros -->
+    <div class="filters">
+      <ion-item>
+        <ion-label>Filtrar por tipo</ion-label>
+        <ion-select [(ngModel)]="selectedType" (ionChange)="aplicarFiltros()">
+          <ion-select-option value="">Todos los tipos</ion-select-option>
+          <ion-select-option value="F">F</ion-select-option>
+          <ion-select-option value="E">E</ion-select-option>
+          <ion-select-option value="R">R</ion-select-option>
+          <ion-select-option value="C">C</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <app-date-picker
+        label="Filtrar por fecha"
+        [selectedDate]="selectedDate"
+        (dateChange)="onDateChange($event)">
+      </app-date-picker>
+    </div>
 
-    <ion-row *ngFor="let c of filteredContracts">
-      <ion-col>
-        {{ c.code }}
-      </ion-col>
-      <ion-col>
-        {{ c.name }}
-      </ion-col>
-      <ion-col>
-        {{ c.customerId }}
-      </ion-col>
-      <ion-col size="2">
-        <ion-button size="small" (click)="editarContrato(c._id)">  <ion-icon name="create-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-        <ion-button size="small" color="danger" (click)="eliminarContrato(c._id)">  <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+    <!-- Lista de Contratos -->
+    <div class="contratos-list">
+      <div *ngIf="filteredContracts.length > 0; else emptyState">
+        <ion-card class="contrato-card" *ngFor="let c of filteredContracts">
+          <ion-card-header>
+            <ion-card-title>
+              <ion-icon name="document-text-outline"></ion-icon>
+              {{ c.name }}
+            </ion-card-title>
+            <ion-card-subtitle>
+              <ion-icon name="barcode-outline"></ion-icon>
+              {{ c.code }}
+            </ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="contrato-info">
+              <div class="info-item">
+                <ion-icon name="business-outline"></ion-icon>
+                <span>Cliente: {{ c.customerId }}</span>
+              </div>
+              <div class="info-item">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <span>Inicio: {{ c.startDate | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="info-item">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <span>Fin: {{ c.endDate | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="info-item">
+                <ion-icon name="cash-outline"></ion-icon>
+                <span>Total: {{ c.total }} €</span>
+              </div>
+            </div>
+            
+            <div class="contrato-type" [ngClass]="'type-' + c.type?.toLowerCase()">
+              {{ c.type }}
+            </div>
+            
+            <div class="contrato-actions">
+              <ion-button fill="outline" (click)="editarContrato(c._id)">
+                <ion-icon name="create-outline" slot="start"></ion-icon>
+                Editar
+              </ion-button>
+              <ion-button color="danger" (click)="eliminarContrato(c._id)">
+                <ion-icon name="trash-outline" slot="start"></ion-icon>
+                Eliminar
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+
+      <ng-template #emptyState>
+        <div class="empty-state">
+          <ion-icon name="document-text-outline"></ion-icon>
+          <h3>No hay contratos</h3>
+          <p>No se encontraron contratos con los filtros actuales</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
 </ion-content>

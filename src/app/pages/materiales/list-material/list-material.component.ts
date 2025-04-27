@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController, AlertController, ToastController } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api.service';
+import { MaterialesService } from '../../../services/materiales.service';
 
 @Component({
   selector: 'app-list-material',
@@ -8,43 +8,54 @@ import { ApiService } from 'src/app/services/api.service';
   templateUrl: './list-material.component.html',
   styleUrls: ['./list-material.component.scss'],
 })
-export class ListMaterialComponent  implements OnInit {
-
-  materials: any[] = [];
+export class ListMaterialComponent implements OnInit {
+  materiales: any[] = [];
   filteredMaterials: any[] = [];
+  loading = true;
+  error = '';
 
   constructor(
-    private apiService: ApiService,
     private navCtrl: NavController,
     private alertCtrl: AlertController,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private _materiales: MaterialesService
   ) {}
 
-  ngOnInit() {
-    this.cargarMateriales();
+  async ngOnInit() {
+    await this.loadMateriales();
   }
 
-  async cargarMateriales() {
+  async loadMateriales() {
     try {
-      const req = await this.apiService.getMaterials();
-      req.subscribe((res: any) => {
-        if (res.ok) {
-          this.materials = res.materials;
-          this.filteredMaterials = [...this.materials];
+      this.loading = true;
+      const req = await this._materiales.getMaterials();
+      req.subscribe(
+        (res: any) => {
+          if (res.ok) {
+            this.materiales = res.materials;
+            this.filteredMaterials = [...this.materiales];
+          }
+        },
+        (error) => {
+          console.error('Error al cargar materiales:', error);
+          this.error = 'Error al cargar los materiales';
         }
-      });
+      );
     } catch (error) {
-      console.error('Error al cargar materiales:', error);
+      console.error('Error:', error);
+      this.error = 'Error al cargar los materiales';
+    } finally {
+      this.loading = false;
     }
   }
 
   filtrar(event: any) {
     const txt = event.detail.value?.toLowerCase() || '';
     if (!txt.trim()) {
-      this.filteredMaterials = [...this.materials];
+      this.filteredMaterials = [...this.materiales];
       return;
     }
-    this.filteredMaterials = this.materials.filter(m => {
+    this.filteredMaterials = this.materiales.filter(m => {
       const name = m.name?.toLowerCase() || '';
       const code = m.code?.toLowerCase() || '';
       return name.includes(txt) || code.includes(txt);
@@ -52,11 +63,11 @@ export class ListMaterialComponent  implements OnInit {
   }
 
   nuevoMaterial() {
-    this.navCtrl.navigateForward('/materials/create');
+    this.navCtrl.navigateForward('/materiales/create');
   }
 
   editarMaterial(id: string) {
-    this.navCtrl.navigateForward(`/materials/edit/${id}`);
+    this.navCtrl.navigateForward(`/materiales/edit/${id}`);
   }
 
   async eliminarMaterial(id: string) {
@@ -68,13 +79,34 @@ export class ListMaterialComponent  implements OnInit {
         {
           text: 'Eliminar',
           handler: () => {
-            // this.apiService.deleteMaterial(id) ...
-            this.mostrarToast('Material eliminado (simulado).');
+            this.deleteMaterial(id);
           }
         }
       ]
     });
     await alert.present();
+  }
+
+  async deleteMaterial(id: string) {
+    try {
+      const req = await this._materiales.deleteMaterial(id);
+      req.subscribe(
+        (res: any) => {
+          if (res.ok) {
+            this.materiales = this.materiales.filter(m => m._id !== id);
+            this.filteredMaterials = this.filteredMaterials.filter(m => m._id !== id);
+            this.mostrarToast('Material eliminado.');
+          }
+        },
+        (error) => {
+          console.error('Error al eliminar material:', error);
+          this.error = 'Error al eliminar el material';
+        }
+      );
+    } catch (error) {
+      console.error('Error:', error);
+      this.error = 'Error al eliminar el material';
+    }
   }
 
   async mostrarToast(msg: string) {
@@ -84,5 +116,11 @@ export class ListMaterialComponent  implements OnInit {
       position: 'top'
     });
     toast.present();
+  }
+
+  doRefresh(event: any) {
+    this.loadMateriales().then(() => {
+      event.target.complete();
+    });
   }
 }

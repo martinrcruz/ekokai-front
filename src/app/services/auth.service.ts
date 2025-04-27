@@ -1,161 +1,241 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Storage } from '@ionic/storage-angular';
-import { environment } from 'src/environments/environment';
-import { BehaviorSubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
 import { Router } from '@angular/router';
+import { ApiResponse } from '../interfaces/api-response.interface';
+import { AlertController } from '@ionic/angular';
+
+interface LoginResponse {
+  token: string;
+  role: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-
   private baseUrl = `${environment.apiUrl}/user`;
   private _storage: Storage | null = null;
-
-  // BehaviorSubject para indicar si el usuario está logueado
   private isLoggedInSubject = new BehaviorSubject<boolean>(false);
-
   private userSubject = new BehaviorSubject<any>(null);
-  user$ = this.userSubject.asObservable();
+
+  public user$ = this.userSubject.asObservable();
 
   constructor(
     private http: HttpClient,
     private storage: Storage,
-    private router: Router
+    private router: Router,
+    private alertCtrl: AlertController
   ) {
     this.init();
   }
 
-  /**
-   * Se llama al crear el servicio.
-   * Carga (o crea) la instancia de Storage.
-   * Revisa si existe un token en Storage y si es así, actualiza el estado de login.
-   */
   async init() {
-    const store = await this.storage.create();
-    this._storage = store;
-    const token = await this._storage?.get('token');
-    if (token) {
-      // decodificar
-      const decoded: any = jwtDecode(token);
-      const now = Math.floor(Date.now() / 1000); // en segundos
-      this.userSubject.next(decoded.user)
-
-
-      if (decoded.exp && decoded.exp > now) {
-        this.isLoggedInSubject.next(true);
-        this.router.navigateByUrl('/calendario');
-      } else {
-        // Token expirado
-        await this.removeToken();
-      }
-    } else {
-      this.isLoggedInSubject.next(false);
+    try {
+      const store = await this.storage.create();
+      this._storage = store;
+      await this.checkToken();
+    } catch (error) {
+      console.error('Error initializing storage', error);
     }
   }
 
-  /**
-   * Emite el estado actual de "¿Está logueado?" para que
-   * AuthGuard y otros componentes puedan suscribirse.
-   */
+  async checkToken() {
+    try {
+      const token = await this._storage?.get('token');
+      if (token) {
+        const decoded: any = jwtDecode(token);
+        const now = Math.floor(Date.now() / 1000); // en segundos
+        this.userSubject.next(decoded.user);
+
+        if (decoded.exp && decoded.exp > now) {
+          this.isLoggedInSubject.next(true);
+        } else {
+          console.log('Token expired');
+          await this.removeToken();
+        }
+      } else {
+        this.isLoggedInSubject.next(false);
+      }
+    } catch (error) {
+      console.error('Error checking token', error);
+      await this.removeToken();
+    }
+  }
+
   isLoggedIn() {
     return this.isLoggedInSubject.asObservable();
   }
 
-  /**
-   * Guarda el token y actualiza el BehaviorSubject
-   */
   async setToken(token: string) {
-    await this._storage?.set('token', token);
-    if (token) {
-      // decodificar
+    try {
+      if (!token) {
+        throw new Error('Token is empty');
+      }
+      
+      await this._storage?.set('token', token);
+      
       const decoded: any = jwtDecode(token);
-      const now = Math.floor(Date.now() / 1000); // en segundos
-      this.userSubject.next(decoded.user)
+      this.userSubject.next(decoded.user);
+      this.isLoggedInSubject.next(true);
+      
+      return true;
+    } catch (error) {
+      console.error('Error setting token', error);
+      return false;
     }
-    this.isLoggedInSubject.next(true);
   }
 
-  /**
-   * Obtiene el token almacenado
-   */
   async getToken(): Promise<string | null> {
-    return await this._storage?.get('token');
+    try {
+      const token = await this._storage?.get('token');
+      
+      if (token) {
+        const decoded: any = jwtDecode(token);
+        const now = Math.floor(Date.now() / 1000);
+        
+        if (decoded.exp && decoded.exp > now) {
+          return token;
+        } else {
+          console.log('Token expired when getting');
+          await this.removeToken();
+          return null;
+        }
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error getting token', error);
+      return null;
+    }
   }
 
-  /**
-   * Elimina el token y emite false en isLoggedInSubject
-   */
   async removeToken() {
-    await this._storage?.remove('token');
-    this.isLoggedInSubject.next(false);
+    try {
+      await this._storage?.remove('token');
+      this.userSubject.next(null);
+      this.isLoggedInSubject.next(false);
+    } catch (error) {
+      console.error('Error removing token', error);
+    }
   }
 
-  // ---------------------------------
-  // EJEMPLOS DE MÉTODOS DE AUTENTICACIÓN
-  // ---------------------------------
-
-  // Registro
-  register(userData: any) {
-    return this.http.post(`${this.baseUrl}/create`, userData);
-  }
-
-  // Login
-  login(credentials: { email: string; password: string }) {
-    return this.http.post(`${this.baseUrl}/login`, credentials)
+  register(userData: any): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/create`, userData)
       .pipe(
-        map(async (resp: any) => {
-          if (resp.ok && resp.tokenU) {
-
-            const token = await this._storage?.get('token');
-            if (token) {
-              const decoded: any = jwtDecode(token);
-              console.log(decoded)
-              this.userSubject.next(decoded.user)
-            }
-
-            await this.setToken(resp.tokenU);
-          }
-          return resp;
+        catchError(error => {
+          console.error('Error en el registro:', error);
+          this.showAlert('Error', 'No se pudo completar el registro. Por favor, inténtelo de nuevo.');
+          return throwError(() => error);
         })
       );
   }
 
+  login(credentials: { email: string; password: string }): Observable<ApiResponse<LoginResponse>> {
+    // Eliminamos el token anterior si existe
+    this.removeToken();
+    
+    return this.http.post<ApiResponse<LoginResponse>>(`${this.baseUrl}/login`, credentials, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      })
+    }).pipe(
+      tap(response => {
+        if (response.ok && response.data?.token) {
+          this.setToken(response.data.token);
+          if (response.data.role) {
+            this.userSubject.next({ ...this.userSubject.value, role: response.data.role });
+          }
+        }
+      }),
+      catchError(error => {
+        console.error('Error en login:', error);
+        let errorMessage = 'Error al iniciar sesión';
+        
+        if (error.status === 401) {
+          errorMessage = 'Credenciales incorrectas. Por favor, verifique su correo y contraseña.';
+        } else if (error.status === 0) {
+          errorMessage = 'No se pudo conectar con el servidor. Compruebe su conexión a internet.';
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        }
+        
+        this.showAlert('Error de inicio de sesión', errorMessage);
+        return throwError(() => error);
+      })
+    );
+  }
 
   getUser() {
     return this.userSubject.value;
   }
 
-
   getRole() {
-    console.log(this.userSubject.value)
     const user = this.getUser();
-    console.log(user)
-
-    return null;
+    return user?.role || null;
   }
 
-  /**
-   * Retorna cabeceras con x-token para peticiones protegidas
-   */
   async getHeaders() {
     const token = await this.getToken();
     if (token) {
       return {
         headers: new HttpHeaders({
-          'x-token': token
+          'Content-Type': 'application/json',
+          'x-token': token,
+          'Accept': 'application/json'
         })
       };
     }
-    return {};
+    return {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      })
+    };
   }
 
-  // Logout
   async logout() {
-    this.userSubject.next(null);
-    await this.removeToken();
+    try {
+      this.userSubject.next(null);
+      await this.removeToken();
+      this.router.navigate(['/auth/login']);
+    } catch (error) {
+      console.error('Error during logout', error);
+    }
+  }
+
+  async getCurrentUserId(): Promise<string> {
+    const user = this.userSubject.value;
+    if (user && user._id) {
+      return user._id;
+    }
+    
+    const token = await this._storage?.get('token');
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token);
+        if (decoded.user && decoded.user._id) {
+          return decoded.user._id;
+        }
+      } catch (error) {
+        console.error('Error getting current user ID', error);
+      }
+    }
+    
+    throw new Error('No hay usuario autenticado');
+  }
+
+  private async showAlert(header: string, message: string): Promise<void> {
+    const alert = await this.alertCtrl.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 }

@@ -9,7 +9,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-segment (ionChange)="seleccionarTab($event.detail.value)" value="{{tabSelected}}">
+  <ion-segment (ionChange)="seleccionarTab($event.detail.value!)" value="{{tabSelected}}">
     <ion-segment-button value="asignados">
       <ion-label>Asignados</ion-label>
     </ion-segment-button>

@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api.service';
+import { RutasService } from '../../../services/rutas.service';
+import { PartesService } from '../../../services/partes.service';
+import { VehiculosService } from '../../../services/vehiculos.service';
+import { UsuariosService } from '../../../services/usuarios.service';
+import { Ruta } from '../../../models/ruta.model';
+import { ApiResponse } from '../../../models/api-response.model';
 
 @Component({
   selector: 'app-crear-ruta-calendario',
@@ -27,7 +32,10 @@ export class CrearRutaCalendarioComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private apiService: ApiService
+    private rutasService: RutasService,
+    private partesService: PartesService,
+    private vehiculosService: VehiculosService,
+    private usuariosService: UsuariosService
   ) {}
 
   async ngOnInit() {
@@ -35,92 +43,104 @@ export class CrearRutaCalendarioComponent implements OnInit {
     this.date = this.route.snapshot.paramMap.get('date') || '';
 
     // Cargar RutaN
-    const rnReq = await this.apiService.getRutasN();
+    const rnReq = await this.rutasService.getRutasN();
     rnReq.subscribe((res: any) => {
       if (res.ok && res.rutas) {
         this.rutasN = res.rutas;
       }
     });
 
-    // Cargar Vehicles
-    const vehReq = await this.apiService.getVehicles();
-    vehReq.subscribe((res: any) => {
-      if (res.ok && res.vehicles) {
-        this.vehicles = res.vehicles;
-      }
-    });
+    try {
+      // Cargar Vehicles
+      const vehReq = await this.vehiculosService.getVehicles();
+      vehReq.subscribe((res: any) => {
+        console.log(res)
+        if (res.ok && res.vehicles) {
+          this.vehicles = res.vehicles;
+        }
+      });
 
-    // Cargar Users
-    const usrReq = await this.apiService.getUsers();
-    usrReq.subscribe((res: any) => {
-      if (res.ok && res.users) {
-        this.users = res.users;
-      }
-    });
+      // Cargar Users
+      const usrReq = await this.usuariosService.getUsers();
+      usrReq.subscribe((res: any) => {
+        if (res.ok && res.users) {
+          this.users = res.users;
+        }
+      });
 
-    // Cargar Partes No Asignados
-    const partesReq = await this.apiService.getPartesNoAsignados();
-    partesReq.subscribe((res: any) => {
-      if (res.ok && res.partes) {
-        // partes no asignados
-        this.partesNoAsignados = res.partes.map((p: any) => {
-          return { ...p, selected: false };
-        });
-      }
-    });
+      // Cargar Partes No Asignados
+      await this.loadPartesNoAsignados();
+    } catch (error) {
+      console.error('Error:', error);
+    }
   }
 
-  async onCreateRuta() {
+  async loadPartesNoAsignados() {
+    try {
+      const req = await this.partesService.getPartesNoAsignados();
+      req.subscribe(
+        (res: any) => {
+          if (res.ok) {
+            this.partesNoAsignados = res.partes;
+          }
+        },
+        (error) => {
+          console.error('Error al cargar partes no asignados:', error);
+        }
+      );
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  async createRuta() {
     try {
       if (!this.rutaNId) {
         console.error('No se seleccionó un RutaN');
         return;
       }
 
-      // Paso 1: Crear la ruta
-      const data = {
+      const selectedRutaN = this.rutasN.find(r => r._id === this.rutaNId);
+      if (!selectedRutaN) {
+        console.error('RutaN no encontrada');
+        return;
+      }
+
+      const selectedVehicle = this.vehicles.find(v => v._id === this.selectedVehicle);
+      const selectedUsers = this.users.filter(u => this.selectedUsers.includes(u._id));
+
+      const data: Partial<Ruta> = {
         date: this.date,
-        name: this.rutaNId,
+        name: {
+          _id: this.rutaNId,
+          name: selectedRutaN.name,
+          __v: 0
+        },
         type: this.type,
         state: this.state,
-        vehicle: this.selectedVehicle || null,
-        users: this.selectedUsers || []
+        vehicle: selectedVehicle || undefined,
+        users: selectedUsers,
+        comentarios: '',
+        herramientas: [],
+        eliminado: false
       };
 
-      const req = await this.apiService.createRuta(data);
-      req.subscribe(async (res: any) => {
-        if (res.ok && res.ruta) {
-          // Ruta creada con éxito
-          const newRutaId = res.ruta._id;
-
-          // Paso 2: Asignar partes seleccionados a la nueva ruta
-          const partesAsignar = this.partesNoAsignados
-            .filter(p => p.selected)
-            .map(p => p._id);
-
-          if (partesAsignar.length > 0) {
-            const asignReq = await this.apiService.asignarPartesARuta(newRutaId, partesAsignar);
-            asignReq.subscribe((resp: any) => {
-              if (resp.ok) {
-                console.log('Partes asignados correctamente');
-              } else {
-                console.warn('No se pudieron asignar partes:', resp);
-              }
-              // Finalmente, navegar al calendario
-              this.navCtrl.navigateRoot('/calendario');
-            });
+      const req = await this.rutasService.createRuta(data);
+      req.subscribe(
+        (response: ApiResponse<Ruta>) => {
+          if (response.ok) {
+            this.navCtrl.navigateBack('/calendario');
           } else {
-            // Si no hay partes que asignar, directo al calendario
-            this.navCtrl.navigateRoot('/calendario');
+            console.error('Error al crear ruta:', response.error);
           }
-
-        } else {
-          console.error('Error al crear la ruta:', res?.message);
+        },
+        (error) => {
+          console.error('Error al crear ruta:', error);
         }
-      });
+      );
 
     } catch (error) {
-      console.error('Error al crear la ruta:', error);
+      console.error('Error:', error);
     }
   }
 

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api.service';
+import { HerramientasService } from 'src/app/services/herramientas.service';
 
 @Component({
   selector: 'app-form-herramienta',
@@ -20,7 +20,7 @@ export class FormHerramientaComponent  implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private apiService: ApiService
+    private _herramienta: HerramientasService
   ) {}
 
   ngOnInit() {
@@ -44,8 +44,8 @@ export class FormHerramientaComponent  implements OnInit {
 
   async cargarHerramienta(id: string) {
     try {
-      // Ajusta si tu ApiService es getHerramientaById
-      const req = await this.apiService.getHerramientaById(id);
+      // Ajusta si tu _herramienta es getHerramientaById
+      const req = await this._herramienta.getHerramientaById(id);
       req.subscribe((res: any) => {
         if (res.ok && res.herramienta) {
           this.herramientaForm.patchValue({
@@ -67,14 +67,14 @@ export class FormHerramientaComponent  implements OnInit {
     try {
       if (!this.isEdit) {
         // Crear
-        const req = await this.apiService.createHerramienta(data);
+        const req = await this._herramienta.createHerramienta(data);
         req.subscribe(() => {
           this.navCtrl.navigateRoot('/herramientas');
         });
       } else {
         // Editar
         data._id = this.herramientaId;
-        const req = await this.apiService.updateHerramienta(data._id, data);
+        const req = await this._herramienta.updateHerramienta(data._id, data);
         req.subscribe(() => {
           this.navCtrl.navigateRoot('/herramientas');
         });
@@ -82,5 +82,10 @@ export class FormHerramientaComponent  implements OnInit {
     } catch (error) {
       console.error('Error al guardar herramienta:', error);
     }
+  }
+
+  cancelar() {
+    // Volver a la lista de herramientas
+    this.navCtrl.navigateBack('/herramientas');
   }
 }

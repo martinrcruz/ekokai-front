@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { NavController } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api.service';
+import { NavController, LoadingController, ToastController, AlertController } from '@ionic/angular';
+import { ContratoService } from 'src/app/services/contrato.service';
+import { ClientesService, Cliente } from 'src/app/services/clientes.service';
 
 @Component({
   selector: 'app-form-contrato',
@@ -10,28 +11,33 @@ import { ApiService } from 'src/app/services/api.service';
   templateUrl: './form-contrato.component.html',
   styleUrls: ['./form-contrato.component.scss'],
 })
-export class FormContratoComponent  implements OnInit {
+export class FormContratoComponent implements OnInit {
 
   contractForm!: FormGroup;
   isEdit = false;
   contractId: string | null = null;
+  clientes: Cliente[] = [];
+  loading = false;
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private apiService: ApiService
+    private _contrato: ContratoService,
+    private clientesService: ClientesService,
+    private loadingController: LoadingController,
+    private toastController: ToastController,
+    private alertController: AlertController
   ) {}
 
   ngOnInit() {
     this.initForm();
-    this.route.paramMap.subscribe(params => {
-      this.contractId = params.get('id');
-      if (this.contractId) {
-        this.isEdit = true;
-        this.cargarContrato(this.contractId);
-      }
-    });
+    this.contractId = this.route.snapshot.paramMap.get('id');
+    if (this.contractId) {
+      this.isEdit = true;
+      this.cargarContrato(this.contractId);
+    }
+    this.loadClientes();
   }
 
   initForm() {
@@ -53,7 +59,7 @@ export class FormContratoComponent  implements OnInit {
 
   async cargarContrato(id: string) {
     try {
-      const req = await this.apiService.getContractById(id);
+      const req = await this._contrato.getContractById(id);
       req.subscribe((res: any) => {
         // Ajusta según tu backend
         if (res) {
@@ -85,21 +91,49 @@ export class FormContratoComponent  implements OnInit {
     try {
       if (!this.isEdit) {
         // Crear contrato
-        const req = await this.apiService.createContract(data);
+        const req = await this._contrato.createContract(data);
         req.subscribe((resp: any) => {
-          // Ajusta si tu API retorna ok, etc.
-          this.navCtrl.navigateRoot('/contracts');
+          // Cambiado de '/contracts' a '/contratos'
+          this.navCtrl.navigateRoot('/contratos');
         });
       } else {
         // Editar contrato
         data._id = this.contractId;
-        const req = await this.apiService.updateContract(this.contractId as string, data);
+        const req = await this._contrato.updateContract(this.contractId as string, data);
         req.subscribe((resp: any) => {
-          this.navCtrl.navigateRoot('/contracts');
+          // Cambiado de '/contracts' a '/contratos'
+          this.navCtrl.navigateRoot('/contratos');
         });
       }
     } catch (error) {
       console.error('Error al guardar contrato:', error);
     }
+  }
+
+  cancel() {
+    // Cambiado de '/contracts' a '/contratos'
+    this.navCtrl.navigateBack('/contratos');
+  }
+
+  loadClientes() {
+    this.loading = true;
+    this.clientesService.getCustomers().subscribe({
+      next: (response: any) => {
+        if (response && response.ok && response.data) {
+          this.clientes = response.data.customers;
+        }
+        this.loading = false;
+      },
+      error: (error: any) => {
+        console.error('Error al cargar clientes', error);
+        this.loading = false;
+      }
+    });
+  }
+  
+  onClientSelected(client: any) {
+    console.log('Cliente seleccionado:', client);
+    this.contractForm.get('customerId')?.setValue(client._id);
+    this.contractForm.get('customerId')?.markAsDirty();
   }
 }

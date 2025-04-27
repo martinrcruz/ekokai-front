@@ -6,6 +6,7 @@ import { ListUsuarioComponent } from './list-usuario/list-usuario.component';
 import { FormUsuarioComponent } from './form-usuario/form-usuario.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { UsuarioDetalleComponent } from './usuario-detalle/usuario-detalle.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { UsuarioDetalleComponent } from './usuario-detalle/usuario-detalle.compo
     CommonModule,
     IonicModule,
     UsuariosRoutingModule,
+    FormsModule,
     ReactiveFormsModule
   ],
   exports: []

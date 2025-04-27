@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController, AlertController, ToastController } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api.service';
+import { ZonasService } from 'src/app/services/zonas.service';
 
 @Component({
   selector: 'app-list-zona',
@@ -12,9 +12,10 @@ export class ListZonaComponent  implements OnInit {
 
   zonas: any[] = [];
   filteredZonas: any[] = [];
+  selectedStatus: string = '';
 
   constructor(
-    private apiService: ApiService,
+    private _zonas: ZonasService,
     private navCtrl: NavController,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController
@@ -26,11 +27,11 @@ export class ListZonaComponent  implements OnInit {
 
   async cargarZonas() {
     try {
-      const req = await this.apiService.getZones();
+      const req = await this._zonas.getZones();
       req.subscribe((res: any) => {
         if (res.ok) {
-          this.zonas = res.zone;
-          this.filteredZonas = [...this.zonas];
+          this.zonas = res.data.zones;
+          this.applyFilters();
         }
       });
     } catch (error) {
@@ -41,13 +42,20 @@ export class ListZonaComponent  implements OnInit {
   filtrar(event: any) {
     const txt = event.detail.value?.toLowerCase() || '';
     if (!txt.trim()) {
-      this.filteredZonas = [...this.zonas];
+      this.applyFilters();
       return;
     }
     this.filteredZonas = this.zonas.filter(z => {
-      const name = z.name?.toLowerCase() || '';
-      const code = z.code?.toLowerCase() || '';
-      return name.includes(txt) || code.includes(txt);
+      const nombre = z.name?.toLowerCase() || '';
+      const descripcion = z.description?.toLowerCase() || '';
+      return nombre.includes(txt) || descripcion.includes(txt);
+    });
+  }
+
+  applyFilters() {
+    this.filteredZonas = this.zonas.filter(z => {
+      const matchesStatus = !this.selectedStatus || z.status === this.selectedStatus;
+      return matchesStatus;
     });
   }
 
@@ -68,7 +76,7 @@ export class ListZonaComponent  implements OnInit {
         {
           text: 'Eliminar',
           handler: () => {
-            // this.apiService.deleteZone(id) ...
+            // Llama al endpoint de eliminar
             this.mostrarToast('Zona eliminada (simulado).');
           }
         }

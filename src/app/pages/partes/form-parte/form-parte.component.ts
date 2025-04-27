@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api.service';
-
+import { PartesService } from 'src/app/services/partes.service';
+import { RutasService } from 'src/app/services/rutas.service';
+import { CustomerService } from 'src/app/services/customer.service';
 @Component({
   selector: 'app-form-parte',
   standalone: false,
@@ -32,7 +33,9 @@ export class FormParteComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private apiService: ApiService
+    private _parte: PartesService,
+    private _rutas: RutasService,
+    private _customer: CustomerService
   ) {}
 
   ngOnInit() {
@@ -69,7 +72,7 @@ export class FormParteComponent implements OnInit {
   }
 
   async loadCustomers() {
-    const req = await this.apiService.getCustomers();
+    const req = await this._customer.getCustomers();
     req.subscribe((resp: any) => {
       if (resp.ok) {
         this.customersList = resp.customers;
@@ -86,7 +89,7 @@ export class FormParteComponent implements OnInit {
     const firstDayOfMonth = `${year}-${month}-01`;
 
     // Llamamos a getRutasDisponibles(firstDayOfMonth)
-    const rReq = await this.apiService.getRutasDisponibles(firstDayOfMonth);
+    const rReq = await this._rutas.getRutasDisponibles(firstDayOfMonth);
     rReq.subscribe((res: any) => {
       if (res.ok && res.rutas) {
         this.rutasDisponibles = res.rutas;
@@ -95,7 +98,7 @@ export class FormParteComponent implements OnInit {
   }
 
   async loadParte(id: string) {
-    const req = await this.apiService.getParteById(id);
+    const req = await this._parte.getParteById(id);
     req.subscribe((res: any) => {
       if (res.ok && res.parte) {
         this.parteForm.patchValue({
@@ -128,7 +131,7 @@ export class FormParteComponent implements OnInit {
 
     if (!this.isEdit) {
       // Crear parte
-      const req = await this.apiService.createParte(data);
+      const req = await this._parte.createParte(data);
       req.subscribe((resp: any) => {
         if (resp.ok) {
           this.navCtrl.navigateRoot('/partes');
@@ -136,7 +139,7 @@ export class FormParteComponent implements OnInit {
       });
     } else {
       // Actualizar parte
-      const req = await this.apiService.updateParte(data);
+      const req = await this._parte.updateParte(this.parteId!, data);
       req.subscribe((resp: any) => {
         if (resp.ok) {
           this.navCtrl.navigateRoot('/partes');

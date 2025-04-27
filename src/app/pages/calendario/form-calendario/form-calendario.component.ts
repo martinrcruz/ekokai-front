@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api.service';
-
+import { CalendarioService } from '../../../services/calendario.service';
+import { RutasService } from '../../../services/rutas.service';
 
 @Component({
   selector: 'app-form-calendario',
@@ -16,12 +16,16 @@ export class FormCalendarioComponent  implements OnInit {
   calendarioForm!: FormGroup;
   isEdit = false;
   eventoId: string | null = null;
+  fecha: string = '';
+  rutas: any[] = [];
+  partesNoAsignados: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private apiService: ApiService
+    private calendarioService: CalendarioService,
+    private rutasService: RutasService
   ) {}
 
   ngOnInit() {
@@ -89,6 +93,42 @@ export class FormCalendarioComponent  implements OnInit {
     // } catch (error) {
     //   console.error('Error al guardar evento calendario:', error);
     // }
+  }
+
+  async loadRutas() {
+    try {
+      const req = await this.calendarioService.getRutasByDate(this.fecha);
+      req.subscribe(
+        (res: any) => {
+          if (res.ok) {
+            this.rutas = res.rutas;
+          }
+        },
+        (error) => {
+          console.error('Error al cargar rutas:', error);
+        }
+      );
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  async loadPartesNoAsignados() {
+    try {
+      const req = await this.calendarioService.getPartesNoAsignadosEnMes(this.fecha);
+      req.subscribe(
+        (res: any) => {
+          if (res.ok) {
+            this.partesNoAsignados = res.partes;
+          }
+        },
+        (error) => {
+          console.error('Error al cargar partes no asignados:', error);
+        }
+      );
+    } catch (error) {
+      console.error('Error:', error);
+    }
   }
 
 }

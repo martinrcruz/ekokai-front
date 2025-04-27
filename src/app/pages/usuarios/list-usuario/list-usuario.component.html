@@ -6,7 +6,7 @@
     <ion-title>Usuarios</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="nuevoUsuario()">
-        <ion-icon name="add-circle-outline" style="color: white !important"></ion-icon>
+        <ion-icon name="add-circle-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -19,45 +19,82 @@
 </div> -->
 
 <ion-content>
+  <div class="page-container">
+    <div class="header">
+      <h1>Usuarios</h1>
+    </div>
 
-  <!-- Searchbar (sin ngModel), filtrado manual -->
-  <ion-searchbar
-    (ionInput)="filtrar($event)"
-    placeholder="Buscar usuario"
-    showCancelButton="focus">
-  </ion-searchbar>
+    <!-- Barra de búsqueda -->
+    <div class="search-bar">
+      <ion-searchbar 
+        (ionInput)="filtrar($event)" 
+        placeholder="Buscar usuario..." 
+        animated>
+      </ion-searchbar>
+    </div>
 
-  <!-- Refresher -->
-  <ion-refresher (ionRefresh)="cargarUsuarios()">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
+    <!-- Filtros -->
+    <div class="filters">
+      <ion-item>
+        <ion-label>Filtrar por estado</ion-label>
+        <ion-select [(ngModel)]="selectedStatus" (ionChange)="applyFilters()">
+          <ion-select-option value="">Todos los estados</ion-select-option>
+          <ion-select-option value="activo">Activo</ion-select-option>
+          <ion-select-option value="inactivo">Inactivo</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </div>
 
-  <!-- IonGrid para mostrar columnas: Nombre, Email, Rol, Acciones -->
-  <ion-grid>
-    <ion-row class="header-row">
-      <ion-col><strong>Nombre</strong></ion-col>
-      <ion-col><strong>Email</strong></ion-col>
-      <ion-col><strong>Rol</strong></ion-col>
-      <ion-col size="2"><strong>Acciones</strong></ion-col>
-    </ion-row>
+    <!-- Lista de Usuarios -->
+    <div class="usuarios-list">
+      <div *ngIf="filteredUsuarios.length > 0; else emptyState">
+        <ion-card class="usuario-card" *ngFor="let u of filteredUsuarios">
+          <ion-card-header>
+            <div class="avatar">
+              <ion-icon name="person-outline"></ion-icon>
+            </div>
+            <div class="header-content">
+              <ion-card-title>{{ u.name }}</ion-card-title>
+              <ion-card-subtitle>{{ u.email }}</ion-card-subtitle>
+            </div>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="usuario-info">
+              <div class="info-item">
+                <ion-icon name="call-outline"></ion-icon>
+                <span>{{ u.phone || 'Sin teléfono' }}</span>
+              </div>
+              <div class="info-item">
+                <ion-icon name="briefcase-outline"></ion-icon>
+                <span>{{ u.role || 'Sin rol' }}</span>
+              </div>
+            </div>
+            
+            <div class="usuario-status" [ngClass]="'status-' + u.status?.toLowerCase()">
+              {{ u.status }}
+            </div>
+            
+            <div class="usuario-actions">
+              <ion-button fill="outline" (click)="editarUsuario(u._id)">
+                <ion-icon name="create-outline" slot="start"></ion-icon>
+                Editar
+              </ion-button>
+              <ion-button color="danger" (click)="eliminarUsuario(u._id)">
+                <ion-icon name="trash-outline" slot="start"></ion-icon>
+                Eliminar
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
 
-    <ion-row *ngFor="let u of filteredUsuarios">
-      <ion-col>
-        {{ u.name }} ({{ u.code }})
-      </ion-col>
-      <ion-col>
-        {{ u.email }}
-      </ion-col>
-      <ion-col>
-        {{ u.role }}
-      </ion-col>
-      <ion-col size="2">
-        <ion-button size="small" (click)="editarUsuario(u._id)">  <ion-icon name="create-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-        <ion-button size="small" color="danger" (click)="eliminarUsuario(u._id)">  <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
+      <ng-template #emptyState>
+        <div class="empty-state">
+          <ion-icon name="people-outline"></ion-icon>
+          <h3>No hay usuarios</h3>
+          <p>No se encontraron usuarios con los filtros actuales</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
 </ion-content>

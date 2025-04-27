@@ -1,0 +1,11 @@
+@import 'src/app/shared/styles/form-styles.scss';
+
+// Estilos específicos para el formulario de usuario
+.role-toggle {
+  display: flex;
+  align-items: center;
+  
+  ion-label {
+    margin-right: 12px;
+  }
+}

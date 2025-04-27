@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, ToastController } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api.service';
+import { LoadingController, ToastController } from '@ionic/angular';
+import { ClientesService, Cliente, ClientesResponse } from '../../../services/clientes.service';
+import { ZonasService, Zona, ZonasResponse } from '../../../services/zonas.service';
+import { firstValueFrom } from 'rxjs';
+import { ApiResponse } from '../../../interfaces/api-response.interface';
 
 @Component({
   selector: 'app-list-cliente',
@@ -10,129 +13,140 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrls: ['./list-cliente.component.scss'],
 })
 export class ListClienteComponent implements OnInit {
-
-  customers: any[] = [];
-  loading: boolean = false;
-
-  filteredCustomers: any[] = [];
-  paginatedCustomers: any[] = [];
-
-  // Búsqueda
+  clientes: Cliente[] = [];
+  filteredClientes: Cliente[] = [];
+  zonas: Zona[] = [];
+  errorMessage: string = '';
   searchText: string = '';
-
-  // Paginación
-  currentPage: number = 1;
-  itemsPerPage: number = 10;
-  totalPages: number = 1;
+  selectedZone: string = '';
+  selectedType: string = '';
 
   constructor(
-    private apiService: ApiService,
+    private clientesService: ClientesService,
+    private zonasService: ZonasService,
     private router: Router,
-    private alertCtrl: AlertController,
+    private loadingCtrl: LoadingController,
     private toastCtrl: ToastController
-  ) { }
+  ) {}
 
   ngOnInit() {
-    this.loadClientes();
+    this.cargarClientes();
+    this.cargarZonas();
   }
 
-  async loadClientes() {
-    this.loading = true;
-    const res = await this.apiService.getCustomers();
-    res.subscribe({
-      next: (data: any) => {
-        console.log(data);
-        this.customers = data.customers; // data debería ser directamente un arreglo
-        this.loading = false;
-        this.filterCustomers(); // Inicializa paginación al cargar datos
-      },
-      error: async () => {
-        this.loading = false;
-        const toast = await this.toastCtrl.create({ message: 'Error al cargar los customers', duration: 2500 });
-        toast.present();
-      }
+  async cargarClientes() {
+    const loading = await this.loadingCtrl.create({
+      message: 'Cargando clientes...'
     });
+    await loading.present();
+
+    try {
+      const response = await firstValueFrom(this.clientesService.getCustomers());
+      if (response && response.ok && response.data) {
+        this.clientes = response.data.customers;
+        this.filteredClientes = [...this.clientes];
+      } else {
+        this.clientes = [];
+        this.filteredClientes = [];
+      }
+    } catch (error) {
+      console.error('Error al cargar clientes:', error);
+      this.errorMessage = 'Error al cargar los clientes. Por favor, intente nuevamente.';
+      const toast = await this.toastCtrl.create({
+        message: this.errorMessage,
+        duration: 3000,
+        position: 'bottom',
+        color: 'danger'
+      });
+      await toast.present();
+    } finally {
+      await loading.dismiss();
+    }
+  }
+
+  async cargarZonas() {
+    try {
+      const response = await firstValueFrom(this.zonasService.getZones());
+      if (response && response.ok && response.data) {
+        this.zonas = response.data.zones;
+      } else {
+        this.zonas = [];
+      }
+    } catch (error) {
+      console.error('Error al cargar zonas:', error);
+      const toast = await this.toastCtrl.create({
+        message: 'Error al cargar las zonas',
+        duration: 3000,
+        position: 'bottom',
+        color: 'danger'
+      });
+      await toast.present();
+    }
   }
 
   filterCustomers() {
-    this.currentPage = 1;
-    const text = this.searchText.toLowerCase().trim();
-
-    this.filteredCustomers = this.customers.filter(c =>
-      c.name.toLowerCase().includes(text) ||
-      c.email.toLowerCase().includes(text) ||
-      c.nifCif.toLowerCase().includes(text) ||
-      (c.zone?.name || '').toLowerCase().includes(text)
-    );
-
-    this.calculatePagination();
+    this.filteredClientes = this.clientes.filter(cliente => {
+      const matchesSearch = cliente.name?.toLowerCase().includes(this.searchText.toLowerCase()) ||
+                          cliente.email?.toLowerCase().includes(this.searchText.toLowerCase()) ||
+                          cliente.nifCif?.toLowerCase().includes(this.searchText.toLowerCase());
+      
+      const matchesZone = !this.selectedZone || cliente.zone?._id === this.selectedZone;
+      
+      const matchesType = !this.selectedType || cliente.tipo === this.selectedType;
+      
+      return matchesSearch && matchesZone && matchesType;
+    });
   }
 
-  calculatePagination() {
-    this.totalPages = Math.ceil(this.filteredCustomers.length / this.itemsPerPage);
-    this.updatePaginatedCustomers();
-  }
-
-  updatePaginatedCustomers() {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    const end = start + this.itemsPerPage;
-    this.paginatedCustomers = this.filteredCustomers.slice(start, end);
-  }
-
-  nextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-      this.updatePaginatedCustomers();
-    }
-  }
-
-  prevPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-      this.updatePaginatedCustomers();
-    }
-  }
-
-  editCliente(id: number) {
-    this.router.navigate(['/clientes/edit/' + id]);
-  }
-
-  createCliente() {
+  nuevoCliente() {
     this.router.navigate(['/clientes/create']);
   }
 
-  async deleteCliente(id: number) {
-    // const alert = await this.alertCtrl.create({
-    //   header: 'Confirmar eliminación',
-    //   message: '¿Seguro que deseas eliminar este cliente?',
-    //   buttons: [
-    //     { text: 'Cancelar', role: 'cancel' },
-    //     {
-    //       text: 'Eliminar',
-    //       handler: () => {
-    //         this.apiService.deleteCustomer(id).subscribe({
-    //           next: async () => {
-    //             const toast = await this.toastCtrl.create({
-    //               message: 'Cliente eliminado correctamente',
-    //               duration: 2000
-    //             });
-    //             toast.present();
-    //             this.loadClientes(); // Recargar clientes después de eliminar
-    //           },
-    //           error: async () => {
-    //             const toast = await this.toastCtrl.create({
-    //               message: 'Error al eliminar cliente',
-    //               duration: 2000
-    //             });
-    //             toast.present();
-    //           }
-    //         });
-    //       }
-    //     }
-    //   ]
-    // });
-
-    // await alert.present();
+  editarCliente(id: string) {
+    this.router.navigate(['/clientes/edit', id]);
   }
 
+  async eliminarCliente(id: string) {
+    const toast = await this.toastCtrl.create({
+      message: '¿Está seguro de eliminar este cliente?',
+      position: 'bottom',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Eliminar',
+          handler: async () => {
+            try {
+              const response = await firstValueFrom(this.clientesService.deleteCustomer(id));
+              if (response && response.ok) {
+                this.clientes = this.clientes.filter(c => c._id !== id);
+                this.filterCustomers();
+                const successToast = await this.toastCtrl.create({
+                  message: 'Cliente eliminado correctamente',
+                  duration: 2000,
+                  position: 'bottom',
+                  color: 'success'
+                });
+                await successToast.present();
+              } else {
+                throw new Error(response?.error || 'Error al eliminar el cliente');
+              }
+            } catch (error) {
+              console.error('Error al eliminar cliente:', error);
+              const errorToast = await this.toastCtrl.create({
+                message: 'Error al eliminar el cliente',
+                duration: 2000,
+                position: 'bottom',
+                color: 'danger'
+              });
+              await errorToast.present();
+            }
+          }
+        }
+      ]
+    });
+    await toast.present();
+  }
 }

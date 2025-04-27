@@ -5,48 +5,89 @@
     </ion-buttons>
     <ion-title>Facturación</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="nuevoFacturacion()">
-        <ion-icon name="add-circle-outline" style="color: white !important"></ion-icon>
+      <ion-button routerLink="/facturacion/create">
+        <ion-icon name="add-circle-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-searchbar
-    (ionInput)="filtrar($event)"
-    placeholder="Buscar"
-    showCancelButton="focus">
-  </ion-searchbar>
+  <div class="page-container">
+    <div class="header">
+      <h1>Facturación</h1>
+    </div>
 
-  <ion-refresher (ionRefresh)="cargarFacturacion()">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
+    <!-- Resumen -->
+    <div class="summary-card">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Resumen</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="summary-item">
+            <span>Total facturado:</span>
+            <span class="amount">{{ formatCurrency(totalFacturado) }}</span>
+          </div>
+          <div class="summary-item">
+            <span>Número de facturaciones:</span>
+            <span class="count">{{ facturaciones.length }}</span>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
 
-  <ion-grid>
-    <ion-row class="header-row">
-      <ion-col><strong>Monto</strong></ion-col>
-      <ion-col><strong>Ruta</strong></ion-col>
-      <ion-col><strong>Parte</strong></ion-col>
-      <ion-col size="2"><strong>Acciones</strong></ion-col>
-    </ion-row>
+    <!-- Lista de Facturaciones -->
+    <div class="facturacion-list">
+      <div *ngIf="facturaciones.length > 0; else emptyState">
+        <ion-card class="facturacion-card" *ngFor="let f of facturaciones">
+          <ion-card-header>
+            <ion-card-title>
+              <ion-icon name="document-text-outline"></ion-icon>
+              Facturación #{{ f._id }}
+            </ion-card-title>
+            <ion-card-subtitle>
+              <ion-icon name="calendar-outline"></ion-icon>
+              {{ formatDate(f.createdDate) }}
+            </ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="facturacion-info">
+              <span class="monto">{{ formatCurrency(f.facturacion) }}</span>
+              <span class="fecha">{{ formatDate(f.createdDate) }}</span>
+            </div>
+            
+            <div class="ruta-info">
+              <ion-icon name="map-outline"></ion-icon>
+              <span>{{ f.ruta.name.name }}</span>
+            </div>
+            
+            <div class="parte-info">
+              <ion-icon name="document-outline"></ion-icon>
+              <span>{{ f.parte.description }}</span>
+            </div>
+            
+            <div class="facturacion-actions">
+              <ion-button fill="outline" [routerLink]="['/facturacion/edit', f._id]">
+                <ion-icon name="create-outline" slot="start"></ion-icon>
+                Editar
+              </ion-button>
+              <ion-button color="danger" (click)="eliminarFactura(f._id)">
+                <ion-icon name="trash-outline" slot="start"></ion-icon>
+                Eliminar
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
 
-    <ion-row *ngFor="let f of filteredFacturaciones">
-      <ion-col>
-        {{ f.facturacion }} €
-      </ion-col>
-      <ion-col>
-        {{ f.ruta.name.name }}
-      </ion-col>
-      <ion-col>
-        {{ f.parte.description }}
-      </ion-col>
-      <ion-col size="2">
-        <ion-button size="small" (click)="editarFacturacion(f._id)">  <ion-icon name="create-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-        <ion-button size="small" color="danger" (click)="eliminarFacturacion(f._id)">  <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-content>
+      <ng-template #emptyState>
+        <div class="empty-state">
+          <ion-icon name="receipt-outline"></ion-icon>
+          <h3>No hay facturaciones</h3>
+          <p>No se encontraron facturaciones</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</ion-content> 

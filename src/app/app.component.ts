@@ -47,7 +47,7 @@ export class AppComponent {
 
   // Para el rol worker, solo dejamos Calendario
   private workerAppPages: AppPage[] = [
-    { title: 'Calendario', url: '/calendario',  icon: 'bi-calendar-check' }
+    { title: 'Calendario', url: '/worker-dashboard',  icon: 'bi-calendar-check' }
   ];
 
   // Este es el array que se renderiza en la plantilla:
@@ -69,17 +69,41 @@ export class AppComponent {
         }
       });
 
-      registerLocaleData(localeEs, 'es');
+    registerLocaleData(localeEs, 'es');
 
     // Suscribirse a un observable del AuthService que retorne la info del usuario
     this.authService.user$.subscribe(user => {
       if (user && user.role) {
         this.userRole = user.role;
+        // Redirigir según el rol
+        if (this.userRole === 'worker') {
+          // Verificar si ya estamos en worker-dashboard para evitar redirecciones infinitas
+          if (!this.router.url.includes('worker-dashboard')) {
+            this.router.navigate(['/worker-dashboard']);
+          }
+        } else if (this.userRole === 'admin') {
+          this.router.navigate(['/home']);
+        }
       } else {
         this.userRole = '';
       }
       this.updateMenuByRole();
     });
+
+    // Verificar el rol al iniciar la aplicación
+    this.checkInitialRole();
+  }
+
+  /**
+   * Verifica el rol al iniciar la aplicación y redirige si es necesario
+   */
+  private async checkInitialRole() {
+    const user = await this.authService.getUser();
+    if (user && user.role === 'worker') {
+      if (!this.router.url.includes('worker-dashboard')) {
+        this.router.navigate(['/worker-dashboard']);
+      }
+    }
   }
 
   /**
@@ -108,6 +132,6 @@ export class AppComponent {
    */
   async logout() {
     await this.authService.logout();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/auth/login']);
   }
 }
