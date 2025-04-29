@@ -2,16 +2,14 @@ export interface Facturacion {
   facturacion: number;
   ruta: {
     _id: string;
-    name: {
-      _id: string;
-      name: string;
-    };
+    name: string;
   };
   parte: {
     _id: string;
+    title: string;
     description: string;
   };
-  createdDate: string;
+  createdDate: Date;
 }
 
 export interface FacturacionResponse {

@@ -6,6 +6,8 @@ export interface Parte {
   state: 'Pendiente' | 'EnProceso' | 'Finalizado';
   type: 'Obra' | 'Mantenimiento' | 'Correctivo' | 'Visitas';
   categoria: 'Extintores' | 'Incendio' | 'Robo' | 'CCTV' | 'Pasiva' | 'Venta';
+  asignado: boolean;
+  eliminado: boolean;
   customer: string;
   ruta?: string;
   address: string;
@@ -27,4 +29,5 @@ export interface Parte {
     tipo: string;
     fecha: Date;
   }>;
+  createdDate: Date;
 } 

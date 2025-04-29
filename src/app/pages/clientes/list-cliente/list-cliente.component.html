@@ -52,7 +52,7 @@
     <!-- Lista de Clientes -->
     <div class="clientes-list">
       <div *ngIf="filteredClientes.length > 0; else emptyState">
-        <ion-card class="cliente-card" *ngFor="let c of filteredClientes">
+        <ion-card class="cliente-card" *ngFor="let c of paginatedClientes">
           <ion-card-header>
             <ion-card-title>
               <ion-icon name="business-outline"></ion-icon>
@@ -99,6 +99,23 @@
             </div>
           </ion-card-content>
         </ion-card>
+      </div>
+
+      <!-- Paginación -->
+      <div class="pagination-container" *ngIf="filteredClientes.length > 0">
+        <ion-button fill="clear" [disabled]="currentPage === 1" (click)="prevPage()">
+          <ion-icon name="chevron-back-outline"></ion-icon>
+          Anterior
+        </ion-button>
+        
+        <div class="pagination-info">
+          Página {{ currentPage }} de {{ totalPages }}
+        </div>
+        
+        <ion-button fill="clear" [disabled]="currentPage === totalPages" (click)="nextPage()">
+          Siguiente
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </ion-button>
       </div>
 
       <ng-template #emptyState>

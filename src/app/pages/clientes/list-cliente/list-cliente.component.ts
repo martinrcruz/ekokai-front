@@ -20,6 +20,12 @@ export class ListClienteComponent implements OnInit {
   searchText: string = '';
   selectedZone: string = '';
   selectedType: string = '';
+  
+  // Paginación
+  currentPage: number = 1;
+  pageSize: number = 8;
+  totalPages: number = 0;
+  paginatedClientes: Cliente[] = [];
 
   constructor(
     private clientesService: ClientesService,
@@ -45,9 +51,11 @@ export class ListClienteComponent implements OnInit {
       if (response && response.ok && response.data) {
         this.clientes = response.data.customers;
         this.filteredClientes = [...this.clientes];
+        this.applyPagination();
       } else {
         this.clientes = [];
         this.filteredClientes = [];
+        this.paginatedClientes = [];
       }
     } catch (error) {
       console.error('Error al cargar clientes:', error);
@@ -96,6 +104,38 @@ export class ListClienteComponent implements OnInit {
       
       return matchesSearch && matchesZone && matchesType;
     });
+    
+    // Resetear a la primera página cuando se filtran los resultados
+    this.currentPage = 1;
+    this.applyPagination();
+  }
+  
+  applyPagination() {
+    this.totalPages = Math.ceil(this.filteredClientes.length / this.pageSize);
+    
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    
+    this.paginatedClientes = this.filteredClientes.slice(startIndex, endIndex);
+  }
+  
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.applyPagination();
+  }
+  
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.applyPagination();
+    }
+  }
+  
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.applyPagination();
+    }
   }
 
   nuevoCliente() {
