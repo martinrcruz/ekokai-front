@@ -18,36 +18,36 @@
       <h1>Clientes</h1>
     </div>
 
-    <!-- Barra de búsqueda -->
-    <div class="search-bar">
-      <ion-searchbar 
-        [(ngModel)]="searchText" 
-        (ionInput)="filterCustomers()" 
-        placeholder="Buscar cliente..." 
-        animated>
-      </ion-searchbar>
-    </div>
+    <!-- Barra de búsqueda y filtros -->
+    <ion-card class="filters">
+      <ion-card-content>
+        <ion-searchbar 
+          [(ngModel)]="searchText" 
+          (ionInput)="filterCustomers()" 
+          placeholder="Buscar cliente..." 
+          animated>
+        </ion-searchbar>
 
-    <!-- Filtros -->
-    <div class="filters">
-      <ion-item>
-        <ion-label>Filtrar por zona</ion-label>
-        <ion-select [(ngModel)]="selectedZone" (ionChange)="filterCustomers()">
-          <ion-select-option value="">Todas las zonas</ion-select-option>
-          <ion-select-option *ngFor="let zone of zonas" [value]="zone._id">
-            {{ zone.name }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-      <ion-item>
-        <ion-label>Filtrar por tipo</ion-label>
-        <ion-select [(ngModel)]="selectedType" (ionChange)="filterCustomers()">
-          <ion-select-option value="">Todos los tipos</ion-select-option>
-          <ion-select-option value="Normal">Normal</ion-select-option>
-          <ion-select-option value="Especial">Especial</ion-select-option>
-        </ion-select>
-      </ion-item>
-    </div>
+        <ion-item>
+          <ion-label>Zona</ion-label>
+          <ion-select [(ngModel)]="selectedZone" (ionChange)="filterCustomers()">
+            <ion-select-option value="">Todas las zonas</ion-select-option>
+            <ion-select-option *ngFor="let zone of zonas" [value]="zone._id">
+              {{ zone.name }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Tipo</ion-label>
+          <ion-select [(ngModel)]="selectedType" (ionChange)="filterCustomers()">
+            <ion-select-option value="">Todos los tipos</ion-select-option>
+            <ion-select-option value="Normal">Normal</ion-select-option>
+            <ion-select-option value="Especial">Especial</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
 
     <!-- Lista de Clientes -->
     <div class="clientes-list">
@@ -63,6 +63,7 @@
               {{ c.nifCif }}
             </ion-card-subtitle>
           </ion-card-header>
+
           <ion-card-content>
             <div class="cliente-info">
               <div class="info-item">
@@ -79,7 +80,7 @@
               </div>
               <div class="info-item">
                 <ion-icon name="map-outline"></ion-icon>
-                <span>Zona: {{ c.zone?.name || 'Sin zona' }}</span>
+                <span>{{ c.zone?.name || 'Sin zona' }}</span>
               </div>
             </div>
             
@@ -99,23 +100,23 @@
             </div>
           </ion-card-content>
         </ion-card>
-      </div>
 
-      <!-- Paginación -->
-      <div class="pagination-container" *ngIf="filteredClientes.length > 0">
-        <ion-button fill="clear" [disabled]="currentPage === 1" (click)="prevPage()">
-          <ion-icon name="chevron-back-outline"></ion-icon>
-          Anterior
-        </ion-button>
-        
-        <div class="pagination-info">
-          Página {{ currentPage }} de {{ totalPages }}
+        <!-- Paginación -->
+        <div class="pagination-container" *ngIf="filteredClientes.length > 0">
+          <ion-button fill="clear" [disabled]="currentPage === 1" (click)="prevPage()">
+            <ion-icon name="chevron-back-outline"></ion-icon>
+            Anterior
+          </ion-button>
+          
+          <div class="pagination-info">
+            Página {{ currentPage }} de {{ totalPages }}
+          </div>
+          
+          <ion-button fill="clear" [disabled]="currentPage === totalPages" (click)="nextPage()">
+            Siguiente
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </ion-button>
         </div>
-        
-        <ion-button fill="clear" [disabled]="currentPage === totalPages" (click)="nextPage()">
-          Siguiente
-          <ion-icon name="chevron-forward-outline"></ion-icon>
-        </ion-button>
       </div>
 
       <ng-template #emptyState>
