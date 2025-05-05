@@ -195,11 +195,38 @@ export class ListCalendarioComponent implements OnInit {
     }).filter(event => event !== null) as CalendarEvent[]; // Filtrar eventos nulos
   }
 
-  previousMonth() { this.viewDate = subMonths(this.viewDate, 1); }
-  nextMonth()     { this.viewDate = addMonths(this.viewDate, 1); }
-  previousYear()  { this.viewDate = subYears(this.viewDate, 1); }
-  nextYear()      { this.viewDate = addYears(this.viewDate, 1); }
-  goToday()       { this.viewDate = new Date(); }
+  previousMonth() { 
+    this.viewDate = subMonths(this.viewDate, 1);
+    this.onMonthChange();
+  }
+  
+  nextMonth() { 
+    this.viewDate = addMonths(this.viewDate, 1);
+    this.onMonthChange();
+  }
+  
+  previousYear() { 
+    this.viewDate = subYears(this.viewDate, 1);
+    this.onMonthChange();
+  }
+  
+  nextYear() { 
+    this.viewDate = addYears(this.viewDate, 1);
+    this.onMonthChange();
+  }
+  
+  goToday() { 
+    this.viewDate = new Date();
+    this.onMonthChange();
+  }
+
+  // Método para manejar cambios de mes
+  private onMonthChange() {
+    const dateStr = this.toDateString(this.viewDate);
+    this.cargarPartesNoAsignadosEnMes(dateStr);
+    this.cargarFacturacionFinalMes();
+    this.loadEvents();
+  }
 
   dayClicked(day: CalendarMonthViewDay): void {
     // Establecer el día seleccionado
@@ -344,30 +371,26 @@ export class ListCalendarioComponent implements OnInit {
 
   async cargarPartesNoAsignadosEnMes(dateStr: string) {
     try {
-      const req = await this.calendarioService.getPartesNoAsignadosEnMes(dateStr);
-      req.subscribe((response: any) => {
-        console.log(response)
-        if (response && response.ok) {
-          // Normalizar la estructura de respuesta
-          if (response.partes) {
-            this.partesNoAsignados = response.partes;
-          } else if (response.data && response.data.partes) {
-            this.partesNoAsignados = response.data.partes;
-          } else {
+      this.calendarioService.getPartesNoAsignadosEnMes(dateStr)
+        .subscribe({
+          next: (response) => {
+            if (response.ok) {
+              this.partesNoAsignados = response.partes;
+              
+              // Aplicar filtros si hay datos
+              if (this.partesNoAsignados.length > 0) {
+                this.filtrarPartesPendientes();
+              }
+            } else {
+              console.error('Error en la respuesta de getPartesNoAsignadosEnMes:', response);
+              this.partesNoAsignados = [];
+            }
+          },
+          error: (error) => {
+            console.error('Error al cargar partes no asignados:', error);
             this.partesNoAsignados = [];
           }
-          // Aplicar filtro después de asegurarnos que hay datos
-          if (this.partesNoAsignados.length > 0) {
-            this.filtrarPartesPendientes();
-          }
-        } else {
-          console.error('Error en la respuesta de getPartesNoAsignadosEnMes:', response);
-          this.partesNoAsignados = [];
-        }
-      }, error => {
-        console.error('Error al cargar partes no asignados:', error);
-        this.partesNoAsignados = [];
-      });
+        });
     } catch (error) {
       console.error('Error en cargarPartesNoAsignadosEnMes:', error);
       this.partesNoAsignados = [];

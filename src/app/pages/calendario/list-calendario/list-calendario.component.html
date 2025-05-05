@@ -271,9 +271,29 @@
               <ion-icon slot="start" name="document-text-outline" *ngIf="!enableCheckParts || isWorker"></ion-icon>
               <ion-label>
                 <h4>{{ p.description }}</h4>
-                <p class="parte-facturacion">
+                <p class="parte-details">
                   <ion-icon name="cash-outline"></ion-icon>
                   {{ p.facturacion }} €
+                </p>
+                <p class="parte-details">
+                  <ion-icon name="construct-outline"></ion-icon>
+                  {{ p.type }} - {{ p.categoria }}
+                </p>
+                <p class="parte-details">
+                  <ion-icon name="calendar-outline"></ion-icon>
+                  {{ p.date | date:'dd/MM/yyyy' }}
+                </p>
+                <p class="parte-details">
+                  <ion-icon name="business-outline"></ion-icon>
+                  {{ p.customer.name }}
+                </p>
+                <p class="parte-details" *ngIf="p.coordinationMethod">
+                  <ion-icon name="time-outline"></ion-icon>
+                  {{ p.coordinationMethod }}
+                </p>
+                <p class="parte-details" *ngIf="p.periodicos">
+                  <ion-icon name="repeat-outline"></ion-icon>
+                  Periódico
                 </p>
               </ion-label>
             </ion-item>

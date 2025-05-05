@@ -23,12 +23,20 @@
         <ion-input formControlName="facturacion" type="number"></ion-input>
       </ion-item>
       <ion-item>
-        <ion-label position="stacked">Ruta (ID)</ion-label>
-        <ion-input formControlName="ruta" type="text"></ion-input>
+        <ion-label position="stacked">Ruta</ion-label>
+        <ion-select formControlName="ruta" placeholder="Seleccione una ruta">
+          <ion-select-option *ngFor="let ruta of rutasDisponibles" [value]="ruta._id">
+            {{ ruta.name?.name }} - {{ ruta.date | date:'shortDate' }}
+          </ion-select-option>
+        </ion-select>
       </ion-item>
       <ion-item>
-        <ion-label position="stacked">Parte (ID)</ion-label>
-        <ion-input formControlName="parte" type="text"></ion-input>
+        <ion-label position="stacked">Parte</ion-label>
+        <ion-select formControlName="parte" placeholder="Seleccione un parte">
+          <ion-select-option *ngFor="let parte of partesDisponibles" [value]="parte._id">
+            {{ parte.description }} - {{ parte.customer?.name }}
+          </ion-select-option>
+        </ion-select>
       </ion-item>
     </ion-list>
 

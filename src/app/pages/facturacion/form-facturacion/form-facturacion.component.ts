@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { FacturacionService } from 'src/app/services/facturacion.service';
+import { RutasService } from 'src/app/services/rutas.service';
+import { PartesService } from 'src/app/services/partes.service';
 
 @Component({
   selector: 'app-form-facturacion',
@@ -16,15 +18,22 @@ export class FormFacturacionComponent implements OnInit {
   isEdit = false;
   facturacionId: string | null = null;
 
+  // Listas para selectores
+  rutasDisponibles: any[] = [];
+  partesDisponibles: any[] = [];
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private _facturacion: FacturacionService
+    private _facturacion: FacturacionService,
+    private _rutas: RutasService,
+    private _partes: PartesService
   ) {}
 
   ngOnInit() {
     this.initForm();
+    this.cargarRutasYPartes();
     this.route.paramMap.subscribe(params => {
       this.facturacionId = params.get('id');
       if (this.facturacionId) {
@@ -37,14 +46,35 @@ export class FormFacturacionComponent implements OnInit {
   initForm() {
     this.facturacionForm = this.fb.group({
       facturacion:  [0, Validators.required],
-      ruta:         [''],
-      parte:        ['']
+      ruta:         ['', Validators.required],
+      parte:        ['', Validators.required]
     });
+  }
+
+  async cargarRutasYPartes() {
+    try {
+      // Cargar rutas
+      const reqRutas = await this._rutas.getRutas();
+      reqRutas.subscribe((res: any) => {
+        if (res.ok && res.rutas) {
+          this.rutasDisponibles = res.rutas;
+        }
+      });
+
+      // Cargar partes
+      const reqPartes = await this._partes.getPartes();
+      reqPartes.subscribe((res: any) => {
+        console.log(res);
+        this.partesDisponibles = res.partes;
+      });
+    } catch (error) {
+      console.error('Error al cargar rutas y partes:', error);
+    }
   }
 
   async cargarFacturacion(id: string) {
     try {
-      const req = await this._facturacion.getFacturacion(); // Ajusta si tu apiService tiene getFacturacionById
+      const req = await this._facturacion.getFacturacion();
       req.subscribe((res: any) => {
         if (res.ok && res.facturacion) {
           this.facturacionForm.patchValue({

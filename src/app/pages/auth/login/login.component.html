@@ -1,33 +1,34 @@
-
 <ion-content class="ion-padding login-content">
   <div class="login-container">
-    <!-- Logo -->
-    <img src="assets/logo.png" alt="Logo" class="logo" />
+    <!-- Logo y título -->
+    <div class="header-section">
+      <img src="assets/logo.png" alt="Logo" class="logo animate-fade-in" />
+      <h1 class="welcome-text">¡Bienvenido de nuevo!</h1>
+      <p class="subtitle-text">Inicia sesión para continuar</p>
+    </div>
     
-    <!-- Texto superior -->
-
     <!-- Formulario -->
-    <form (ngSubmit)="onLogin()" #loginForm="ngForm">
-      
+    <form (ngSubmit)="onLogin()" #loginForm="ngForm" class="login-form animate-slide-up">
       <!-- Campo Email -->
-      <ion-item>
+      <ion-item class="custom-input">
         <ion-label position="floating">Email</ion-label>
         <ion-input
           name="email"
-          type="text"
+          type="email"
           required
           email
           #emailInput="ngModel"
           [(ngModel)]="email"
+          placeholder="ejemplo@correo.com"
         ></ion-input>
       </ion-item>
-      <!-- Mensaje de error cuando el campo está vacío o no es un email válido -->
-      <ion-note *ngIf="emailInput.invalid && emailInput.touched" color="danger">
+      <ion-note *ngIf="emailInput.invalid && emailInput.touched" color="danger" class="error-message">
+        <ion-icon name="alert-circle-outline"></ion-icon>
         Introduzca un email válido
       </ion-note>
 
       <!-- Campo Contraseña -->
-      <ion-item>
+      <ion-item class="custom-input">
         <ion-label position="floating">Contraseña</ion-label>
         <ion-input
           name="password"
@@ -35,35 +36,39 @@
           required
           #passwordInput="ngModel"
           [(ngModel)]="password"
+          placeholder="••••••••"
         ></ion-input>
       </ion-item>
-      <!-- Mensaje de error cuando el campo está vacío -->
-      <ion-note *ngIf="passwordInput.invalid && passwordInput.touched" color="danger">
+      <ion-note *ngIf="passwordInput.invalid && passwordInput.touched" color="danger" class="error-message">
+        <ion-icon name="alert-circle-outline"></ion-icon>
         La contraseña es obligatoria
       </ion-note>
 
-      <!-- Check de "Recordarme" -->
-      <ion-item lines="none">
-        <ion-label>Recordarme</ion-label>
-        <ion-checkbox
-          name="rememberMe"
-          [(ngModel)]="rememberMe"
-        ></ion-checkbox>
-      </ion-item>
+      <!-- Opciones adicionales -->
+      <div class="options-row">
+        <ion-item lines="none" class="remember-me">
+          <ion-checkbox
+            name="rememberMe"
+            [(ngModel)]="rememberMe"
+            slot="start"
+          ></ion-checkbox>
+          <ion-label>Recordarme</ion-label>
+        </ion-item>
+        
+        <ion-button fill="clear" size="small" class="forgot-password" (click)="onForgotPassword()">
+          ¿Olvidaste tu contraseña?
+        </ion-button>
+      </div>
 
       <!-- Botón para iniciar sesión -->
       <ion-button
         type="submit"
-        expand="full"
-        class="ion-margin-top"
+        expand="block"
+        class="login-button"
         [disabled]="loginForm.invalid"
       >
+        <ion-icon name="log-in-outline" slot="start"></ion-icon>
         Iniciar Sesión
-      </ion-button>
-
-      <!-- Enlace para "Olvidé mi contraseña" -->
-      <ion-button fill="clear" size="small" (click)="onForgotPassword()">
-        Olvidé mi contraseña
       </ion-button>
     </form>
   </div>

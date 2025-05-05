@@ -125,6 +125,53 @@
         </ion-item>
       </div>
 
+      <div class="form-section">
+        <h2>Artículos</h2>
+        <div formArrayName="articulos">
+          <div *ngFor="let articulo of articulosFormArray.controls; let i = index" [formGroupName]="i" class="articulo-item">
+            <ion-item>
+              <ion-label position="stacked">Cantidad</ion-label>
+              <ion-input formControlName="cantidad" type="number" placeholder="Cantidad"></ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Código</ion-label>
+              <ion-input formControlName="codigo" type="text" placeholder="Código"></ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Grupo</ion-label>
+              <ion-input formControlName="grupo" type="text" placeholder="Grupo"></ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Familia</ion-label>
+              <ion-input formControlName="familia" type="text" placeholder="Familia"></ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Descripción Artículo</ion-label>
+              <ion-textarea formControlName="descripcionArticulo" placeholder="Descripción del artículo"></ion-textarea>
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Precio Venta</ion-label>
+              <ion-input formControlName="precioVenta" type="number" placeholder="Precio de venta"></ion-input>
+            </ion-item>
+
+            <ion-button fill="clear" color="danger" (click)="eliminarArticulo(i)">
+              <ion-icon name="trash-outline"></ion-icon>
+              Eliminar
+            </ion-button>
+          </div>
+        </div>
+
+        <ion-button expand="block" fill="outline" (click)="agregarArticulo()">
+          <ion-icon name="add-outline"></ion-icon>
+          Agregar Artículo
+        </ion-button>
+      </div>
+
       <div class="form-actions">
         <ion-button expand="block" type="submit" [disabled]="parteForm.invalid">
           {{ isEdit ? 'Actualizar' : 'Crear' }}

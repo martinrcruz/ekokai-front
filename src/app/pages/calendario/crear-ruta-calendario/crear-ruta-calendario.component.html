@@ -52,7 +52,7 @@
         *ngFor="let v of vehicles" 
         [value]="v._id"
       >
-        {{ v.brand }} - {{ v.matricula }}
+        {{ v.brand }} {{ v.modelo }} - {{ v.matricula }}
       </ion-select-option>
     </ion-select>
   </ion-item>
@@ -72,15 +72,48 @@
 
   <!-- Partes No Asignados -->
   <ion-list>
-    <ion-list-header>Partes No Asignados</ion-list-header>
+    <ion-list-header>
+      <ion-label>Partes No Asignados</ion-label>
+    </ion-list-header>
+    
     <ion-item *ngFor="let p of partesNoAsignados">
       <!-- Checkbox para seleccionar el parte -->
       <ion-checkbox slot="start" [(ngModel)]="p.selected"></ion-checkbox>
       <ion-label>
-        <!-- Muestra la descripción, tipo, etc. como quieras -->
-        {{ p.description }} - {{ p.type }} - {{ p.state }}
+        <h4>{{ p.description }}</h4>
+        <p class="parte-details">
+          <ion-icon name="cash-outline"></ion-icon>
+          {{ p.facturacion }} €
+        </p>
+        <p class="parte-details">
+          <ion-icon name="construct-outline"></ion-icon>
+          {{ p.type }} - {{ p.categoria }}
+        </p>
+        <p class="parte-details">
+          <ion-icon name="calendar-outline"></ion-icon>
+          {{ p.date | date:'dd/MM/yyyy' }}
+        </p>
+        <p class="parte-details">
+          <ion-icon name="business-outline"></ion-icon>
+          {{ p.customer.name }}
+        </p>
+        <p class="parte-details" *ngIf="p.coordinationMethod">
+          <ion-icon name="time-outline"></ion-icon>
+          {{ p.coordinationMethod }}
+        </p>
+        <p class="parte-details" *ngIf="p.periodicos">
+          <ion-icon name="repeat-outline"></ion-icon>
+          Periódico
+        </p>
       </ion-label>
     </ion-item>
+
+    <!-- Estado vacío -->
+    <div class="empty-state" *ngIf="!partesNoAsignados || partesNoAsignados.length === 0">
+      <ion-icon name="document-text-outline"></ion-icon>
+      <h3>No hay partes sin asignar</h3>
+      <p>No se encontraron partes pendientes de asignación.</p>
+    </div>
   </ion-list>
 
   <!-- Botón para crear la ruta -->

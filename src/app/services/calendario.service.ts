@@ -10,34 +10,23 @@ import { AuthService } from './auth.service';
 @Injectable({
   providedIn: 'root'
 })
-export class CalendarioService extends BaseService {
+export class CalendarioService  {
   
   constructor(
-    protected override http: HttpClient,
-    protected override authService: AuthService
+    private http: HttpClient,
+    private authService: AuthService
   ) {
-    super(http, authService);
   }
 
   // Obtiene las rutas programadas para una fecha específica
   getRutasByDate(date: string): Observable<ApiResponse<any>> {
-    return this.get<any>(`/partes/calendario/${date}/rutas`).pipe(
-      retry(1), // Reintentar 1 vez si hay un error de red
+    return this.http.get<any>(`${environment.apiUrl}/partes/calendario/${date}/rutas`).pipe(
+      retry(1),
       map(response => {
-        // Normalizar la respuesta para que siempre tenga una estructura consistente
-        if (!response.rutas && response.ok) {
-          return {
-            ok: true,
-            data: { rutas: [] }
-          };
-        } else if (response.rutas) {
-          return {
-            ok: true,
-            data: { rutas: response.rutas }
-          };
-        }
-        // Retornar la respuesta original si no cumple con los criterios anteriores
-        return response;
+        return {
+          ok: true,
+          data: { rutas: response.rutas }
+        };
       }),
       catchError(error => {
         console.error('Error en getRutasByDate:', error);
@@ -51,31 +40,21 @@ export class CalendarioService extends BaseService {
   }
 
   // Obtiene los partes no asignados en un mes
-  getPartesNoAsignadosEnMes(date: string): Observable<ApiResponse<any>> {
-    return this.get<any>(`/partes/calendario/${date}/partes-no-asignados`).pipe(
-      retry(1), // Reintentar 1 vez si hay un error de red
+  getPartesNoAsignadosEnMes(date: string): Observable<{ok: boolean, partes: any[]}> {
+    return this.http.get<{ok: boolean, partes: any[]}>(`${environment.apiUrl}/partes/calendario/${date}/partes-no-asignados`).pipe(
+      retry(1),
       map(response => {
-        // Normalizar la respuesta para que siempre tenga una estructura consistente
-        if (!response.partes && response.ok) {
-          return {
-            ok: true,
-            data: { partes: [] }
-          };
-        } else if (response.partes) {
-          return {
-            ok: true,
-            data: { partes: response.partes }
-          };
-        }
-        // Retornar la respuesta original si no cumple con los criterios anteriores
-        return response;
+        // Asegurarnos de que la respuesta tenga la estructura correcta
+        return {
+          ok: response.ok,
+          partes: response.partes || []
+        };
       }),
       catchError(error => {
         console.error('Error en getPartesNoAsignadosEnMes:', error);
         return of({
           ok: false,
-          error: error.message || 'Error al obtener partes no asignados',
-          data: { partes: [] }
+          partes: []
         });
       })
     );
@@ -83,7 +62,7 @@ export class CalendarioService extends BaseService {
 
   // Obtiene los partes finalizados en un mes (para facturación)
   getPartesFinalizadasMonth(date: string): Observable<ApiResponse<any>> {
-    return this.get<any>(`/partes/calendario/${date}/partes-finalizados`).pipe(
+    return this.http.get<any>(`${environment.apiUrl}/partes/calendario/${date}/partes-finalizados`).pipe(
       retry(1), // Reintentar 1 vez si hay un error de red
       map(response => {
         // Normalizar la respuesta para que siempre tenga una estructura consistente

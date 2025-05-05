@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { PartesService } from 'src/app/services/partes.service';
 import { RutasService } from 'src/app/services/rutas.service';
 import { CustomerService } from 'src/app/services/customer.service';
+import { ArticulosService } from 'src/app/services/articulos.service';
+import { Articulo } from 'src/app/models/articulo.model';
+
 @Component({
   selector: 'app-form-parte',
   standalone: false,
@@ -17,9 +20,10 @@ export class FormParteComponent implements OnInit {
   isEdit = false;
   parteId: string | null = null;
   documentos: File[] = [];
+  articulos: Articulo[] = [];
 
   // Listas para selects
-  customersList: any[] = [];   // “Customer” unificado
+  customersList: any[] = [];   // "Customer" unificado
   rutasDisponibles: any[] = [];
 
   customers: any[] = []; // lista de clientes
@@ -35,13 +39,15 @@ export class FormParteComponent implements OnInit {
     private navCtrl: NavController,
     private _parte: PartesService,
     private _rutas: RutasService,
-    private _customer: CustomerService
+    private _customer: CustomerService,
+    private _articulos: ArticulosService
   ) {}
 
   ngOnInit() {
     this.initForm();
     this.loadRutas();
     this.loadCustomers();
+    this.loadArticulos();
 
     this.route.paramMap.subscribe(params => {
       this.parteId = params.get('id');
@@ -54,20 +60,52 @@ export class FormParteComponent implements OnInit {
 
   initForm() {
     this.parteForm = this.fb.group({
-  description: ['', Validators.required],
+      description: ['', Validators.required],
       facturacion: [0],
       state: ['Pendiente', Validators.required],
       type: ['Mantenimiento', Validators.required],
-      categoria: ['Extintores', Validators.required], // añade “Venta”
+      categoria: ['Extintores', Validators.required],
       date: ['', Validators.required],
       customer: ['', Validators.required],
       ruta: [''],
       coordinationMethod: ['Coordinar según horarios'],
       gestiona: [0],
-      // Parte periódico
-      periodico:    [false],
-      frequency:    ['Mensual'], // default
-      endDate:      ['']
+      periodico: [false],
+      frequency: ['Mensual'],
+      endDate: [''],
+      articulos: this.fb.array([])
+    });
+  }
+
+  get articulosFormArray() {
+    return this.parteForm.get('articulos') as FormArray;
+  }
+
+  crearArticuloFormGroup() {
+    return this.fb.group({
+      cantidad: ['', Validators.required],
+      codigo: ['', Validators.required],
+      grupo: ['', Validators.required],
+      familia: ['', Validators.required],
+      descripcionArticulo: ['', Validators.required],
+      precioVenta: ['', Validators.required]
+    });
+  }
+
+  agregarArticulo() {
+    this.articulosFormArray.push(this.crearArticuloFormGroup());
+  }
+
+  eliminarArticulo(index: number) {
+    this.articulosFormArray.removeAt(index);
+  }
+
+  async loadArticulos() {
+    const req = await this._articulos.getArticulos();
+    req.subscribe((res: any) => {
+      if (res.ok && res.data) {
+        this.articulos = res.data;
+      }
     });
   }
 

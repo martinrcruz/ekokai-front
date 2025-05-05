@@ -38,7 +38,7 @@ export class ListVehiculoComponent implements OnInit {
 
     try {
       const response :any= await firstValueFrom(this.vehiculoService.getVehicles());
-      this.vehiculos = response.vehicles;
+      this.vehiculos = response.data;
       this.filteredVehiculos = [...this.vehiculos];
     } catch (error) {
       console.error('Error al cargar vehículos:', error);

@@ -1,3 +1,4 @@
+
 .page-container {
   padding: 16px;
   background: var(--ion-color-light);
@@ -120,21 +121,20 @@
   }
 
   .zona-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .info-item {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
+    align-items: center;
+    gap: 8px;
 
-    .info-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--ion-color-dark);
-      font-size: 0.9rem;
-
-      ion-icon {
-        color: var(--ion-color-primary);
-        font-size: 1.1rem;
-      }
+    ion-icon {
+      font-size: 20px;
+      color: var(--ion-color-medium);
     }
   }
 
@@ -142,40 +142,25 @@
     display: inline-block;
     padding: 4px 8px;
     border-radius: 4px;
-    font-size: 0.8rem;
+    font-size: 14px;
     font-weight: 500;
-    margin-top: 12px;
+    margin-bottom: 16px;
 
     &.status-activa {
-      background: #d4edda;
-      color: #155724;
+      background-color: var(--ion-color-success-tint);
+      color: var(--ion-color-success-shade);
     }
 
     &.status-inactiva {
-      background: #f8d7da;
-      color: #721c24;
+      background-color: var(--ion-color-danger-tint);
+      color: var(--ion-color-danger-shade);
     }
   }
 
   .zona-actions {
     display: flex;
-    justify-content: flex-end;
     gap: 8px;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--ion-color-light-shade);
-
-    ion-button {
-      --border-radius: 8px;
-      --box-shadow: none;
-      font-size: 0.9rem;
-
-      &.button-outline {
-        --background: transparent;
-        --color: var(--ion-color-primary);
-        --border-color: var(--ion-color-primary);
-      }
-    }
+    justify-content: flex-end;
   }
 }
 

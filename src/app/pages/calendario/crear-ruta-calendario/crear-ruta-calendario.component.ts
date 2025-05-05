@@ -2,11 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { RutasService } from '../../../services/rutas.service';
-import { PartesService } from '../../../services/partes.service';
-import { VehiculosService } from '../../../services/vehiculos.service';
+import { CalendarioService } from '../../../services/calendario.service';
+import { VehiculosService, Vehicle } from '../../../services/vehiculos.service';
 import { UsuariosService } from '../../../services/usuarios.service';
 import { Ruta } from '../../../models/ruta.model';
+import { Parte } from '../../../models/parte.model';
 import { ApiResponse } from '../../../models/api-response.model';
+import { forkJoin, Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-crear-ruta-calendario',
@@ -24,16 +27,16 @@ export class CrearRutaCalendarioComponent implements OnInit {
 
   // Listas para selects
   rutasN: any[] = [];
-  vehicles: any[] = [];
+  vehicles: Vehicle[] = [];
   users: any[] = [];
   // Partes no asignados
-  partesNoAsignados: any[] = [];
+  partesNoAsignados: Parte[] = [];
 
   constructor(
     private route: ActivatedRoute,
     private navCtrl: NavController,
     private rutasService: RutasService,
-    private partesService: PartesService,
+    private calendarioService: CalendarioService,
     private vehiculosService: VehiculosService,
     private usuariosService: UsuariosService
   ) {}
@@ -52,13 +55,23 @@ export class CrearRutaCalendarioComponent implements OnInit {
 
     try {
       // Cargar Vehicles
-      const vehReq = await this.vehiculosService.getVehicles();
-      vehReq.subscribe((res: any) => {
-        console.log(res)
-        if (res.ok && res.vehicles) {
-          this.vehicles = res.vehicles;
+      this.vehiculosService.getVehicles().subscribe(
+        (response: ApiResponse<Vehicle[]>) => {
+          if (response.ok && response.data) {
+            // Filtrar vehículos no eliminados y disponibles
+            this.vehicles = response.data.filter(v => 
+              !v.eliminado && 
+              (!v.status || v.status === 'Disponible')
+            );
+          } else {
+            console.error('No se pudieron cargar los vehículos:', response.message);
+          }
+        },
+        (error) => {
+          console.error('Error al cargar vehículos:', error);
+          // Mostrar mensaje de error al usuario si es necesario
         }
-      });
+      );
 
       // Cargar Users
       const usrReq = await this.usuariosService.getUsers();
@@ -68,7 +81,7 @@ export class CrearRutaCalendarioComponent implements OnInit {
         }
       });
 
-      // Cargar Partes No Asignados
+      // Cargar Partes No Asignados del mes actual y meses anteriores
       await this.loadPartesNoAsignados();
     } catch (error) {
       console.error('Error:', error);
@@ -77,20 +90,55 @@ export class CrearRutaCalendarioComponent implements OnInit {
 
   async loadPartesNoAsignados() {
     try {
-      const req = await this.partesService.getPartesNoAsignados();
-      req.subscribe(
-        (res: any) => {
-          if (res.ok) {
-            this.partesNoAsignados = res.partes;
-          }
+      // Obtener fecha actual y los últimos 3 meses
+      const dates = this.getLastMonths(3);
+      
+      // Crear un array de observables para cada mes
+      const requests = dates.map(date => 
+        this.calendarioService.getPartesNoAsignadosEnMes(date)
+      );
+
+      // Ejecutar todas las peticiones en paralelo
+      forkJoin(requests).subscribe(
+        (responses) => {
+          // Combinar todos los partes no asignados y eliminar duplicados por _id
+          const partesMap = new Map<string, Parte>();
+          responses
+            .filter(res => res.ok)
+            .forEach(res => {
+              res.partes.forEach(parte => {
+                if (!partesMap.has(parte._id)) {
+                  partesMap.set(parte._id, parte);
+                }
+              });
+            });
+          
+          // Convertir el Map a array y ordenar por fecha
+          this.partesNoAsignados = Array.from(partesMap.values())
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         },
         (error) => {
           console.error('Error al cargar partes no asignados:', error);
+          this.partesNoAsignados = [];
         }
       );
     } catch (error) {
       console.error('Error:', error);
+      this.partesNoAsignados = [];
     }
+  }
+
+  // Obtener array con fechas de los últimos n meses en formato YYYY-MM-DD
+  private getLastMonths(months: number): string[] {
+    const dates: string[] = [];
+    const currentDate = new Date();
+    
+    for (let i = 0; i < months; i++) {
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      dates.push(date.toISOString().split('T')[0]);
+    }
+    
+    return dates;
   }
 
   async createRuta() {
@@ -109,6 +157,22 @@ export class CrearRutaCalendarioComponent implements OnInit {
       const selectedVehicle = this.vehicles.find(v => v._id === this.selectedVehicle);
       const selectedUsers = this.users.filter(u => this.selectedUsers.includes(u._id));
 
+      // Mapear el vehículo a la estructura esperada por la interfaz Ruta
+      const mappedVehicle = selectedVehicle ? {
+        _id: selectedVehicle._id!,
+        fuel: selectedVehicle.fuel,
+        type: selectedVehicle.type,
+        modelo: selectedVehicle.modelo,
+        brand: selectedVehicle.brand,
+        photo: selectedVehicle.photo || '',
+        matricula: selectedVehicle.matricula,
+        createdDate: selectedVehicle.createdDate || new Date().toISOString(),
+        __v: selectedVehicle.__v || 0
+      } : undefined;
+
+      // Obtener los partes seleccionados
+      const selectedPartes = this.partesNoAsignados.filter(p => p.selected);
+
       const data: Partial<Ruta> = {
         date: this.date,
         name: {
@@ -118,24 +182,36 @@ export class CrearRutaCalendarioComponent implements OnInit {
         },
         type: this.type,
         state: this.state,
-        vehicle: selectedVehicle || undefined,
+        vehicle: mappedVehicle,
         users: selectedUsers,
         comentarios: '',
         herramientas: [],
         eliminado: false
       };
 
+      // Crear la ruta y luego asignar los partes
       const req = await this.rutasService.createRuta(data);
-      req.subscribe(
-        (response: ApiResponse<Ruta>) => {
+      req.pipe(
+        switchMap((response: ApiResponse<Ruta>) => {
+          if (response.ok && response.data && selectedPartes.length > 0) {
+            // Si hay partes seleccionados y la ruta se creó correctamente, asignarlos
+            return this.rutasService.asignarPartesARuta(
+              response.data._id,
+              selectedPartes.map(p => p._id)
+            );
+          }
+          return new Observable(subscriber => subscriber.next(response));
+        })
+      ).subscribe(
+        (response: any) => {
           if (response.ok) {
             this.navCtrl.navigateBack('/calendario');
           } else {
-            console.error('Error al crear ruta:', response.error);
+            console.error('Error al crear ruta o asignar partes:', response.error);
           }
         },
         (error) => {
-          console.error('Error al crear ruta:', error);
+          console.error('Error al crear ruta o asignar partes:', error);
         }
       );
 

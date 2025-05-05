@@ -1,0 +1,61 @@
+// Estilos comunes para cards
+.page-container {
+  padding: 16px;
+  max-width: 100%;
+  margin: 0 auto;
+
+  .header {
+    margin-bottom: 24px;
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+  }
+
+  ion-card {
+    width: 100%;
+    margin: 16px 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    ion-card-header {
+      padding: 16px;
+    }
+
+    ion-card-content {
+      padding: 0 16px 16px;
+    }
+  }
+
+  .search-bar {
+    margin-bottom: 16px;
+    width: 100%;
+  }
+
+  .filters {
+    margin-bottom: 16px;
+    width: 100%;
+  }
+}
+
+// Estilos para listas
+.vehiculos-list,
+.herramientas-list,
+.zonas-list,
+.rutas-list,
+.usuarios-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+// Estilos para cards específicas
+.vehiculo-card,
+.herramienta-card,
+.zona-card,
+.ruta-card,
+.usuario-card {
+  width: 100% !important;
+  margin: 0 !important;
+} 

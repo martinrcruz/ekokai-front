@@ -1,14 +1,26 @@
 export interface Parte {
   _id: string;
-  date: string;
   description: string;
-  type: string;
+  facturacion: number;
   state: string;
-  facturacion?: number;
-  customer?: {
+  type: string;
+  categoria: string;
+  asignado: boolean;
+  periodicos: boolean;
+  date: string;
+  zone: string;
+  customer: {
     _id: string;
     name: string;
+    email: string;
+    nifCif: string;
+    address: string;
     zone: string;
+    phone: string;
+    contactName: string;
+    code: string;
+    photo: string;
   };
+  coordinationMethod: string;
   selected?: boolean;
 } 
