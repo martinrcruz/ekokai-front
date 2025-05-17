@@ -8,6 +8,18 @@ export interface Ruta {
   type: string;
   state: string;
   date: string;
+  encargado:{
+    _id: string;
+    name: string;
+    code: string;
+    photo: string;
+    role: string;
+    email: string;
+    phone: string;
+    activo: boolean;
+    junior: boolean;
+    __v: number;
+  };
   users: Array<{
     _id: string;
     name: string;

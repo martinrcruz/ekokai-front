@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
-import { CustomerService } from 'src/app/services/customer.service';
 import { RutasService } from 'src/app/services/rutas.service';
-import { UsuariosService } from 'src/app/services/usuarios.service';
+import { UserService } from 'src/app/services/user.service';
 import { VehiculosService } from 'src/app/services/vehiculos.service';
+import { CustomerService } from 'src/app/services/customer.service';
 
 @Component({
   selector: 'app-form-ruta',
@@ -18,7 +18,7 @@ export class FormRutaComponent implements OnInit {
   isEdit = false;
   rutaId: string | null = null;
   users: any[] = [];
-
+  // clientes: any[] = [];
   listaRutaN: any[] = [];
   listaVehicles: any[] = [];
   listaClientes: any[] = [];
@@ -27,54 +27,57 @@ export class FormRutaComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private _usuarios: UsuariosService,
+    private _usuarios: UserService,
     private _rutas: RutasService,
     private _vehiculos: VehiculosService,
     private _clientes: CustomerService
   ) { }
 
+
   ngOnInit() {
     this.initForm();
-    this.cargarListas();
-    this.loadUsers();
-
-    this.route.paramMap.subscribe(params => {
-      this.rutaId = params.get('id');
-      if (this.rutaId) {
-        this.isEdit = true;
-        this.cargarRuta(this.rutaId);
-      }
+    // Cargo catálogos en paralelo
+    Promise.all([this.cargarListas(), this.loadUsers()]).then(() => {
+      // cuando ya tengo catálogos, veo si es edición
+      this.route.paramMap.subscribe(async (params) => {
+        this.rutaId = params.get('id');
+        if (this.rutaId) {
+          this.isEdit = true;
+          await this.cargarRuta(this.rutaId);
+        }
+      });
     });
   }
 
   async loadUsers() {
-    const req = await this._usuarios.getUsers();
-    req.subscribe((resp: any) => {
-      if (resp.ok) {
-        this.users = resp.users;
-      }
-    });
+    const req = await this._usuarios.getAllUsers();
+    return req
+      .toPromise()
+      .then((resp: any) => (this.users = resp.ok ? resp.data.users : []))
+      .catch(() => (this.users = []));
   }
-
+  // Cargar listas para rutas, vehículos y clientes
   async cargarListas() {
     const rnReq = await this._rutas.getRutasN();
     rnReq.subscribe((res: any) => {
+      console.log(res)
       if (res.ok) {
-        this.listaRutaN = res.rutas; // ajusta según JSON
+        this.listaRutaN = res.rutas;
       }
     });
-    // GET /vehicle => [{ _id, brand, ...}, ...]
+
     const vReq = await this._vehiculos.getVehicles();
     vReq.subscribe((res: any) => {
+      console.log(res)
       if (res.ok) {
-        this.listaVehicles = res.vehicles;
+        this.listaVehicles = res.data;
       }
     });
 
     const cReq = await this._clientes.getCustomers();
     cReq.subscribe((res: any) => {
       console.log(res)
-      if (res.ok) {
+      if (res) {
         this.listaClientes = res.customers;
       }
     });
@@ -82,66 +85,59 @@ export class FormRutaComponent implements OnInit {
 
   initForm() {
     this.rutaForm = this.fb.group({
-      // Ajusta campos según tu modelo de Rutas
-      name: ['', Validators.required],   // o ID a RutaN
-      date: ['', Validators.required],   // Ej: Fecha
+      name: ['', Validators.required],
+      date: ['', Validators.required],
       state: ['Pendiente', Validators.required],
-      vehicle: [''],  // Podrías usar un select para vehicles
+      vehicle: [''],
       users: [[]],
+      // clientes: [[]],          // si no lo usas, bórralo del template también
       comentarios: [''],
       encargado: ['', Validators.required],
-      herramientas: [[]]
+      herramientas: [[]],
     });
   }
 
   async cargarRuta(id: string) {
-    try {
-      const req = await this._rutas.getRutaById(id);
-      req.subscribe((res: any) => {
-        if (res.ok && res.ruta) {
-          this.rutaForm.patchValue({
-            name: res.ruta.name?._id || res.ruta.name,
-            date: res.ruta.date,
-            state: res.ruta.state,
-            vehicle: res.ruta.vehicle,
-            users: res.ruta.users,
-            comentarios: res.ruta.comentarios,
-            encargado: res.ruta.encargado,
-            herramientas: res.ruta.herramientas
-          });
-        }
-      });
-    } catch (error) {
-      console.error('Error al cargar ruta:', error);
-    }
+    const req = await this._rutas.getRutaById(id);
+    req.subscribe({
+      next: (res: any) => {
+        if (!res.ok || !res.ruta) return;
+
+        const ruta = res.ruta;
+        this.rutaForm.patchValue({
+          name: ruta.name?._id ?? ruta.name,
+          date: ruta.date ? ruta.date.substring(0, 10) : '',
+          state: ruta.state,
+          vehicle: ruta.vehicle?._id ?? ruta.vehicle ?? '',
+          users: Array.isArray(ruta.users) ? ruta.users.map((u: any) => u._id) : [],
+          // clientes: Array.isArray(ruta.clientes) ? ruta.clientes.map((c: any) => c._id) : [],
+          comentarios: ruta.comentarios ?? '',
+          encargado: ruta.encargado?._id ?? ruta.encargado ?? '',
+          herramientas: ruta.herramientas ?? [],
+        });
+      },
+      error: (err) => console.error('Error al cargar ruta:', err),
+    });
   }
 
-  async onSave() {
+  // Guardar ruta (crear o actualizar)
+   async onSave() {
     if (this.rutaForm.invalid) return;
-    const data = this.rutaForm.value;
-    // Check encargado
-    if (!data.encargado) {
-      console.error('Encargado es obligatorio');
-      return;
-    }
 
-    if (!this.isEdit) {
-      // createRuta
-      const req = await this._rutas.createRuta(data);
-      req.subscribe((resp: any) => {
-        if (resp.ok) {
-          this.navCtrl.navigateRoot('/rutas');
-        }
-      });
-    } else {
-      // updateRuta
-      data._id = this.rutaId;
-      const req = await this._rutas.updateRuta(this.rutaId!, data);
-      req.subscribe((resp: any) => {
-        if (resp.ok) {
-          this.navCtrl.navigateRoot('/rutas');
-        }
-      });
+    const body = { ...this.rutaForm.value };
+    if (!body.encargado) return;
+
+    try {
+      if (!this.isEdit) {
+        const req = await this._rutas.createRuta(body);
+        req.subscribe((r: any) => r.ok && this.navCtrl.navigateRoot('/rutas'));
+      } else {
+        body._id = this.rutaId;
+        const req = await this._rutas.updateRuta(body);
+        req.subscribe((r: any) => r.ok && this.navCtrl.navigateRoot('/rutas'));
+      }
+    } catch (e) {
+      console.error('Error al guardar:', e);
     }
   }
 

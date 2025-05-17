@@ -29,6 +29,10 @@ export class ListVehiculoComponent implements OnInit {
   ngOnInit() {
     this.cargarVehiculos();
   }
+  
+  ionViewDidEnter(){
+   this.cargarVehiculos();
+  }
 
   async cargarVehiculos() {
     const loading = await this.loadingCtrl.create({
@@ -38,6 +42,7 @@ export class ListVehiculoComponent implements OnInit {
 
     try {
       const response :any= await firstValueFrom(this.vehiculoService.getVehicles());
+      console.log(response)
       this.vehiculos = response.data;
       this.filteredVehiculos = [...this.vehiculos];
     } catch (error) {

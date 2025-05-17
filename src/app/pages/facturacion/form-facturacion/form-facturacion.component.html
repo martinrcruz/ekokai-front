@@ -34,7 +34,7 @@
         <ion-label position="stacked">Parte</ion-label>
         <ion-select formControlName="parte" placeholder="Seleccione un parte">
           <ion-select-option *ngFor="let parte of partesDisponibles" [value]="parte._id">
-            {{ parte.description }} - {{ parte.customer?.name }}
+            {{ parte.description }}
           </ion-select-option>
         </ion-select>
       </ion-item>

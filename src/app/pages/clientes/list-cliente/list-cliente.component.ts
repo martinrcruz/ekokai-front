@@ -40,6 +40,12 @@ export class ListClienteComponent implements OnInit {
     this.cargarZonas();
   }
 
+
+  ionViewDidEnter(){
+       this.cargarClientes();
+
+  }
+
   async cargarClientes() {
     const loading = await this.loadingCtrl.create({
       message: 'Cargando clientes...'

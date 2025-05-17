@@ -216,6 +216,6 @@ export class WorkerDashboardComponent implements OnInit, OnDestroy {
   }
 
   getPartesDeRuta(rutaId: string): Parte[] {
-    return this.partes.filter(parte => parte.ruta === rutaId);
+    return this.partes.filter(parte => parte.ruta._id === rutaId);
   }
 } 

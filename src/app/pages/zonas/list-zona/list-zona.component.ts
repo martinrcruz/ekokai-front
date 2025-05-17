@@ -25,6 +25,10 @@ export class ListZonaComponent  implements OnInit {
     this.cargarZonas();
   }
 
+  ionViewDidEnter(){
+   this.cargarZonas();
+  }
+
   async cargarZonas() {
     try {
       const req = await this._zonas.getZones();
@@ -67,23 +71,29 @@ export class ListZonaComponent  implements OnInit {
     this.navCtrl.navigateForward(`/zonas/edit/${id}`);
   }
 
-  async eliminarZona(id: string) {
-    const alert = await this.alertCtrl.create({
-      header: 'Confirmar',
-      message: '¿Eliminar esta zona?',
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Eliminar',
-          handler: () => {
-            // Llama al endpoint de eliminar
-            this.mostrarToast('Zona eliminada (simulado).');
+ async eliminarZona(id: string) {
+  const alert = await this.alertCtrl.create({
+    header: 'Confirmar',
+    message: '¿Eliminar esta zona?',
+    buttons: [
+      { text: 'Cancelar', role: 'cancel' },
+      {
+        text: 'Eliminar',
+        handler: async () => {
+          try {
+            await this._zonas.deleteZone(id).toPromise();
+            this.zonas = this.zonas.filter(z => z._id !== id);
+            this.applyFilters();
+            this.mostrarToast('Zona eliminada correctamente');
+          } catch {
+            this.mostrarToast('Error al eliminar la zona');
           }
         }
-      ]
-    });
-    await alert.present();
-  }
+      }
+    ]
+  });
+  await alert.present();
+}
 
   async mostrarToast(msg: string) {
     const toast = await this.toastCtrl.create({

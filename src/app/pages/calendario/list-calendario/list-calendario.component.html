@@ -151,15 +151,16 @@
                     <ion-label>Partes Asignados ({{ partesAsignadosARuta.length }})</ion-label>
                   </ion-item>
                   <div slot="content" class="accordion-content">
-                    <ion-list *ngIf="partesAsignadosARuta.length > 0">
-                      <ion-item *ngFor="let p of partesAsignadosARuta">
-                        <ion-icon name="document-outline" slot="start"></ion-icon>
-                        <ion-label>
-                          <h4>{{ p.description }}</h4>
-                          <p>{{ p.facturacion }} €</p>
-                        </ion-label>
-                      </ion-item>
-                    </ion-list>
+                    <div *ngIf="partesAsignadosARuta.length > 0">
+                      <ion-card *ngFor="let p of partesAsignadosARuta" class="parte-card">
+                        <ion-card-header>
+                          <ion-card-title>{{ p.description }}</ion-card-title>
+                        </ion-card-header>
+                        <ion-card-content>
+                          <p><strong>Facturación:</strong> {{ p.facturacion }} €</p>
+                        </ion-card-content>
+                      </ion-card>
+                    </div>
                     <div *ngIf="partesAsignadosARuta.length === 0" class="empty-accordion">
                       <ion-icon name="document-outline"></ion-icon>
                       <p>No hay partes asignados a esta ruta</p>
@@ -264,40 +265,68 @@
 
         <!-- Lista de partes no asignados -->
         <div class="parts-list-container">
-          <ion-list *ngIf="partesNoAsignados && partesNoAsignados.length > 0">
-            <ion-item *ngFor="let p of partesNoAsignados">
-              <!-- Checkboxes, solo si enableCheckParts y no isWorker -->
-              <ion-checkbox slot="start" [(ngModel)]="p.selected" *ngIf="enableCheckParts && !isWorker"></ion-checkbox>
-              <ion-icon slot="start" name="document-text-outline" *ngIf="!enableCheckParts || isWorker"></ion-icon>
-              <ion-label>
-                <h4>{{ p.description }}</h4>
-                <p class="parte-details">
-                  <ion-icon name="cash-outline"></ion-icon>
-                  {{ p.facturacion }} €
-                </p>
-                <p class="parte-details">
-                  <ion-icon name="construct-outline"></ion-icon>
-                  {{ p.type }} - {{ p.categoria }}
-                </p>
-                <p class="parte-details">
-                  <ion-icon name="calendar-outline"></ion-icon>
-                  {{ p.date | date:'dd/MM/yyyy' }}
-                </p>
-                <p class="parte-details">
-                  <ion-icon name="business-outline"></ion-icon>
-                  {{ p.customer.name }}
-                </p>
-                <p class="parte-details" *ngIf="p.coordinationMethod">
-                  <ion-icon name="time-outline"></ion-icon>
-                  {{ p.coordinationMethod }}
-                </p>
-                <p class="parte-details" *ngIf="p.periodicos">
-                  <ion-icon name="repeat-outline"></ion-icon>
-                  Periódico
-                </p>
-              </ion-label>
-            </ion-item>
-          </ion-list>
+          <div *ngIf="partesNoAsignados && partesNoAsignados.length > 0">
+            <ion-card *ngFor="let p of partesNoAsignados" class="parte-card">
+              <ion-card-header>
+                <ion-card-title>{{ p.description }}</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <!-- Checkboxes, solo si enableCheckParts y no isWorker -->
+                <ion-checkbox [(ngModel)]="p.selected" *ngIf="enableCheckParts && !isWorker"></ion-checkbox>
+                
+                <ion-grid>
+                  <ion-row>
+                    <ion-col>
+                      <p class="parte-details">
+                        <ion-icon name="cash-outline"></ion-icon>
+                        <strong>Facturación:</strong> {{ p.facturacion }} €
+                      </p>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col>
+                      <p class="parte-details">
+                        <ion-icon name="construct-outline"></ion-icon>
+                        <strong>Tipo:</strong> {{ p.type }} - {{ p.categoria }}
+                      </p>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col>
+                      <p class="parte-details">
+                        <ion-icon name="calendar-outline"></ion-icon>
+                        <strong>Fecha:</strong> {{ p.date | date:'dd/MM/yyyy' }}
+                      </p>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col>
+                      <p class="parte-details">
+                        <ion-icon name="business-outline"></ion-icon>
+                        <strong>Cliente:</strong> {{ p.customer.name }}
+                      </p>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row *ngIf="p.coordinationMethod">
+                    <ion-col>
+                      <p class="parte-details">
+                        <ion-icon name="time-outline"></ion-icon>
+                        <strong>Coordinación:</strong> {{ p.coordinationMethod }}
+                      </p>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row *ngIf="p.periodicos">
+                    <ion-col>
+                      <p class="parte-details">
+                        <ion-icon name="repeat-outline"></ion-icon>
+                        <strong>Tipo:</strong> Periódico
+                      </p>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-card-content>
+            </ion-card>
+          </div>
           
           <div class="empty-state" *ngIf="!partesNoAsignados || partesNoAsignados.length === 0">
             <ion-icon name="document-text-outline"></ion-icon>

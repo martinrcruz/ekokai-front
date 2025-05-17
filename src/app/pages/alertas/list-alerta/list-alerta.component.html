@@ -11,16 +11,26 @@
 </div> -->
 
 <ion-content class="ion-padding">
-  <ion-list>
-    <ion-item *ngFor="let al of alertas">
-      <ion-label>
-        <h2>{{ al.message }}</h2>
-        <p>Estado: {{ al.state }}</p>
-      </ion-label>
-      <ion-select [value]="al.state" (ionChange)="cambiarEstado(al, $event.detail.value)">
-        <ion-select-option value="Pendiente">Pendiente</ion-select-option>
-        <ion-select-option value="Cerrado">Cerrado</ion-select-option>
-      </ion-select>
-    </ion-item>
-  </ion-list>
+  <ion-card *ngFor="let al of alertas" class="alerta-card">
+    <ion-card-header>
+      <ion-card-title>{{ al.message }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <strong>Estado:</strong> {{ al.state }}
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-select [value]="al.state" (ionChange)="cambiarEstado(al, $event.detail.value)">
+              <ion-select-option value="Pendiente">Pendiente</ion-select-option>
+              <ion-select-option value="Cerrado">Cerrado</ion-select-option>
+            </ion-select>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

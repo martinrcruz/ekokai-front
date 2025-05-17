@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController, AlertController, ToastController } from '@ionic/angular';
 import { RutasService } from 'src/app/services/rutas.service';
-import { SharedModule } from 'src/app/shared/shared.module';
 
 @Component({
   selector: 'app-list-ruta',
-  standalone: false,
+  standalone:false,
   templateUrl: './list-ruta.component.html',
   styleUrls: ['./list-ruta.component.scss']
 })
@@ -26,15 +25,7 @@ export class ListRutaComponent implements OnInit {
     this.cargarRutas();
   }
 
-  getTipoRutaClass(tipo: string): string {
-    switch (tipo) {
-      case 'Mantenimiento': return 'tag-mant';
-      case 'Correctivo':    return 'tag-corr';
-      case 'Visitas':       return 'tag-visit';
-      default:              return 'tag-other';
-    }
-  }
-
+  // Método para cargar las rutas
   async cargarRutas() {
     try {
       const req = await this._rutas.getRutas();
@@ -49,6 +40,7 @@ export class ListRutaComponent implements OnInit {
     }
   }
 
+  // Método para aplicar filtros
   filtrar(event: any) {
     const txt = event.detail.value?.toLowerCase() || '';
     if (!txt.trim()) {
@@ -56,12 +48,13 @@ export class ListRutaComponent implements OnInit {
       return;
     }
     this.filteredRutas = this.rutas.filter(r => {
-      const nombre = r.name?.name?.toLowerCase() || r.name?.toLowerCase() || '';
+      const nombre = r.name?.name?.toLowerCase() || '';
       const state = r.state?.toLowerCase() || '';
       return nombre.includes(txt) || state.includes(txt);
     });
   }
 
+  // Aplicar filtros de estado y fecha
   applyFilters() {
     this.filteredRutas = this.rutas.filter(r => {
       const matchesStatus = !this.selectedStatus || r.state === this.selectedStatus;
@@ -70,14 +63,17 @@ export class ListRutaComponent implements OnInit {
     });
   }
 
+  // Función para ir a la página de crear ruta
   nuevaRuta() {
     this.navCtrl.navigateForward('/rutas/create');
   }
 
+  // Función para editar una ruta
   editarRuta(id: string) {
     this.navCtrl.navigateForward(`/rutas/edit/${id}`);
   }
 
+  // Función para eliminar una ruta (simulada)
   async eliminarRuta(id: string) {
     const alert = await this.alertCtrl.create({
       header: 'Confirmar',
@@ -87,7 +83,7 @@ export class ListRutaComponent implements OnInit {
         {
           text: 'Eliminar',
           handler: () => {
-            // Llama al endpoint de eliminar
+            // Simulación de eliminación
             this.mostrarToast('Ruta eliminada (simulado).');
           }
         }
@@ -96,6 +92,7 @@ export class ListRutaComponent implements OnInit {
     await alert.present();
   }
 
+  // Mostrar toast de eliminación
   async mostrarToast(msg: string) {
     const toast = await this.toastCtrl.create({
       message: msg,
@@ -105,6 +102,7 @@ export class ListRutaComponent implements OnInit {
     toast.present();
   }
 
+  // Filtrar por fecha
   onDateChange(event: any) {
     this.selectedDate = event;
     this.applyFilters();

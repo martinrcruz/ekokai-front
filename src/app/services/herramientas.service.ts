@@ -2,28 +2,29 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
+import { Observable } from 'rxjs';
+import { BaseService } from './base.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class HerramientasService {
-  private baseUrl = environment.apiUrl;
+export class HerramientasService extends BaseService {
+  private readonly endpoint = '/herramientas';
 
   constructor(
-    private http: HttpClient,
-    private authService: AuthService
-  ) {}
-
-  private async getHeaders() {
-    return await this.authService.getHeaders();
+    http: HttpClient,
+    authService: AuthService
+  ) {
+    super(http, authService);
   }
+
+
 
   /**
    * Obtener todas las herramientas (GET /herramientas)
    */
-  async getHerramientas() {
-    const opts = await this.getHeaders();
-    return this.http.get(`${this.baseUrl}/herramientas`, opts);
+  getHerramientas() :Observable<any> {
+    return this.http.get(`${this.baseUrl}/herramientas`);
   }
 
   /**

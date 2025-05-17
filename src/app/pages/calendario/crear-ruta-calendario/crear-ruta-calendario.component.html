@@ -16,7 +16,7 @@
 
   <!-- Nombre de Ruta (RutaN) -->
   <ion-item>
-    <ion-label>Nombre de Ruta (RutaN)</ion-label>
+    <ion-label>Nombre de Ruta</ion-label>
     <ion-select [(ngModel)]="rutaNId" placeholder="Selecciona Nombre Ruta">
       <ion-select-option *ngFor="let rn of rutasN" [value]="rn._id">
         {{ rn.name }}
@@ -57,6 +57,18 @@
     </ion-select>
   </ion-item>
 
+   <ion-item>
+    <ion-label>Encargado</ion-label>
+    <ion-select [(ngModel)]="selectedEncargado" multiple="false" placeholder="Selecciona al encargado">
+      <ion-select-option 
+        *ngFor="let u of users" 
+        [value]="u._id"
+      >
+        {{ u.name }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
   <!-- Trabajadores (users) -->
   <ion-item>
     <ion-label>Trabajadores</ion-label>
@@ -68,6 +80,25 @@
         {{ u.name }}
       </ion-select-option>
     </ion-select>
+  </ion-item>
+
+  <!-- Herramientas -->
+  <ion-item>
+    <ion-label>Herramientas</ion-label>
+    <ion-select [(ngModel)]="selectedHerramientas" multiple="true" placeholder="Selecciona herramientas">
+      <ion-select-option 
+        *ngFor="let t of herramientas" 
+        [value]="t._id"
+      >
+        {{ t.name }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Comentario -->
+  <ion-item>
+    <ion-label>Comentario</ion-label>
+    <ion-textarea [(ngModel)]="comentario"></ion-textarea>
   </ion-item>
 
   <!-- Partes No Asignados -->

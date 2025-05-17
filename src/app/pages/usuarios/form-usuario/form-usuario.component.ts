@@ -21,7 +21,7 @@ export class FormUsuarioComponent implements OnInit {
     private route: ActivatedRoute,
     private navCtrl: NavController,
     private _user: UserService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.initForm();
@@ -38,36 +38,26 @@ export class FormUsuarioComponent implements OnInit {
 
   initForm() {
     this.usuarioForm = this.fb.group({
-      name:       ['', [Validators.required]],
-      code:       ['', [Validators.required]],
-      email:      ['', [Validators.required, Validators.email]],
-      phone:      ['', Validators.required],
-      role:       ['worker', Validators.required],
-      junior:     [false],
-      password:   ['', [Validators.required]]
+      name: ['', [Validators.required]],
+      code: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', Validators.required],
+      role: ['worker', Validators.required],
+      junior: [false],
+      password: ['']
     });
   }
-
   async cargarUsuario(id: string) {
-    try {
-      const req = await this._user.getUserById(id);
-      req.subscribe((res: any) => {
-        if (res.ok && res.user) {
-          // Cargar datos en el form
-          this.usuarioForm.patchValue({
-            name:     res.user.name,
-            code:     res.user.code,
-            email:    res.user.email,
-            phone:    res.user.phone,
-            role:     res.user.role,
-            junior:   res.user.junior,
-            // password: '' -> No solemos mostrar la pass real
-          });
-        }
-      });
-    } catch (error) {
-      console.error('Error al cargar usuario:', error);
-    }
+    const req = await this._user.getUserById(id);
+    req.subscribe(({ ok, data }) => {
+      if (ok && data.user) {
+        const u = data.user;
+        this.usuarioForm.patchValue({
+          name: u.name, code: u.code, email: u.email,
+          phone: u.phone, role: u.role, junior: u.junior
+        });
+      }
+    });
   }
 
   async guardar() {
@@ -75,25 +65,13 @@ export class FormUsuarioComponent implements OnInit {
 
     const data = this.usuarioForm.value;
     try {
-      if (!this.isEdit) {
-        // Crear usuario
-        const req = await this._user.createUser(data);
-        req.subscribe((resp: any) => {
-          if (resp.ok) {
-            this.navCtrl.navigateRoot('/usuarios');
-          }
-        });
-      } else {
-        // Actualizar usuario
-        // Se suele incluir el id en el body, o como param en la API
-        data._id = this.usuarioId;
-        const req = await this._user.updateUser(data);
-        req.subscribe((resp: any) => {
-          if (resp.ok) {
-            this.navCtrl.navigateRoot('/usuarios');
-          }
-        });
-      }
+      const req = this.isEdit
+        ? await this._user.updateUser({ ...data, _id: this.usuarioId! })
+        : this._user.createUser(data);
+
+      req.subscribe(({ ok }) => ok && this.navCtrl.navigateRoot('/usuarios'));
+
+
     } catch (error) {
       console.error('Error al guardar usuario:', error);
     }

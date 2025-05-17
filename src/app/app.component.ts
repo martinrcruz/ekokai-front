@@ -41,6 +41,7 @@ export class AppComponent {
         { title: 'Zonas',        url: '/zonas',        icon: 'bi-geo-alt' },
         { title: 'Rutas',        url: '/rutas',        icon: 'bi-map' },
         { title: 'Usuarios',     url: '/usuarios',     icon: 'bi-people' },
+        { title: 'Artículos',    url: '/articulos',    icon: 'bi-box' },
       ]
     }
   ];

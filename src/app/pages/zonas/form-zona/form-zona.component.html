@@ -35,9 +35,23 @@
         </ion-item>
 
         <ion-item>
-          <ion-label position="stacked">ZipCode (ID)</ion-label>
-          <ion-input formControlName="codezip" placeholder="Código postal o ZIP"></ion-input>
+          <ion-label position="stacked">ZipCode</ion-label>
+
+          <!-- select: lista los existentes y, al final, la opción para crear uno nuevo -->
+          <ion-select formControlName="codezip" interface="popover" placeholder="Seleccione o cree"
+            (ionChange)="onZipChange($event)">
+
+            <ion-select-option *ngFor="let z of zipcodesDisponibles" [value]="z._id">
+              {{ z.codezip }}
+            </ion-select-option>
+
+            <!-- Opción especial -->
+            <ion-select-option value="__nuevo__">
+              + Nuevo código postal…
+            </ion-select-option>
+          </ion-select>
         </ion-item>
+
       </div>
 
       <div class="form-actions">

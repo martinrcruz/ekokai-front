@@ -1,0 +1,125 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Artículos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="nuevoArticulo()">
+        <ion-icon name="add-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="page-container">
+    <div class="header">
+      <h1>Artículos</h1>
+    </div>
+
+  <div class="search-bar">
+    <ion-searchbar (ionInput)="filtrar($event)" placeholder="Buscar artículo..." animated>
+    </ion-searchbar>
+  </div>
+ 
+  
+  <div class="filters">
+    <ion-item>
+      <ion-label>Filtrar por grupo</ion-label>
+      <ion-select [(ngModel)]="filtroGrupo" (ionChange)="aplicarFiltros()">
+        <ion-select-option value="">Todos</ion-select-option>
+        <ion-select-option *ngFor="let grupo of gruposUnicos" [value]="grupo">{{ grupo }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    
+    <ion-item>
+      <ion-label>Filtrar por familia</ion-label>
+      <ion-select [(ngModel)]="filtroFamilia" (ionChange)="aplicarFiltros()">
+        <ion-select-option value="">Todos</ion-select-option>
+        <ion-select-option *ngFor="let familia of familiasUnicas" [value]="familia">{{ familia }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </div>
+
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ng-container *ngIf="loading">
+    <div class="empty-state">
+      <ion-spinner name="crescent"></ion-spinner>
+      <h3>Cargando artículos</h3>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!loading && error">
+    <div class="empty-state">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      <h3>Error al cargar artículos</h3>
+      <p>{{ error }}</p>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!loading && !error && filteredArticulos.length === 0">
+    <div class="empty-state">
+      <ion-icon name="cube-outline"></ion-icon>
+      <h3>No hay artículos</h3>
+      <p>No se encontraron artículos que coincidan con los criterios de búsqueda</p>
+    </div>
+  </ng-container>
+
+  <div class="articulos-grid">
+    <ion-card *ngFor="let a of filteredArticulos" class="articulo-card">
+      <ion-card-header>
+        <ion-card-subtitle>
+          <ion-chip color="primary">{{ a.codigo }}</ion-chip>
+          <ion-chip color="tertiary">{{ a.grupo }}</ion-chip>
+          <ion-chip color="secondary">{{ a.familia }}</ion-chip>
+        </ion-card-subtitle>
+        <ion-card-title>{{ a.descripcionArticulo }}</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="1"></ion-col>
+            <ion-col size="5">
+              <ion-item lines="none">
+                <ion-icon name="cash-outline" slot="start"></ion-icon>
+                <ion-label>
+                  <p>Precio</p>
+                  <h3>{{ a.precioVenta | currency:'EUR':'symbol':'1.2-2' }}</h3>
+                </ion-label>
+              </ion-item>
+            </ion-col>
+
+            <ion-col size="6">
+              <ion-item lines="none">
+                <ion-icon name="calculator-outline" slot="start"></ion-icon>
+                <ion-label>
+                  <p>Cantidad</p>
+                  <h3>{{ a.cantidad }}</h3>
+                </ion-label>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+
+        <div class="card-actions">
+          <ion-button expand="block" fill="outline" (click)="editarArticulo(a._id)">
+            <ion-icon name="create-outline" slot="start"></ion-icon>
+            Editar
+          </ion-button>
+          <ion-button expand="block" fill="outline" color="danger" (click)="eliminarArticulo(a._id)">
+            <ion-icon name="trash-outline" slot="start"></ion-icon>
+            Eliminar
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</div>
+
+</ion-content>

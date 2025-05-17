@@ -23,36 +23,33 @@ export interface Facturacion {
 export interface FacturacionResponse {
   facturacion: Facturacion[];
 }
-
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class FacturacionService {
   private apiUrl = `${environment.apiUrl}/facturacion`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  getFacturacion(): Observable<ApiResponse<FacturacionResponse>> {
-    return this.http.get<ApiResponse<FacturacionResponse>>(this.apiUrl);
+  getFacturacion() {
+    return this.http.get<any>(this.apiUrl);
   }
 
-  getFacturacionById(id: string): Observable<ApiResponse<Facturacion>> {
-    return this.http.get<ApiResponse<Facturacion>>(`${this.apiUrl}/${id}`);
+  getFacturacionById(id: string) {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 
-  createFacturacion(facturacion: Partial<Facturacion>): Observable<ApiResponse<Facturacion>> {
-    return this.http.post<ApiResponse<Facturacion>>(`${this.apiUrl}/create`, facturacion);
+  createFacturacion(facturacion: Partial<Facturacion>) {
+    return this.http.post<any>(`${this.apiUrl}/create`, facturacion);
   }
 
-  updateFacturacion(id: string, facturacion: Partial<Facturacion>): Observable<ApiResponse<Facturacion>> {
-    return this.http.put<ApiResponse<Facturacion>>(`${this.apiUrl}/update`, { ...facturacion, _id: id });
+  updateFacturacion(id: string, facturacion: Partial<Facturacion>) {
+    return this.http.put<any>(`${this.apiUrl}/update/${id}`, facturacion);
   }
 
-  deleteFacturacion(id: string): Observable<ApiResponse<Facturacion>> {
-    return this.http.delete<ApiResponse<Facturacion>>(`${this.apiUrl}/${id}`);
+  deleteFacturacion(id: string) {
+    return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
 
-  getFacturacionByRuta(rutaId: string): Observable<ApiResponse<FacturacionResponse>> {
-    return this.http.get<ApiResponse<FacturacionResponse>>(`${this.apiUrl}/ruta/${rutaId}`);
+  getFacturacionByRuta(rutaId: string) {
+    return this.http.get<any>(`${this.apiUrl}/ruta/${rutaId}`);
   }
-} 
+}

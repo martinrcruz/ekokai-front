@@ -41,10 +41,10 @@ export class PartesService {
    */
   async getParteById(id: string): Promise<Observable<Parte>> {
     const opts = await this.getHeaders();
-    return this.http.get<ApiResponse<Parte>>(`${this.baseUrl}/partes/${id}`, opts).pipe(
+    return this.http.get<any>(`${this.baseUrl}/partes/${id}`, opts).pipe(
       map(response => {
-        if (response.ok && response.data) {
-          return response.data;
+        if (response.ok && response.parte) {
+          return response.parte;
         }
         throw new Error(response.error || 'Error al obtener el parte');
       })
@@ -69,9 +69,9 @@ export class PartesService {
   /**
    * Actualizar parte (PUT /partes/update/:id)
    */
-  async updateParte(id: string, data: Partial<Parte>): Promise<Observable<Parte>> {
+  async updateParte(data: Partial<Parte>): Promise<Observable<Parte>> {
     const opts = await this.getHeaders();
-    return this.http.put<ApiResponse<Parte>>(`${this.baseUrl}/partes/update/${id}`, data, opts).pipe(
+    return this.http.post<ApiResponse<Parte>>(`${this.baseUrl}/partes/update`, data, opts).pipe(
       map(response => {
         if (response.ok && response.data) {
           return response.data;

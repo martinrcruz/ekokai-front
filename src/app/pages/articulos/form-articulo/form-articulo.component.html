@@ -1,0 +1,71 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? 'Editar Artículo' : 'Nuevo Artículo' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="articuloForm" (ngSubmit)="guardar()">
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Código</ion-label>
+        <ion-input formControlName="codigo" type="text"></ion-input>
+        <div *ngIf="articuloForm.get('codigo')?.invalid && articuloForm.get('codigo')?.touched" class="error-message">
+          El código es obligatorio
+        </div>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Descripción</ion-label>
+        <ion-textarea formControlName="descripcionArticulo" rows="3"></ion-textarea>
+        <div *ngIf="articuloForm.get('descripcionArticulo')?.invalid && articuloForm.get('descripcionArticulo')?.touched" class="error-message">
+          La descripción es obligatoria
+        </div>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Grupo</ion-label>
+        <ion-input formControlName="grupo" type="text"></ion-input>
+        <div *ngIf="articuloForm.get('grupo')?.invalid && articuloForm.get('grupo')?.touched" class="error-message">
+          El grupo es obligatorio
+        </div>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Familia</ion-label>
+        <ion-input formControlName="familia" type="text"></ion-input>
+        <div *ngIf="articuloForm.get('familia')?.invalid && articuloForm.get('familia')?.touched" class="error-message">
+          La familia es obligatoria
+        </div>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Cantidad</ion-label>
+        <ion-input formControlName="cantidad" type="number" min="0"></ion-input>
+        <div *ngIf="articuloForm.get('cantidad')?.invalid && articuloForm.get('cantidad')?.touched" class="error-message">
+          La cantidad debe ser un número mayor o igual a 0
+        </div>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Precio de Venta</ion-label>
+        <ion-input formControlName="precioVenta" type="number" min="0" step="0.01"></ion-input>
+        <div *ngIf="articuloForm.get('precioVenta')?.invalid && articuloForm.get('precioVenta')?.touched" class="error-message">
+          El precio debe ser un número mayor o igual a 0
+        </div>
+      </ion-item>
+    </ion-list>
+
+    <div class="ion-padding">
+      <ion-button expand="block" type="submit" [disabled]="articuloForm.invalid">
+        {{ isEdit ? 'Actualizar' : 'Crear' }}
+      </ion-button>
+      <ion-button expand="block" fill="outline" routerLink="/articulos" class="ion-margin-top">
+        Cancelar
+      </ion-button>
+    </div>
+  </form>
+</ion-content> 

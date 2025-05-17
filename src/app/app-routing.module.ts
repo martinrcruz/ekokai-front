@@ -103,6 +103,12 @@ const routes: Routes = [
       import('./pages/zonas/zonas.module').then(m => m.ZonasModule),
     canActivate: [AuthGuard, AdminGuard]
   },
+  {
+    path: 'articulos',
+    loadChildren: () =>
+      import('./pages/articulos/articulos.module').then(m => m.ArticulosModule),
+    canActivate: [AuthGuard, AdminGuard]
+  },
 
   // ---------------------------------
   // Ruta comodín

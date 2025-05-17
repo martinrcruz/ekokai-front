@@ -49,7 +49,7 @@ export class FormVehiculoComponent  implements OnInit {
     try {
       const req = await this._vehiculo.getVehicleById(id);
       req.subscribe((res: any) => {
-        if (res.ok && res.vehicle) {
+        if (res.vehicle) {
           this.vehicleForm.patchValue({
             brand:      res.vehicle.brand,
             modelo:     res.vehicle.modelo,

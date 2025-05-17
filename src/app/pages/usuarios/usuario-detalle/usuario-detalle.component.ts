@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { PartesService } from 'src/app/services/partes.service';
-import { UsuariosService } from 'src/app/services/usuarios.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-usuario-detalle',
@@ -19,7 +19,7 @@ export class UsuarioDetalleComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private _usuario: UsuariosService,
+    private _usuario: UserService,
     private _parte: PartesService,
     private navCtrl: NavController
   ) {}

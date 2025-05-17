@@ -15,96 +15,47 @@ export interface User {
   role?: string;
   junior?: boolean;
 }
+// src/app/services/user.service.ts
+export interface ApiEnvelope<T> { ok: boolean; data?: T; error?: string; }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class UserService {
-  // Ajusta la URL base a la de tu API
-  private baseUrl = environment.apiUrl + '/user';
+  private baseUrl = `${environment.apiUrl}/user`;
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient, private auth: AuthService) {}
 
-  private async getHeaders() {
-    return await this.authService.getHeaders();
+  /** helpers */
+  private async opts() { return this.auth.getHeaders(); }
+
+  createUser(u: User) {
+    return this.http.post<any>(`${this.baseUrl}/create`, u);
   }
 
-  /**
-   * Crea un nuevo usuario.
-   */
-  createUser(user: User): Observable<ApiResponse<User>> {
-    return this.http.post<ApiResponse<User>>(`${this.baseUrl}/create`, user);
+  async updateUser(u: User) {
+    const opts = await this.opts();
+    return this.http.put<ApiEnvelope<{user: User; token: string}>>(`${this.baseUrl}/update`, u, opts);
   }
 
-  /**
-   * Actualiza un usuario existente.
-   * Se envía el token en las cabeceras para la verificación.
-   */
-  async updateUser(data: User): Promise<Observable<ApiResponse<User>>> {
-    const opts = await this.getHeaders();
-    return this.http.put<ApiResponse<User>>(`${this.baseUrl}/update`, data, opts).pipe(
-      map(response => {
-        if (response.ok && response.data) {
-          return response;
-        }
-        throw new Error(response.error || 'Error al actualizar usuario');
-      })
-    );
+  getUserById(id: string) {
+    return this.http.get<any>(`${this.baseUrl}/${id}`);
   }
 
-  /**
-   * Obtiene un usuario por su ID.
-   */
-  getUserById(id: string): Observable<ApiResponse<User>> {
-    return this.http.get<ApiResponse<User>>(`${this.baseUrl}/${id}`).pipe(
-      map(response => {
-        if (response.ok && response.data) {
-          return response;
-        }
-        throw new Error(response.error || 'Error al obtener usuario');
-      })
-    );
+  getLoggedUser() {
+    return this.http.get<any>(this.baseUrl);
   }
 
-  /**
-   * Obtiene el usuario logueado (según el token enviado).
-   */
-  getLoggedUser(): Observable<ApiResponse<User>> {
-    return this.http.get<ApiResponse<User>>(`${this.baseUrl}`).pipe(
-      map(response => {
-        if (response.ok && response.data) {
-          return response;
-        }
-        throw new Error(response.error || 'Error al obtener usuario logueado');
-      })
-    );
+  getAllUsers() {
+    return this.http.get<any>(`${this.baseUrl}/list`);
   }
 
-  /**
-   * Obtiene la lista de todos los usuarios.
-   */
-  getAllUsers(): Observable<ApiResponse<User[]>> {
-    return this.http.get<ApiResponse<User[]>>(`${this.baseUrl}/list`).pipe(
-      map(response => {
-        if (response.ok && response.data) {
-          return response;
-        }
-        throw new Error(response.error || 'Error al obtener usuarios');
-      })
-    );
+  getWorkers() {
+    return this.http.get<any>(`${this.baseUrl}/worker`);
   }
 
-  /**
-   * Obtiene los usuarios cuyo role es "worker".
-   */
-  getWorkers(): Observable<ApiResponse<User[]>> {
-    return this.http.get<ApiResponse<User[]>>(`${this.baseUrl}/worker`).pipe(
-      map(response => {
-        if (response.ok && response.data) {
-          return response;
-        }
-        throw new Error(response.error || 'Error al obtener trabajadores');
-      })
-    );
+  /** NEW */
+  async deleteUser(id: string) {
+    const opts = await this.opts();
+    return this.http.delete<any>(`${this.baseUrl}/delete/${id}`, opts);
   }
 }
+

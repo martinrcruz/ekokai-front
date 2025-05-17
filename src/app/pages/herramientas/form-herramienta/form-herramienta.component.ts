@@ -47,11 +47,12 @@ export class FormHerramientaComponent  implements OnInit {
       // Ajusta si tu _herramienta es getHerramientaById
       const req = await this._herramienta.getHerramientaById(id);
       req.subscribe((res: any) => {
-        if (res.ok && res.herramienta) {
+        console.log(res);
+        if (res.ok && res.data.herramienta) {
           this.herramientaForm.patchValue({
-            name:        res.herramienta.name,
-            code:        res.herramienta.code,
-            description: res.herramienta.description
+            name:        res.data.herramienta.name,
+            code:        res.data.herramienta.code,
+            description: res.data.herramienta.description
           });
         }
       });

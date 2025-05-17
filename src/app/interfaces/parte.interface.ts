@@ -1,3 +1,6 @@
+import { Ruta } from "../models/ruta.model";
+import { Cliente } from "../services/clientes.service";
+
 export interface Parte {
   _id: string;
   title: string;
@@ -8,8 +11,8 @@ export interface Parte {
   categoria: 'Extintores' | 'Incendio' | 'Robo' | 'CCTV' | 'Pasiva' | 'Venta';
   asignado: boolean;
   eliminado: boolean;
-  customer: string;
-  ruta?: string;
+  customer: Cliente;
+  ruta: Ruta;
   address: string;
   periodico: boolean;
   frequency?: 'Mensual' | 'Trimestral' | 'Semestral' | 'Anual';

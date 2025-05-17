@@ -28,6 +28,10 @@ export class ListHerramientaComponent implements OnInit {
     this.cargarHerramientas();
   }
 
+  ionViewDidEnter(){
+   this.cargarHerramientas();
+  }
+
   async cargarHerramientas() {
     try {
       this.loading = true;
@@ -107,6 +111,7 @@ export class ListHerramientaComponent implements OnInit {
           if (res.ok) {
             this.herramientas = this.herramientas.filter(h => h._id !== id);
             this.mostrarToast('Herramienta eliminada.');
+            this.cargarHerramientas();
           }
         },
         (error) => {

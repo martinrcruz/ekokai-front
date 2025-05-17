@@ -14,11 +14,7 @@
 
 <ion-content>
   <!-- Barra de búsqueda y filtros -->
-  <ion-searchbar 
-    (ionInput)="filtrar($event)" 
-    placeholder="Buscar parte..." 
-    animated
-    class="ion-margin">
+  <ion-searchbar (ionInput)="filtrar($event)" placeholder="Buscar parte..." animated class="ion-margin">
   </ion-searchbar>
 
   <ion-item-group class="ion-margin">
@@ -76,7 +72,7 @@
                 <ion-icon name="business-outline" slot="start"></ion-icon>
                 <ion-label>
                   <p>Cliente</p>
-                  <h3>{{ p.customer || 'Sin cliente' }}</h3>
+                  <h3>{{ p.customer.name || 'Sin cliente' }}</h3>
                 </ion-label>
               </ion-item>
             </ion-col>
@@ -87,7 +83,7 @@
                 <ion-icon name="map-outline" slot="start"></ion-icon>
                 <ion-label>
                   <p>Ruta</p>
-                  <h3>{{ p.ruta || 'No asignada' }}</h3>
+                  <h3>{{ p.ruta ? p.ruta.name : 'No asignada'  }}</h3>
                 </ion-label>
               </ion-item>
             </ion-col>

@@ -38,12 +38,26 @@
   }
 }
 
-// Estilos para listas
+// Estilos globales para todos los ion-card en la aplicación
+ion-card {
+  width: 100% !important;
+  margin: 16px 0 !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+// Estilos para listas de entidades
 .vehiculos-list,
 .herramientas-list,
 .zonas-list,
 .rutas-list,
-.usuarios-list {
+.usuarios-list,
+.clientes-list,
+.partes-list,
+.materiales-list,
+.articulos-list,
+.facturacion-list,
+.alertas-list,
+.contratos-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -55,7 +69,14 @@
 .herramienta-card,
 .zona-card,
 .ruta-card,
-.usuario-card {
+.usuario-card,
+.cliente-card,
+.parte-card,
+.material-card,
+.articulo-card,
+.facturacion-card,
+.alerta-card,
+.contrato-card {
   width: 100% !important;
-  margin: 0 !important;
+  margin: 8px 0 !important;
 } 

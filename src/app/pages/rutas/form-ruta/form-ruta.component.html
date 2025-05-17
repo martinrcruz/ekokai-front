@@ -7,14 +7,6 @@
   </ion-toolbar>
 </ion-header>
 
-<!-- <div class="breadcrumb">
-  <ion-icon name="home-outline" color="gray"></ion-icon>
-  <span>/</span>
-  <span>Rutas</span>
-  <span>/</span>
-  <span class="breadcrumb-current">{{ isEdit ? 'Editar' : 'Crear' }}</span>
-</div> -->
-
 <ion-content>
   <div class="page-container">
     <div class="header">
@@ -74,14 +66,24 @@
           </ion-select>
         </ion-item>
 
+        <!-- Trabajadores -->
         <ion-item>
-          <ion-label position="stacked">Contratos</ion-label>
-          <ion-select formControlName="users" multiple="true" placeholder="Seleccione contratos">
-            <ion-select-option *ngFor="let user of listaClientes" [value]="user._id">
+          <ion-label position="stacked">Trabajadores</ion-label>
+          <ion-select formControlName="users" multiple="true" placeholder="Seleccione trabajadores">
+            <ion-select-option *ngFor="let user of users" [value]="user._id">
               {{ user.name }}
             </ion-select-option>
           </ion-select>
         </ion-item>
+
+        <!-- <ion-item>
+          <ion-label position="stacked">Clientes</ion-label>
+          <ion-select formControlName="clientes" multiple="true" placeholder="Seleccione un cliente">
+            <ion-select-option *ngFor="let cliente of listaClientes" [value]="cliente._id">
+              {{ cliente.name }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item> -->
       </div>
 
       <div class="form-section">

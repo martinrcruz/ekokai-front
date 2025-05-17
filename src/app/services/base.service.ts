@@ -54,13 +54,13 @@ export class BaseService {
   protected get<T>(url: string): Observable<T> {
     return from(this.getHeaders()).pipe(
       switchMap(opts => 
-        this.http.get<ApiResponse<T>>(`${this.baseUrl}${url}`, opts)
+        this.http.get<T>(`${this.baseUrl}${url}`, opts)
       ),
       map(response => {
-        if (response.ok && response.data) {
-          return response.data;
+        if (response) {
+          return response;
         }
-        throw new Error(response.error || 'Error en la petición');
+        throw new Error('Error en la petición');
       }),
       catchError(this.handleError.bind(this))
     );
@@ -69,13 +69,13 @@ export class BaseService {
   protected post<T>(url: string, data: any): Observable<T> {
     return from(this.getHeaders()).pipe(
       switchMap(opts => 
-        this.http.post<ApiResponse<T>>(`${this.baseUrl}${url}`, data, opts)
+        this.http.post<T>(`${this.baseUrl}${url}`, data, opts)
       ),
       map(response => {
-        if (response.ok && response.data) {
-          return response.data;
+        if (response) {
+          return response;
         }
-        throw new Error(response.error || 'Error en la petición');
+        throw new Error('Error en la petición');
       }),
       catchError(this.handleError.bind(this))
     );
@@ -84,13 +84,13 @@ export class BaseService {
   protected put<T>(url: string, data: any): Observable<T> {
     return from(this.getHeaders()).pipe(
       switchMap(opts => 
-        this.http.put<ApiResponse<T>>(`${this.baseUrl}${url}`, data, opts)
+        this.http.put<T>(`${this.baseUrl}${url}`, data, opts)
       ),
       map(response => {
-        if (response.ok && response.data) {
-          return response.data;
+        if (response) {
+          return response;
         }
-        throw new Error(response.error || 'Error en la petición');
+        throw new Error('Error en la petición');
       }),
       catchError(this.handleError.bind(this))
     );
@@ -99,13 +99,13 @@ export class BaseService {
   protected delete<T>(url: string): Observable<T> {
     return from(this.getHeaders()).pipe(
       switchMap(opts => 
-        this.http.delete<ApiResponse<T>>(`${this.baseUrl}${url}`, opts)
+        this.http.delete<T>(`${this.baseUrl}${url}`, opts)
       ),
       map(response => {
-        if (response.ok && response.data) {
-          return response.data;
+        if (response) {
+          return response;
         }
-        throw new Error(response.error || 'Error en la petición');
+        throw new Error('Error en la petición');
       }),
       catchError(this.handleError.bind(this))
     );

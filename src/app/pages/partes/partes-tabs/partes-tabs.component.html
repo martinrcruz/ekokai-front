@@ -19,24 +19,24 @@
   </ion-segment>
 
   <div *ngIf="tabSelected === 'asignados'">
-    <ion-list>
-      <ion-item *ngFor="let p of partesAsignados">
-        <ion-label>
-          <h2>{{ p.description }}</h2>
-          <p>Estado: {{ p.state }}</p>
-        </ion-label>
-      </ion-item>
-    </ion-list>
+    <ion-card *ngFor="let p of partesAsignados" class="parte-card">
+      <ion-card-header>
+        <ion-card-title>{{ p.description }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <strong>Estado:</strong> {{ p.state }}
+      </ion-card-content>
+    </ion-card>
   </div>
 
   <div *ngIf="tabSelected === 'noasignados'">
-    <ion-list>
-      <ion-item *ngFor="let p of partesNoAsignados">
-        <ion-label>
-          <h2>{{ p.description }}</h2>
-          <p>Estado: {{ p.state }}</p>
-        </ion-label>
-      </ion-item>
-    </ion-list>
+    <ion-card *ngFor="let p of partesNoAsignados" class="parte-card">
+      <ion-card-header>
+        <ion-card-title>{{ p.description }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <strong>Estado:</strong> {{ p.state }}
+      </ion-card-content>
+    </ion-card>
   </div>
 </ion-content>

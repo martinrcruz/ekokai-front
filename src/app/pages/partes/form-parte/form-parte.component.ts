@@ -5,7 +5,7 @@ import { NavController } from '@ionic/angular';
 import { PartesService } from 'src/app/services/partes.service';
 import { RutasService } from 'src/app/services/rutas.service';
 import { CustomerService } from 'src/app/services/customer.service';
-import { ArticulosService } from 'src/app/services/articulos.service';
+import { ArticuloService } from 'src/app/services/articulo.service';
 import { Articulo } from 'src/app/models/articulo.model';
 
 @Component({
@@ -33,6 +33,12 @@ export class FormParteComponent implements OnInit {
   filteredCustomers: any[] = [];
   searchClientTxt: string = '';
 
+  // Variables para el modal de artículos
+  articulosModalOpen = false;
+  filteredArticulos: Articulo[] = [];
+  searchArticuloTxt: string = '';
+  articulosSeleccionados: Articulo[] = [];
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -40,8 +46,8 @@ export class FormParteComponent implements OnInit {
     private _parte: PartesService,
     private _rutas: RutasService,
     private _customer: CustomerService,
-    private _articulos: ArticulosService
-  ) {}
+    private _articulos: ArticuloService
+  ) { }
 
   ngOnInit() {
     this.initForm();
@@ -83,17 +89,32 @@ export class FormParteComponent implements OnInit {
 
   crearArticuloFormGroup() {
     return this.fb.group({
-      cantidad: ['', Validators.required],
+      cantidad: [1, Validators.required],
       codigo: ['', Validators.required],
       grupo: ['', Validators.required],
       familia: ['', Validators.required],
       descripcionArticulo: ['', Validators.required],
-      precioVenta: ['', Validators.required]
+      precioVenta: [0, Validators.required],
+      articuloId: [''] // Campo para guardar referencia al artículo original
     });
   }
 
   agregarArticulo() {
     this.articulosFormArray.push(this.crearArticuloFormGroup());
+  }
+
+  agregarArticuloExistente(articulo: Articulo) {
+    const articuloForm = this.crearArticuloFormGroup();
+    articuloForm.patchValue({
+      cantidad: 1,
+      codigo: articulo.codigo,
+      grupo: articulo.grupo,
+      familia: articulo.familia,
+      descripcionArticulo: articulo.descripcionArticulo,
+      precioVenta: articulo.precioVenta,
+      articuloId: articulo._id
+    });
+    this.articulosFormArray.push(articuloForm);
   }
 
   eliminarArticulo(index: number) {
@@ -103,8 +124,9 @@ export class FormParteComponent implements OnInit {
   async loadArticulos() {
     const req = await this._articulos.getArticulos();
     req.subscribe((res: any) => {
-      if (res.ok && res.data) {
-        this.articulos = res.data;
+      if (res.ok && res.articulos) {
+        this.articulos = res.articulos;
+        this.filteredArticulos = [...this.articulos];
       }
     });
   }
@@ -138,20 +160,50 @@ export class FormParteComponent implements OnInit {
   async loadParte(id: string) {
     const req = await this._parte.getParteById(id);
     req.subscribe((res: any) => {
-      if (res.ok && res.parte) {
-        this.parteForm.patchValue({
-          description: res.parte.description,
-          facturacion: res.parte.facturacion,
-          state:       res.parte.state,
-          type:        res.parte.type,
-          categoria:   res.parte.categoria,
-          asignado:    res.parte.asignado,
-          date:        res.parte.date, // 1er día del mes
-          customer:    res.parte.customer, // _id
-          ruta:        res.parte.ruta,
-          periodico:   res.parte.periodico,
-          frequency:   res.parte.frequency,
-          endDate:     res.parte.endDate
+      if (!res) return;
+
+      const p = res;                         // alias corto
+      const fechaIso = p.date ? this.isoDateOnly(p.date) : '';
+
+      console.log(p)
+
+      /* ----------- rellenar FormGroup ----------- */
+      this.parteForm.patchValue({
+        description: p.description,
+        facturacion: p.facturacion,
+        state: p.state,
+        type: p.type,
+        categoria: p.categoria,
+        date: fechaIso,
+        customer: p.customer?._id ?? '',
+        ruta: p.ruta?._id ?? p.ruta ?? '',
+        coordinationMethod: p.coordinationMethod,
+        gestiona: p.gestiona,
+        periodico: p.periodico,
+        frequency: p.frequency ?? 'Mensual',
+        endDate: p.endDate ? this.isoDateOnly(p.endDate) : ''
+      });
+
+      /* mostrar el nombre del cliente en el input de búsqueda */
+      this.searchClientTxt = p.customer?.name ?? '';
+
+      /* ----------- cargar artículos si existen ----------- */
+      if (p.articulos?.length) {
+        /* vaciamos el array por si ya hay items */
+        while (this.articulosFormArray.length) this.articulosFormArray.removeAt(0);
+
+        p.articulos.forEach((a: any) => {
+          const g = this.crearArticuloFormGroup();
+          g.patchValue({
+            cantidad: a.cantidad,
+            codigo: a.codigo,
+            grupo: a.grupo,
+            familia: a.familia,
+            descripcionArticulo: a.descripcionArticulo,
+            precioVenta: a.precioVenta,
+            articuloId: a.articuloId || ''
+          });
+          this.articulosFormArray.push(g);
         });
       }
     });
@@ -161,6 +213,10 @@ export class FormParteComponent implements OnInit {
     if (this.parteForm.invalid) return;
 
     const data = this.parteForm.value;
+
+
+
+
     // Verificar en front date >= minDate
     if (new Date(data.date) < new Date(this.minDate)) {
       console.error('Fecha anterior al mes actual');
@@ -168,6 +224,10 @@ export class FormParteComponent implements OnInit {
     }
 
     if (!this.isEdit) {
+      const body = { ...this.parteForm.value };   // en edición
+      if (!body.ruta) delete body.ruta;          // <-- evita "" en la petición
+      if (!body.endDate) delete body.endDate;
+      if (!body.frequency) delete body.frequency;
       // Crear parte
       const req = await this._parte.createParte(data);
       req.subscribe((resp: any) => {
@@ -177,7 +237,11 @@ export class FormParteComponent implements OnInit {
       });
     } else {
       // Actualizar parte
-      const req = await this._parte.updateParte(this.parteId!, data);
+      const body = { ...this.parteForm.value, _id: this.parteId };   // en edición
+      if (!body.ruta) delete body.ruta;          // <-- evita "" en la petición
+      if (!body.endDate) delete body.endDate;
+      if (!body.frequency) delete body.frequency;
+      const req = await this._parte.updateParte(body);
       req.subscribe((resp: any) => {
         if (resp.ok) {
           this.navCtrl.navigateRoot('/partes');
@@ -220,5 +284,53 @@ export class FormParteComponent implements OnInit {
 
   cancel() {
     this.navCtrl.back();
+  }
+
+  private isoDateOnly(dateStr: string): string {
+    return new Date(dateStr).toISOString().substring(0, 10);
+  }
+
+  openArticulosModal() {
+    this.articulosModalOpen = true;
+    this.filteredArticulos = [...this.articulos];
+  }
+
+  closeArticulosModal() {
+    this.articulosModalOpen = false;
+  }
+
+  filterArticulos(event: any) {
+    const txt = this.searchArticuloTxt.toLowerCase().trim();
+    this.filteredArticulos = this.articulos.filter(a => 
+      a.codigo.toLowerCase().includes(txt) || 
+      a.descripcionArticulo.toLowerCase().includes(txt) ||
+      a.familia.toLowerCase().includes(txt) ||
+      a.grupo.toLowerCase().includes(txt)
+    );
+  }
+
+  selectArticulo(articulo: Articulo) {
+    this.agregarArticuloExistente(articulo);
+    // Opcional: puedes cerrar el modal al seleccionar un artículo
+    // o dejarlo abierto para permitir seleccionar varios
+    // this.closeArticulosModal();
+  }
+
+  selectMultipleArticulos() {
+    for (const articulo of this.articulosSeleccionados) {
+      this.agregarArticuloExistente(articulo);
+    }
+    this.articulosSeleccionados = [];
+    this.closeArticulosModal();
+  }
+
+  toggleArticuloSelection(articulo: Articulo, event: any) {
+    const isChecked = event.detail.checked;
+    
+    if (isChecked) {
+      this.articulosSeleccionados.push(articulo);
+    } else {
+      this.articulosSeleccionados = this.articulosSeleccionados.filter(a => a._id !== articulo._id);
+    }
   }
 }

@@ -60,8 +60,8 @@ export class ListParteComponent implements OnInit {
     this.filteredPartes = this.partes.filter(parte => {
       const matchesSearch = !searchTerm || 
         parte.description.toLowerCase().includes(searchTerm) ||
-        parte.customer?.toLowerCase().includes(searchTerm) ||
-        parte.ruta?.toLowerCase().includes(searchTerm);
+        parte.customer.name.toLowerCase().includes(searchTerm) ||
+        parte.ruta.name.name.toLowerCase().includes(searchTerm);
 
       const matchesEstado = !this.estadoFiltro || parte.state === this.estadoFiltro;
       const matchesTipo = !this.tipoFiltro || parte.type === this.tipoFiltro;

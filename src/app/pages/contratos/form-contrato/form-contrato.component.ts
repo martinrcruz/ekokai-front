@@ -28,7 +28,7 @@ export class FormContratoComponent implements OnInit {
     private loadingController: LoadingController,
     private toastController: ToastController,
     private alertController: AlertController
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.initForm();
@@ -42,40 +42,40 @@ export class FormContratoComponent implements OnInit {
 
   initForm() {
     this.contractForm = this.fb.group({
-      code:              ['', Validators.required],
-      customerId:        ['', Validators.required],
-      name:              ['', Validators.required],
-      startDate:         ['', Validators.required],
-      endDate:           ['', Validators.required],
-      type:              ['F'],    // F, E, R, C ...
-      averageTime:       [0],
-      delegation:        [''],
+      code: ['', Validators.required],
+      customerId: ['', Validators.required],
+      name: ['', Validators.required],
+      startDate: ['', Validators.required],
+      endDate: ['', Validators.required],
+      type: ['F'],    // F, E, R, C ...
+      averageTime: [0],
+      delegation: [''],
       revisionFrequency: [''],
-      address:           [''],
-      zone:              [''],     // zone _id
-      total:             [0]
+      address: [''],
+      zone: [''],     // zone _id
+      total: [0]
     });
   }
 
-  async cargarContrato(id: string) {
+  cargarContrato(id: string) {
     try {
-      const req = await this._contrato.getContractById(id);
-      req.subscribe((res: any) => {
+      this._contrato.getContractById(id).subscribe((res: any) => {
         // Ajusta según tu backend
-        if (res) {
+        console.log(res)
+        if (res.data) {
           this.contractForm.patchValue({
-            code:       res.code,
-            customerId: res.customerId,
-            name:       res.name,
-            startDate:  res.startDate,
-            endDate:    res.endDate,
-            type:       res.type,
-            averageTime: res.averageTime,
-            delegation: res.delegation,
-            revisionFrequency: res.revisionFrequency,
-            address:    res.address,
-            zone:       res.zone,
-            total:      res.total
+            code: res.data.code,
+            customerId: res.data.customerId,
+            name: res.data.name,
+            startDate: res.data.startDate,
+            endDate: res.data.endDate,
+            type: res.data.type,
+            averageTime: res.data.averageTime,
+            delegation: res.data.delegation,
+            revisionFrequency: res.data.revisionFrequency,
+            address: res.data.address,
+            zone: res.data.zone,
+            total: res.data.total
           });
         }
       });
@@ -130,7 +130,7 @@ export class FormContratoComponent implements OnInit {
       }
     });
   }
-  
+
   onClientSelected(client: any) {
     console.log('Cliente seleccionado:', client);
     this.contractForm.get('customerId')?.setValue(client._id);

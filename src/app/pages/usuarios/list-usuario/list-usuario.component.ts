@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController, AlertController, ToastController } from '@ionic/angular';
-import { UsuariosService } from 'src/app/services/usuarios.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-list-usuario',
@@ -15,7 +15,7 @@ export class ListUsuarioComponent  implements OnInit {
   selectedStatus: string = '';
 
   constructor(
-    private _usuarios: UsuariosService,
+    private _usuarios: UserService,
     private navCtrl: NavController,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController
@@ -29,19 +29,16 @@ export class ListUsuarioComponent  implements OnInit {
    this.cargarUsuarios();
   }
 
-  async cargarUsuarios() {
-    try {
-      const req = await this._usuarios.getUsers();
-      req.subscribe((res: any) => {
-        if (res.ok) {
-          this.usuarios = res.users;
-          this.applyFilters();
-        }
-      });
-    } catch (error) {
-      console.error('Error al cargar usuarios:', error);
+async cargarUsuarios() {
+  const req = await this._usuarios.getAllUsers();
+  req.subscribe(({ ok, data }) => {
+    if (ok && data.users) {
+      this.usuarios = data.users;
+      this.applyFilters();
     }
-  }
+  });
+}
+
 
   filtrar(event: any) {
     const txt = event.detail.value?.toLowerCase() || '';
@@ -74,24 +71,29 @@ export class ListUsuarioComponent  implements OnInit {
     this.navCtrl.navigateForward(`/usuarios/edit/${id}`);
   }
 
-  // Confirmar y eliminar
-  async eliminarUsuario(id: string) {
-    const alert = await this.alertCtrl.create({
-      header: 'Confirmar',
-      message: '¿Eliminar este usuario?',
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Eliminar',
-          handler: () => {
-            // Llama al endpoint de eliminar
-            this.mostrarToast('Usuario eliminado (simulado).');
-          }
+ async eliminarUsuario(id: string) {
+  const alert = await this.alertCtrl.create({
+    header: 'Confirmar',
+    message: '¿Eliminar este usuario?',
+    buttons: [
+      { text: 'Cancelar', role: 'cancel' },
+      {
+        text: 'Eliminar',
+        handler: async () => {
+          const del$ = await this._usuarios.deleteUser(id);
+          del$.subscribe(({ ok }) => {
+            if (ok) {
+              this.usuarios = this.usuarios.filter(u => u._id !== id);
+              this.applyFilters();
+              this.mostrarToast('Usuario eliminado.');
+            }
+          });
         }
-      ]
-    });
-    await alert.present();
-  }
+      }
+    ]
+  });
+  alert.present();
+}
 
   async mostrarToast(msg: string) {
     const toast = await this.toastCtrl.create({

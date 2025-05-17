@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { NavController } from '@ionic/angular';
+import { AlertController, NavController } from '@ionic/angular';
+import { firstValueFrom } from 'rxjs';
+import { ZipcodesService } from 'src/app/services/zipcode.service';
 import { ZonasService } from 'src/app/services/zonas.service';
 @Component({
   selector: 'app-form-zona',
@@ -9,21 +11,26 @@ import { ZonasService } from 'src/app/services/zonas.service';
   templateUrl: './form-zona.component.html',
   styleUrls: ['./form-zona.component.scss'],
 })
-export class FormZonaComponent  implements OnInit {
+export class FormZonaComponent implements OnInit {
 
   zonaForm!: FormGroup;
   isEdit = false;
   zonaId: string | null = null;
+  zipcodesDisponibles: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private _zona: ZonasService
-  ) {}
+    private alertCtrl: AlertController,
+    private _zona: ZonasService,
+    private _zipcodes: ZipcodesService
+
+  ) { }
 
   ngOnInit() {
     this.initForm();
+    this.loadZipcodes();
     this.route.paramMap.subscribe(params => {
       this.zonaId = params.get('id');
       if (this.zonaId) {
@@ -35,21 +42,31 @@ export class FormZonaComponent  implements OnInit {
 
   initForm() {
     this.zonaForm = this.fb.group({
-      name:  ['', Validators.required],
-      code:  ['', Validators.required],
+      name: ['', Validators.required],
+      code: ['', Validators.required],
       codezip: [''] // ID de Zipcode (opcional)
     });
+  }
+
+  async loadZipcodes() {
+    const res = await firstValueFrom(this._zipcodes.getZipcodes());
+    if (res.ok) this.zipcodesDisponibles = res.data.zipcodes;
   }
 
   async cargarZona(id: string) {
     try {
       const req = await this._zona.getZoneById(id);
       req.subscribe((res: any) => {
-        if (res.ok && res.zone) {
+        if (res.ok && res.data?.zone) {
+          const z = res.data.zone;
+          if (z.codezip && !this.zipcodesDisponibles.some(c => c._id === z.codezip)) {
+            this.zipcodesDisponibles.push({ _id: z.codezip, codezip: z.codezip });
+          }
+
           this.zonaForm.patchValue({
-            name:   res.zone.name,
-            code:   res.zone.code,
-            codezip: res.zone.codezip
+            name: z.name,
+            code: z.code,
+            codezip: z.codezip ?? ''
           });
         }
       });
@@ -58,10 +75,79 @@ export class FormZonaComponent  implements OnInit {
     }
   }
 
+   /* ▸ Se dispara cuando el usuario cambia el select de ZIP */
+  async onZipChange(ev: any) {
+    if (ev.detail.value !== '__nuevo__') return;
+
+    /* 1. Pedir al usuario el nuevo código postal ------------- */
+    const alert = await this.alertCtrl.create({
+      header: 'Nuevo código postal',
+      inputs: [
+        {
+          name: 'codezip',
+          type: 'text',
+          placeholder: 'Ej.: 28001',
+        },
+        {
+          name: 'name',
+          type: 'text',
+          placeholder: 'Descripción (opcional)',
+        }
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel', handler: () => this.zonaForm.patchValue({ codezip: '' }) },
+        {
+          text: 'Crear',
+          handler: async (values) => {
+            if (!values.codezip?.trim()) {
+              this.zonaForm.patchValue({ codezip: '' });
+              return;
+            }
+
+            try {
+              /* 2. Crear ZIP en backend ------------------------ */
+              const res = await firstValueFrom(
+                this._zipcodes.createZipcode({ codezip: values.codezip.trim(), name: values.name })
+              );
+
+              if (res.ok) {
+                const nuevoZip = res.data.zipcode;
+                /* 3. Añadir a la lista y seleccionar ------------ */
+                this.zipcodesDisponibles.push(nuevoZip);
+                this.zonaForm.patchValue({ codezip: nuevoZip._id });
+              } else {
+                this.zonaForm.patchValue({ codezip: '' });
+              }
+            } catch (e) {
+              console.error('Error creando ZIP:', e);
+              this.zonaForm.patchValue({ codezip: '' });
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
   async guardar() {
+
+
     if (this.zonaForm.invalid) return;
 
     const data = this.zonaForm.value;
+
+    const zipSeleccionado = this.zipcodesDisponibles.find(z => z._id === data.codezip);
+    if (!zipSeleccionado && data.codezip) {
+      try {
+        const nuevo = await firstValueFrom(this._zipcodes.createZipcode({ codezip: data.codezip }));
+        if (nuevo.ok) {
+          this.zipcodesDisponibles.push(nuevo.data.zipcode);
+          data.codezip = nuevo.data.zipcode._id; // usamos su id real
+        }
+      } catch (e) { console.error('Error creando ZIP:', e); }
+    }
+
+
     try {
       if (!this.isEdit) {
         // Crear

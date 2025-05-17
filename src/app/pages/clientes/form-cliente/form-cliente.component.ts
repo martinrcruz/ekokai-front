@@ -28,7 +28,7 @@ export class FormClienteComponent implements OnInit {
     private zonasService: ZonasService,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.initForm();
@@ -78,20 +78,21 @@ export class FormClienteComponent implements OnInit {
 
     try {
       const response = await firstValueFrom(this.clientesService.getCustomerById(id));
+      console.log(response)
       if (response && response.ok && response.data) {
         this.clienteForm.patchValue({
-          name: response.data.name,
-          email: response.data.email,
-          nifCif: response.data.nifCif,
-          phone: response.data.phone,
-          address: response.data.address,
-          zone: response.data.zone,
-          code: response.data.code,
-          contactName: response.data.contactName,
-          MI: response.data.MI,
-          tipo: response.data.tipo
+          name: response.data.customer.name,
+          email: response.data.customer.email,
+          nifCif: response.data.customer.nifCif,
+          phone: response.data.customer.phone,
+          address: response.data.customer.address,
+          zone: response.data.customer.zone._id,
+          code: response.data.customer.code,
+          contactName: response.data.customer.contactName,
+          MI: response.data.customer.MI,
+          tipo: response.data.customer.tipo
         });
-        this.previewImage = response.data.photo || null;
+        this.previewImage = response.data.customer.photo || null;
       }
     } catch (error) {
       console.error('Error al cargar cliente:', error);
@@ -134,19 +135,19 @@ export class FormClienteComponent implements OnInit {
     await loading.present();
 
     try {
-      const formData = new FormData();
-      Object.keys(this.clienteForm.value).forEach(key => {
-        formData.append(key, this.clienteForm.value[key]);
-      });
 
       if (this.selectedFile) {
-        formData.append('photo', this.selectedFile);
+        this.clienteForm.patchValue({
+          photo: this.selectedFile
+        });
       }
 
+      console.log(this.clienteForm.value)
+
       if (this.isEdit && this.customerId) {
-        await firstValueFrom(this.clientesService.updateCustomer(this.customerId, formData));
+        await firstValueFrom(this.clientesService.updateCustomer(this.customerId, this.clienteForm.value));
       } else {
-        await firstValueFrom(this.clientesService.createCustomer(formData));
+        await firstValueFrom(this.clientesService.createCustomer(this.clienteForm.value));
       }
 
       const toast = await this.toastCtrl.create({

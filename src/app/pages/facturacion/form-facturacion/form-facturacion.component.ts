@@ -72,39 +72,51 @@ export class FormFacturacionComponent implements OnInit {
     }
   }
 
-  async cargarFacturacion(id: string) {
-    try {
-      const req = await this._facturacion.getFacturacion();
-      req.subscribe((res: any) => {
-        if (res.ok && res.facturacion) {
-          this.facturacionForm.patchValue({
-            facturacion: res.facturacion.facturacion,
-            ruta:        res.facturacion.ruta,
-            parte:       res.facturacion.parte
-          });
-        }
-      });
-    } catch (error) {
-      console.error('Error al cargar facturación:', error);
+ async cargarFacturacion(id: string) {
+  const req = await this._facturacion.getFacturacionById(id);
+  req.subscribe(res => {
+    console.log(res)
+    if (!(res?.ok && res.data?.facturacion)) return;
+
+    const f = res.data.facturacion;
+
+    /* ▸ Garantizar que la ruta y el parte existan en sus arrays
+       (por si aún no se han cargado desde el backend) */
+    if (!this.rutasDisponibles.some(r => r._id === f.ruta._id)) {
+      this.rutasDisponibles.push(f.ruta);
     }
-  }
+    if (!this.partesDisponibles.some(p => p._id === f.parte._id)) {
+      this.partesDisponibles.push(f.parte);
+    }
 
-  async guardar() {
-    if (this.facturacionForm.invalid) return;
+    /* ▸ Cargar datos en el formulario */
+    this.facturacionForm.patchValue({
+      facturacion: f.facturacion,
+      ruta:        f.ruta._id,   // solo el _id
+      parte:       f.parte._id   // solo el _id
+    });
+  });
+}
 
+async guardar() {
+  if (this.facturacionForm.invalid) return;
+
+  try {
     const data = this.facturacionForm.value;
-    try {
-      if (!this.isEdit) {
-        // Crear
-        const req = await this._facturacion.createFacturacion(data);
-        req.subscribe((resp: any) => {
-          if (resp.ok) {
-            this.navCtrl.navigateRoot('/facturacion');
-          }
-        });
-      } 
-    } catch (error) {
-      console.error('Error guardando facturación:', error);
+
+    if (!this.isEdit) {
+      const req = await this._facturacion.createFacturacion(data);
+      req.subscribe(resp => {
+        if (resp.ok) this.navCtrl.navigateRoot('/facturacion');
+      });
+    } else if (this.facturacionId) {
+      const req = await this._facturacion.updateFacturacion(this.facturacionId, data);
+      req.subscribe(resp => {
+        if (resp.ok) this.navCtrl.navigateRoot('/facturacion');
+      });
     }
+  } catch (error) {
+    console.error('Error guardando facturación:', error);
   }
+}
 }

@@ -44,7 +44,7 @@ export class ListCalendarioComponent implements OnInit {
   filterTipo: string = '';
   filterFactRange: string = '';
   // Lista de zonas (para select de zona)
-  zonas: any[] = []; 
+  zonas: any[] = [];
 
   // Días de la semana abreviados
   weekDays = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
@@ -60,7 +60,7 @@ export class ListCalendarioComponent implements OnInit {
     private calendarioService: CalendarioService,
     private rutasService: RutasService,
     private zonasService: ZonasService
-  ) {}
+  ) { }
 
   async ngOnInit() {
     this.loadEvents();
@@ -68,7 +68,7 @@ export class ListCalendarioComponent implements OnInit {
     this.cargarFacturacionFinalMes(); // cargar sumatoria de facturación final
   }
 
-  ionViewDidEnter(){
+  ionViewDidEnter() {
     this.loadEvents();
     this.selectedDay = null;
   }
@@ -174,17 +174,36 @@ export class ListCalendarioComponent implements OnInit {
       console.warn('mapRutasToEvents: rutas no es un array válido');
       return [];
     }
-    
+
     return rutas.map(ruta => {
       if (!ruta) return null;
-      
-      // Asegurarse de que la fecha sea válida
-      const date = ruta.date ? new Date(ruta.date) : new Date();
-      if (isNaN(date.getTime())) {
-        console.warn('Fecha inválida en ruta:', ruta);
-        return null;
+
+
+      // Si ruta.date es una fecha válida, convertirla a UTC
+      let date: Date;
+      if (ruta.date) {
+        // Convertir la fecha en formato UTC a la misma fecha local sin el ajuste de zona horaria
+        const rutaDateParts = ruta.date.split('T');
+        const [year, month, day] = rutaDateParts[0].split('-').map(Number); // extraemos año, mes y día
+        const [hours, minutes, seconds] = rutaDateParts[1].split(':').map(Number); // extraemos hora, minutos y segundos
+        // Crear la fecha en UTC
+        date = new Date(Date.UTC(year, month - 1, day + 1, hours, minutes, 0));
+
+        // Comprobamos si la fecha es válida
+        if (isNaN(date.getTime())) {
+          console.warn('Fecha inválida en ruta:', ruta);
+          return null;
+        }
+
+        // Establecemos la hora a las 00:00 UTC
+        date.setUTCHours(0, 0, 0, 0);
+      } else {
+        // Si no existe una fecha, usamos la fecha actual
+        date = new Date();
+        date.setUTCHours(0, 0, 0, 0);
       }
-      
+
+
       return {
         start: date,
         title: ruta.name?.name || 'Ruta sin nombre',
@@ -195,27 +214,29 @@ export class ListCalendarioComponent implements OnInit {
     }).filter(event => event !== null) as CalendarEvent[]; // Filtrar eventos nulos
   }
 
-  previousMonth() { 
+
+
+  previousMonth() {
     this.viewDate = subMonths(this.viewDate, 1);
     this.onMonthChange();
   }
-  
-  nextMonth() { 
+
+  nextMonth() {
     this.viewDate = addMonths(this.viewDate, 1);
     this.onMonthChange();
   }
-  
-  previousYear() { 
+
+  previousYear() {
     this.viewDate = subYears(this.viewDate, 1);
     this.onMonthChange();
   }
-  
-  nextYear() { 
+
+  nextYear() {
     this.viewDate = addYears(this.viewDate, 1);
     this.onMonthChange();
   }
-  
-  goToday() { 
+
+  goToday() {
     this.viewDate = new Date();
     this.onMonthChange();
   }
@@ -232,9 +253,9 @@ export class ListCalendarioComponent implements OnInit {
     // Establecer el día seleccionado
     this.selectedDay = day.date;
     const dateStr = this.toDateString(day.date);
-    
+
     console.log('Día seleccionado:', dateStr, 'Eventos del día:', day.events.length);
-    
+
     // Cargar rutas del día directamente desde los eventos
     if (day.events && day.events.length > 0) {
       // Obtener las rutas directamente de los metadatos de los eventos
@@ -242,18 +263,19 @@ export class ListCalendarioComponent implements OnInit {
       if (rutasDirectas.length > 0) {
         console.log('Rutas obtenidas directamente de eventos:', rutasDirectas.length);
         this.rutasDelDia = rutasDirectas;
-        
+
         // Seleccionar la primera ruta para mostrar sus detalles
         if (this.rutasDelDia.length > 0) {
           this.mostrarDetalleRuta(this.rutasDelDia[0]);
         }
       }
     }
-    
+
     // Además, hacer la llamada al API para asegurar que tenemos los datos más actualizados
     this.calendarioService.getRutasByDate(dateStr).subscribe((response: any) => {
+      this.rutasDelDia = [];
       console.log('Respuesta de getRutasByDate en dayClicked:', response);
-      
+
       if (response && response.ok) {
         // Normalizar la estructura de respuesta
         let rutasAPI = [];
@@ -262,16 +284,20 @@ export class ListCalendarioComponent implements OnInit {
         } else if (response.data && response.data.rutas) {
           rutasAPI = response.data.rutas;
         }
-        
+
         if (rutasAPI.length > 0) {
           console.log('Rutas obtenidas de API:', rutasAPI.length);
           this.rutasDelDia = rutasAPI;
-          
+
           // Solo establecer la ruta seleccionada si no hay una ya seleccionada
           if (!this.rutaSeleccionada && this.rutasDelDia.length > 0) {
             this.mostrarDetalleRuta(this.rutasDelDia[0]);
           }
+        } else {
+          this.rutasDelDia = [];
+
         }
+
       } else {
         // Solo vaciar si realmente no hay rutas en la API
         if (this.rutasDelDia.length === 0) {
@@ -285,10 +311,10 @@ export class ListCalendarioComponent implements OnInit {
       console.error('Error al cargar rutas del día desde API:', error);
       // No vaciar rutasDelDia en caso de error, para mantener las rutas obtenidas de los eventos
     });
-    
+
     // Cargar partes no asignados en paralelo
     this.cargarPartesNoAsignadosEnMes(dateStr);
-    
+
     // Reiniciar estado de selección de partes
     this.enableCheckParts = false;
   }
@@ -376,7 +402,7 @@ export class ListCalendarioComponent implements OnInit {
           next: (response) => {
             if (response.ok) {
               this.partesNoAsignados = response.partes;
-              
+
               // Aplicar filtros si hay datos
               if (this.partesNoAsignados.length > 0) {
                 this.filtrarPartesPendientes();
@@ -514,7 +540,7 @@ export class ListCalendarioComponent implements OnInit {
   }
 
   getFactSum(d: Date): number {
-    return this.factSumDay[this.toDateString(d)] || 0; 
+    return this.factSumDay[this.toDateString(d)] || 0;
   }
 
   onDateChange(event: any) {
@@ -525,17 +551,17 @@ export class ListCalendarioComponent implements OnInit {
   applyFilters() {
     // Actualizar la vista del calendario con la fecha seleccionada
     this.viewDate = this.parseDateAsUTC(this.selectedDate);
-    
+
     // Recargar los eventos con la nueva fecha
     this.loadEvents();
-    
+
     // Si hay un día seleccionado, actualizar los datos para ese día
     if (this.selectedDay) {
       const dateStr = this.toDateString(this.selectedDay);
       this.cargarRutasDelDia(dateStr);
       this.cargarPartesNoAsignadosEnMes(dateStr);
     }
-    
+
     // Actualizar la facturación del mes
     this.cargarFacturacionFinalMes();
   }

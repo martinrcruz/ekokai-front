@@ -38,15 +38,15 @@ export class ClientesService {
     return this.http.get<ApiResponse<ClientesResponse>>(this.apiUrl);
   }
 
-  getCustomerById(id: string): Observable<ApiResponse<Cliente>> {
-    return this.http.get<ApiResponse<Cliente>>(`${this.apiUrl}/${id}`);
+  getCustomerById(id: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 
-  createCustomer(customer: Partial<Cliente> | FormData): Observable<ApiResponse<Cliente>> {
+  createCustomer(customer: any): Observable<any> {
     return this.http.post<ApiResponse<Cliente>>(`${this.apiUrl}/create`, customer);
   }
 
-  updateCustomer(id: string, customer: Partial<Cliente> | FormData): Observable<ApiResponse<Cliente>> {
+  updateCustomer(id: string, customer: any): Observable<any> {
     return this.http.put<ApiResponse<Cliente>>(`${this.apiUrl}/update`, { ...customer, _id: id });
   }
 

@@ -18,19 +18,13 @@
         <h2>Información Básica</h2>
         <ion-item>
           <ion-label position="stacked">Descripción</ion-label>
-          <ion-textarea 
-            formControlName="description"
-            rows="4"
-            placeholder="Describa el trabajo a realizar">
+          <ion-textarea formControlName="description" rows="4" placeholder="Describa el trabajo a realizar">
           </ion-textarea>
         </ion-item>
 
         <ion-item>
           <ion-label position="stacked">Facturación (€)</ion-label>
-          <ion-input 
-            formControlName="facturacion" 
-            type="number"
-            placeholder="Importe en euros">
+          <ion-input formControlName="facturacion" type="number" placeholder="Importe en euros">
           </ion-input>
         </ion-item>
       </div>
@@ -73,24 +67,14 @@
         <h2>Planificación</h2>
         <ion-item>
           <ion-label position="stacked">Fecha</ion-label>
-          <ion-datetime 
-            formControlName="date"
-            [min]="minDate"
-            display-format="yyyy-MM-dd"
-            picker-format="yyyy-MM-dd"
-            placeholder="Seleccione una fecha">
+          <ion-datetime formControlName="date" [min]="minDate" presentation="date">
           </ion-datetime>
         </ion-item>
 
         <ion-item>
-          <ion-label position="stacked">Cliente</ion-label>
-          <ion-input
-            placeholder="Buscar cliente..."
-            [(ngModel)]="searchClientTxt"
-            [ngModelOptions]="{standalone: true}"
-            (ionInput)="filterCustomers($event)"
-            (click)="openClientModal()"
-            readonly>
+          <ion-label position="stacked">Contratos</ion-label>
+          <ion-input placeholder="Buscar cliente..." [(ngModel)]="searchClientTxt" [ngModelOptions]="{standalone: true}"
+            (ionInput)="filterCustomers($event)" (click)="openClientModal()" readonly>
           </ion-input>
         </ion-item>
 
@@ -117,10 +101,7 @@
 
         <ion-item>
           <ion-label position="stacked">Gestiona (Nº)</ion-label>
-          <ion-input 
-            formControlName="gestiona" 
-            type="number"
-            placeholder="Número de gestión">
+          <ion-input formControlName="gestiona" type="number" placeholder="Número de gestión">
           </ion-input>
         </ion-item>
       </div>
@@ -128,47 +109,53 @@
       <div class="form-section">
         <h2>Artículos</h2>
         <div formArrayName="articulos">
-          <div *ngFor="let articulo of articulosFormArray.controls; let i = index" [formGroupName]="i" class="articulo-item">
-            <ion-item>
-              <ion-label position="stacked">Cantidad</ion-label>
-              <ion-input formControlName="cantidad" type="number" placeholder="Cantidad"></ion-input>
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">Código</ion-label>
-              <ion-input formControlName="codigo" type="text" placeholder="Código"></ion-input>
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">Grupo</ion-label>
-              <ion-input formControlName="grupo" type="text" placeholder="Grupo"></ion-input>
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">Familia</ion-label>
-              <ion-input formControlName="familia" type="text" placeholder="Familia"></ion-input>
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">Descripción Artículo</ion-label>
-              <ion-textarea formControlName="descripcionArticulo" placeholder="Descripción del artículo"></ion-textarea>
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">Precio Venta</ion-label>
-              <ion-input formControlName="precioVenta" type="number" placeholder="Precio de venta"></ion-input>
-            </ion-item>
-
-            <ion-button fill="clear" color="danger" (click)="eliminarArticulo(i)">
-              <ion-icon name="trash-outline"></ion-icon>
-              Eliminar
-            </ion-button>
+          <div *ngFor="let articulo of articulosFormArray.controls; let i = index" [formGroupName]="i"
+            class="articulo-card">
+            <div class="articulo-header">
+              <div class="articulo-title">
+                <ion-input formControlName="codigo" type="text" placeholder="Código"></ion-input>
+                <ion-textarea formControlName="descripcionArticulo" placeholder="Descripción" rows="1"></ion-textarea>
+              </div>
+              <ion-button fill="clear" color="danger" (click)="eliminarArticulo(i)">
+                <ion-icon name="trash-outline"></ion-icon>
+              </ion-button>
+            </div>
+            
+            <div class="articulo-content">
+              <div class="articulo-data">
+                <div class="data-row">
+                  <div class="data-field">
+                    <label>Cantidad</label>
+                    <ion-input formControlName="cantidad" type="number" placeholder="Cant."></ion-input>
+                  </div>
+                  <div class="data-field">
+                    <label>Precio</label>
+                    <ion-input formControlName="precioVenta" type="number" placeholder="€"></ion-input>
+                  </div>
+                </div>
+                <div class="data-row">
+                  <div class="data-field">
+                    <label>Grupo</label>
+                    <ion-input formControlName="grupo" type="text" placeholder="Grupo"></ion-input>
+                  </div>
+                  <div class="data-field">
+                    <label>Familia</label>
+                    <ion-input formControlName="familia" type="text" placeholder="Familia"></ion-input>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
+        <ion-button expand="block" fill="outline" (click)="openArticulosModal()">
+          <ion-icon name="list-outline"></ion-icon>
+          Seleccionar Artículos Existentes
+        </ion-button>
+
         <ion-button expand="block" fill="outline" (click)="agregarArticulo()">
           <ion-icon name="add-outline"></ion-icon>
-          Agregar Artículo
+          Agregar Artículo Manual
         </ion-button>
       </div>
 
@@ -194,7 +181,8 @@
         </ion-buttons>
       </ion-toolbar>
       <ion-toolbar>
-        <ion-searchbar placeholder="Buscar..." [(ngModel)]="searchClientTxt" (ionInput)="filterCustomers($event)"></ion-searchbar>
+        <ion-searchbar placeholder="Buscar..." [(ngModel)]="searchClientTxt"
+          (ionInput)="filterCustomers($event)"></ion-searchbar>
       </ion-toolbar>
     </ion-header>
     <ion-content class="modal-content">
@@ -203,6 +191,50 @@
           {{ c.name }} ({{ c.nifCif }})
         </ion-item>
       </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Modal para seleccionar artículos -->
+<ion-modal [isOpen]="articulosModalOpen" (ionModalDidDismiss)="closeArticulosModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>Seleccionar Artículos</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="articulosModalOpen = false">Cerrar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+      <ion-toolbar>
+        <ion-searchbar placeholder="Buscar artículo..." [(ngModel)]="searchArticuloTxt"
+          (ionInput)="filterArticulos($event)"></ion-searchbar>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="modal-content">
+      <ion-list>
+        <ion-item *ngFor="let articulo of filteredArticulos" class="articulo-list-item">
+          <ion-checkbox slot="start" (ionChange)="toggleArticuloSelection(articulo, $event)"></ion-checkbox>
+          <ion-label>
+            <h2><span class="codigo-badge">{{ articulo.codigo }}</span> {{ articulo.descripcionArticulo }}</h2>
+            <p>
+              <ion-badge color="light">{{ articulo.grupo }}</ion-badge>
+              <ion-badge color="light">{{ articulo.familia }}</ion-badge>
+              <span class="precio">{{ articulo.precioVenta | currency:'EUR':'symbol':'1.2-2' }}</span>
+            </p>
+          </ion-label>
+          <ion-button slot="end" fill="clear" color="primary" (click)="selectArticulo(articulo)">
+            <ion-icon name="add-circle-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-list>
+      <div class="ion-padding" *ngIf="articulosSeleccionados.length > 0">
+        <ion-button expand="block" (click)="selectMultipleArticulos()">
+          Agregar {{ articulosSeleccionados.length }} artículos seleccionados
+        </ion-button>
+      </div>
+      <div class="ion-padding" *ngIf="filteredArticulos.length === 0">
+        <p class="ion-text-center">No se encontraron artículos.</p>
+      </div>
     </ion-content>
   </ng-template>
 </ion-modal>

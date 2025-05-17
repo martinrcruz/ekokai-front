@@ -40,29 +40,29 @@ export class VehiculosService extends BaseService {
     super(http, authService);
   }
 
-  getVehicles(): Observable<ApiResponse<Vehicle[]>> {
-    return this.get<{vehicles: Vehicle[]}>(this.endpoint).pipe(
+  getVehicles(): Observable<any> {
+    return this.get<any>(this.endpoint).pipe(
       map(response => ({
         ok: true,
-        data: response.vehicles,
+        data: response.data.vehicles,
         message: 'Vehículos obtenidos correctamente'
       }))
     );
   }
 
-  createVehicle(data: Partial<Vehicle>): Observable<ApiResponse<Vehicle>> {
-    return this.post<ApiResponse<Vehicle>>(`${this.endpoint}/create`, data);
+  createVehicle(data: Partial<Vehicle>): Observable<any> {
+    return this.post<any>(`${this.endpoint}/create`, data);
   }
 
-  getVehicleById(id: string): Observable<ApiResponse<Vehicle>> {
-    return this.get<ApiResponse<Vehicle>>(`${this.endpoint}/${id}`);
+  getVehicleById(id: string): Observable<any> {
+    return this.get<any>(`${this.endpoint}/${id}`);
   }
 
-  updateVehicle(data: Partial<Vehicle>): Observable<ApiResponse<Vehicle>> {
-    return this.put<ApiResponse<Vehicle>>(`${this.endpoint}/update`, data);
+  updateVehicle(data: Partial<Vehicle>): Observable<any> {
+    return this.put<any>(`${this.endpoint}/update`, data);
   }
 
-  deleteVehicle(id: string): Observable<ApiResponse<Vehicle>> {
-    return this.delete<ApiResponse<Vehicle>>(`${this.endpoint}/${id}`);
+  deleteVehicle(id: string): Observable<any> {
+    return this.delete<any>(`${this.endpoint}/${id}`);
   }
 } 

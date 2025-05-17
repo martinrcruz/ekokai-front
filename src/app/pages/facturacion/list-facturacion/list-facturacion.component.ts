@@ -25,6 +25,10 @@ export class ListFacturacionComponent implements OnInit {
     await this.cargarFacturaciones();
   }
 
+  ionViewDidEnter(){
+   this.cargarFacturaciones();
+  }
+
   async cargarFacturaciones() {
     const loading = await this.loadingCtrl.create({
       message: 'Cargando facturaciones...'
@@ -33,6 +37,7 @@ export class ListFacturacionComponent implements OnInit {
 
     try {
       const response = await firstValueFrom(this.facturacionService.getFacturacion());
+      console.log(response)
       if (response && response.ok && response.data) {
         this.facturaciones = response.data.facturacion;
         this.calcularTotal();
