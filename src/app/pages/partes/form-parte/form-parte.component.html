@@ -89,6 +89,32 @@
       </div>
 
       <div class="form-section">
+        <h2>Configuración Periódica</h2>
+        <ion-item>
+          <ion-label>Periódico</ion-label>
+          <ion-toggle formControlName="periodico"></ion-toggle>
+        </ion-item>
+
+        <div *ngIf="parteForm.get('periodico')?.value">
+          <ion-item>
+            <ion-label position="stacked">Frecuencia</ion-label>
+            <ion-select formControlName="frequency" placeholder="Seleccione frecuencia">
+              <ion-select-option value="Mensual">Mensual</ion-select-option>
+              <ion-select-option value="Trimestral">Trimestral</ion-select-option>
+              <ion-select-option value="Semestral">Semestral</ion-select-option>
+              <ion-select-option value="Anual">Anual</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Fecha de Fin</ion-label>
+            <ion-datetime formControlName="endDate" presentation="date">
+            </ion-datetime>
+          </ion-item>
+        </div>
+      </div>
+
+      <div class="form-section">
         <h2>Detalles Adicionales</h2>
         <ion-item>
           <ion-label position="stacked">Coordinación</ion-label>

@@ -24,9 +24,9 @@ export class PartesService {
   /**
    * Obtener todas las partes (GET /partes)
    */
-  async getPartes(): Promise<Observable<Parte[]>> {
+  async getPartes(): Promise<Observable<any>> {
     const opts = await this.getHeaders();
-    return this.http.get<ApiResponse<Parte[]>>(`${this.baseUrl}/partes`, opts).pipe(
+    return this.http.get<any>(`${this.baseUrl}/partes`, opts).pipe(
       map(response => {
         if (response.ok && response.data) {
           return response.data;
@@ -84,12 +84,12 @@ export class PartesService {
   /**
    * Eliminar parte (DELETE /partes/:id)
    */
-  async deleteParte(id: string): Promise<Observable<Parte>> {
+  async deleteParte(id: string): Promise<Observable<any>> {
     const opts = await this.getHeaders();
-    return this.http.delete<ApiResponse<Parte>>(`${this.baseUrl}/partes/${id}`, opts).pipe(
+    return this.http.delete<any>(`${this.baseUrl}/partes/${id}`, opts).pipe(
       map(response => {
-        if (response.ok && response.data) {
-          return response.data;
+        if (response.ok) {
+          return response;
         }
         throw new Error(response.error || 'Error al eliminar el parte');
       })

@@ -86,9 +86,24 @@ export class ListParteComponent implements OnInit {
         { text: 'Cancelar', role: 'cancel' },
         {
           text: 'Eliminar',
-          handler: () => {
-            // Llama a this._partes.deleteParte(id)
-            this.mostrarToast('Parte eliminada (simulado).');
+          handler: async () => {
+            try {
+              const deleteObservable = await this.parteService.deleteParte(id);
+              deleteObservable.subscribe((res: any) => {
+                if (res.ok) {
+                  this.mostrarToast('Parte eliminada correctamente.');
+                  this.cargarPartes(); // Recargar la lista
+                } else {
+                  this.mostrarToast('Error al eliminar la parte.');
+                }
+              }, (error: any) => {
+                console.error('Error al eliminar parte:', error);
+                this.mostrarToast('Error al eliminar la parte.');
+              });
+            } catch (error) {
+              console.error('Error al eliminar parte:', error);
+              this.mostrarToast('Error al eliminar la parte.');
+            }
           }
         }
       ]

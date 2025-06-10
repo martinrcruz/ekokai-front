@@ -12,8 +12,8 @@ export class CustomerService extends BaseService {
   /**
    * Obtener todos los clientes (GET /customers)
    */
-  getCustomers(): Observable<any[]> {
-    return this.get<any[]>(this.endpoint);
+  getCustomers(): Observable<any> {
+    return this.get<any>(this.endpoint);
   }
 
   /**

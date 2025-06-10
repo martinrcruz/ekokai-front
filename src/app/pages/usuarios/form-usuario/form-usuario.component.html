@@ -25,11 +25,10 @@
       <div class="form-section">
         <h2>Información Personal</h2>
 
-          <ion-item>
+        <ion-item *ngIf="isEdit">
           <ion-label position="stacked">Codigo</ion-label>
           <ion-input formControlName="code" type="text" placeholder="Codigo de usuario"></ion-input>
         </ion-item>
-
 
         <ion-item>
           <ion-label position="stacked">Nombre</ion-label>

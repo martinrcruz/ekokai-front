@@ -31,6 +31,9 @@ export class FormUsuarioComponent implements OnInit {
       this.usuarioId = params.get('id');
       if (this.usuarioId) {
         this.isEdit = true;
+        // Agregar validación requerida al campo código cuando se edita
+        this.usuarioForm.get('code')?.setValidators([Validators.required]);
+        this.usuarioForm.get('code')?.updateValueAndValidity();
         this.cargarUsuario(this.usuarioId);
       }
     });
@@ -39,7 +42,7 @@ export class FormUsuarioComponent implements OnInit {
   initForm() {
     this.usuarioForm = this.fb.group({
       name: ['', [Validators.required]],
-      code: ['', [Validators.required]],
+      code: [''], // Sin validadores inicialmente
       email: ['', [Validators.required, Validators.email]],
       phone: ['', Validators.required],
       role: ['worker', Validators.required],

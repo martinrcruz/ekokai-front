@@ -134,8 +134,8 @@ export class FormParteComponent implements OnInit {
   async loadCustomers() {
     const req = await this._customer.getCustomers();
     req.subscribe((resp: any) => {
-      if (resp.ok) {
-        this.customersList = resp.customers;
+      if (resp.ok && resp.data && resp.data.customers) {
+        this.customersList = resp.data.customers;
         this.filteredCustomers = [...this.customersList];
       }
     });

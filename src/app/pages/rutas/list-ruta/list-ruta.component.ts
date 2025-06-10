@@ -82,9 +82,24 @@ export class ListRutaComponent implements OnInit {
         { text: 'Cancelar', role: 'cancel' },
         {
           text: 'Eliminar',
-          handler: () => {
-            // Simulación de eliminación
-            this.mostrarToast('Ruta eliminada (simulado).');
+          handler: async () => {
+            try {
+              const req = await this._rutas.deleteRuta(id);
+              req.subscribe((res: any) => {
+                if (res.ok) {
+                  this.mostrarToast('Ruta eliminada correctamente.');
+                  this.cargarRutas(); // Recargar la lista
+                } else {
+                  this.mostrarToast('Error al eliminar la ruta.');
+                }
+              }, (error: any) => {
+                console.error('Error al eliminar ruta:', error);
+                this.mostrarToast('Error al eliminar la ruta.');
+              });
+            } catch (error) {
+              console.error('Error al eliminar ruta:', error);
+              this.mostrarToast('Error al eliminar la ruta.');
+            }
           }
         }
       ]
