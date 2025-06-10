@@ -31,6 +31,11 @@
     --box-shadow: none;
     --color: var(--ion-color-dark);
     --placeholder-color: var(--ion-color-medium);
+    
+    &[disabled] {
+      opacity: 0.6;
+      pointer-events: none;
+    }
   }
 }
 
@@ -40,6 +45,12 @@
   margin-bottom: 16px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: opacity 0.3s ease;
+
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
 
   ion-item {
     --background: transparent;
@@ -75,21 +86,64 @@
   }
 }
 
-.contratos-list {
+// Nuevo loader principal
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  background: white;
+  margin: 20px 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+  .loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 40px 20px;
+
+    ion-spinner {
+      margin-bottom: 20px;
+      --color: var(--ion-color-primary);
+      width: 40px;
+      height: 40px;
+    }
+
+    h3 {
+      color: var(--ion-color-dark);
+      margin-bottom: 8px;
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+
+    p {
+      color: var(--ion-color-medium);
+      font-size: 0.9rem;
+      margin: 0;
+    }
+  }
+}
+
+.articulos-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 16px;
   margin-bottom: 80px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
 }
 
-.contrato-card {
+.articulo-card {
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 
   &:hover {
     transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
   }
 
   ion-card-header {
@@ -127,7 +181,7 @@
     padding: 16px;
   }
 
-  .contrato-info {
+  .articulo-info {
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -146,36 +200,12 @@
     }
   }
 
-  .contrato-type {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 4px;
+  ion-chip {
+    margin: 2px;
     font-size: 0.8rem;
-    font-weight: 500;
-    margin-top: 12px;
-
-    &.type-f {
-      background: #d4edda;
-      color: #155724;
-    }
-
-    &.type-e {
-      background: #cce5ff;
-      color: #004085;
-    }
-
-    &.type-r {
-      background: #fff3cd;
-      color: #856404;
-    }
-
-    &.type-c {
-      background: #f8d7da;
-      color: #721c24;
-    }
   }
 
-  .contrato-actions {
+  .card-actions {
     display: flex;
     justify-content: flex-end;
     gap: 8px;
@@ -207,6 +237,7 @@
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin: 20px 0;
 
   ion-icon {
     font-size: 64px;
@@ -223,6 +254,18 @@
   p {
     color: var(--ion-color-medium);
     font-size: 0.9rem;
+    margin-bottom: 16px;
+  }
+
+  ion-button {
+    --border-radius: 8px;
+    margin-top: 8px;
+  }
+
+  &.error-state {
+    ion-icon {
+      color: var(--ion-color-danger);
+    }
   }
 }
 
@@ -233,4 +276,57 @@
   --border-radius: 50%;
   --box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   margin: 16px;
+}
+
+.pagination-info {
+  margin-top: 8px;
+  
+  small {
+    color: var(--ion-color-medium);
+    font-size: 0.85rem;
+  }
+}
+
+.pagination-controls {
+  background: white;
+  padding: 20px 16px;
+  margin: 20px 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+  ion-button {
+    --border-radius: 8px;
+    --box-shadow: none;
+    margin: 0 2px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    
+    &[fill="solid"] {
+      --background: var(--ion-color-primary);
+      --color: white;
+    }
+    
+    &[fill="outline"] {
+      --background: transparent;
+      --color: var(--ion-color-primary);
+      --border-color: var(--ion-color-primary);
+      
+      &[disabled] {
+        --color: var(--ion-color-medium);
+        --border-color: var(--ion-color-light-shade);
+        opacity: 0.5;
+      }
+
+      &:not([disabled]):hover {
+        --background: var(--ion-color-primary-tint);
+      }
+    }
+  }
+
+  small {
+    color: var(--ion-color-medium);
+    font-size: 0.85rem;
+    margin-top: 8px;
+    display: block;
+  }
 }

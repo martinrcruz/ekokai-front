@@ -178,11 +178,6 @@
           <ion-icon name="list-outline"></ion-icon>
           Seleccionar Artículos Existentes
         </ion-button>
-
-        <ion-button expand="block" fill="outline" (click)="agregarArticulo()">
-          <ion-icon name="add-outline"></ion-icon>
-          Agregar Artículo Manual
-        </ion-button>
       </div>
 
       <div class="form-actions">
@@ -235,10 +230,26 @@
         <ion-searchbar placeholder="Buscar artículo..." [(ngModel)]="searchArticuloTxt"
           (ionInput)="filterArticulos($event)"></ion-searchbar>
       </ion-toolbar>
+      <!-- Información de paginación -->
+      <ion-toolbar *ngIf="articulosPagination">
+        <ion-title size="small" style="font-size: 0.9rem;">
+          {{ (articulosPagination.currentPage - 1) * articulosPagination.itemsPerPage + 1 }} - 
+          {{ Math.min(articulosPagination.currentPage * articulosPagination.itemsPerPage, articulosPagination.totalItems) }} 
+          de {{ articulosPagination.totalItems }} artículos
+        </ion-title>
+      </ion-toolbar>
     </ion-header>
     <ion-content class="modal-content">
-      <ion-list>
-        <ion-item *ngFor="let articulo of filteredArticulos" class="articulo-list-item">
+      
+      <!-- Loading spinner -->
+      <div class="ion-padding ion-text-center" *ngIf="articulosLoading">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Cargando artículos...</p>
+      </div>
+
+      <!-- Lista de artículos -->
+      <ion-list *ngIf="!articulosLoading">
+        <ion-item *ngFor="let articulo of articulos" class="articulo-list-item">
           <ion-checkbox slot="start" (ionChange)="toggleArticuloSelection(articulo, $event)"></ion-checkbox>
           <ion-label>
             <h2><span class="codigo-badge">{{ articulo.codigo }}</span> {{ articulo.descripcionArticulo }}</h2>
@@ -253,12 +264,51 @@
           </ion-button>
         </ion-item>
       </ion-list>
+
+      <!-- Controles de paginación -->
+      <div class="ion-padding" *ngIf="articulosPagination && articulosPagination.totalPages > 1">
+        <ion-grid>
+          <ion-row class="ion-align-items-center">
+            <ion-col size="12" class="ion-text-center">
+              
+              <!-- Botón página anterior -->
+              <ion-button 
+                fill="outline" 
+                size="small" 
+                [disabled]="!articulosPagination.hasPrevPage"
+                (click)="articulosPrevPage()">
+                <ion-icon name="chevron-back-outline"></ion-icon>
+                Anterior
+              </ion-button>
+
+              <!-- Información de página actual -->
+              <ion-chip color="primary" style="margin: 0 10px;">
+                {{ articulosPagination.currentPage }} / {{ articulosPagination.totalPages }}
+              </ion-chip>
+
+              <!-- Botón página siguiente -->
+              <ion-button 
+                fill="outline" 
+                size="small" 
+                [disabled]="!articulosPagination.hasNextPage"
+                (click)="articulosNextPage()">
+                Siguiente
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+              </ion-button>
+
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+
+      <!-- Botones de acción -->
       <div class="ion-padding" *ngIf="articulosSeleccionados.length > 0">
         <ion-button expand="block" (click)="selectMultipleArticulos()">
           Agregar {{ articulosSeleccionados.length }} artículos seleccionados
         </ion-button>
       </div>
-      <div class="ion-padding" *ngIf="filteredArticulos.length === 0">
+      
+      <div class="ion-padding" *ngIf="!articulosLoading && articulos.length === 0">
         <p class="ion-text-center">No se encontraron artículos.</p>
       </div>
     </ion-content>

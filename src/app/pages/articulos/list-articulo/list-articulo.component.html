@@ -17,18 +17,33 @@
   <div class="page-container">
     <div class="header">
       <h1>Artículos</h1>
+      <div class="pagination-info" *ngIf="pagination && !loading">
+        <small>
+          Mostrando {{ (pagination.currentPage - 1) * pagination.itemsPerPage + 1 }} - 
+          {{ Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems) }} 
+          de {{ pagination.totalItems }} artículos
+        </small>
+      </div>
     </div>
 
   <div class="search-bar">
-    <ion-searchbar (ionInput)="filtrar($event)" placeholder="Buscar artículo..." animated>
+    <ion-searchbar 
+      [(ngModel)]="textoBusqueda" 
+      (ionInput)="filtrar($event)" 
+      placeholder="Buscar artículo..." 
+      [disabled]="loading"
+      animated>
     </ion-searchbar>
   </div>
  
   
-  <div class="filters">
+  <div class="filters" [class.disabled]="loading">
     <ion-item>
       <ion-label>Filtrar por grupo</ion-label>
-      <ion-select [(ngModel)]="filtroGrupo" (ionChange)="aplicarFiltros()">
+      <ion-select 
+        [(ngModel)]="filtroGrupo" 
+        (ionChange)="onGrupoChange()"
+        [disabled]="loading || loadingGruposFamilias">
         <ion-select-option value="">Todos</ion-select-option>
         <ion-select-option *ngFor="let grupo of gruposUnicos" [value]="grupo">{{ grupo }}</ion-select-option>
       </ion-select>
@@ -36,7 +51,10 @@
     
     <ion-item>
       <ion-label>Filtrar por familia</ion-label>
-      <ion-select [(ngModel)]="filtroFamilia" (ionChange)="aplicarFiltros()">
+      <ion-select 
+        [(ngModel)]="filtroFamilia" 
+        (ionChange)="onFamiliaChange()"
+        [disabled]="loading || loadingGruposFamilias">
         <ion-select-option value="">Todos</ion-select-option>
         <ion-select-option *ngFor="let familia of familiasUnicas" [value]="familia">{{ familia }}</ion-select-option>
       </ion-select>
@@ -47,31 +65,40 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <ng-container *ngIf="loading">
-    <div class="empty-state">
-      <ion-spinner name="crescent"></ion-spinner>
-      <h3>Cargando artículos</h3>
+  <!-- Loading principal -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="loading-content">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <h3>Cargando artículos...</h3>
+      <p>Página {{ currentPage }} de {{ pagination?.totalPages || '?' }}</p>
     </div>
-  </ng-container>
+  </div>
 
-  <ng-container *ngIf="!loading && error">
-    <div class="empty-state">
-      <ion-icon name="alert-circle-outline"></ion-icon>
-      <h3>Error al cargar artículos</h3>
-      <p>{{ error }}</p>
-    </div>
-  </ng-container>
+  <!-- Error state -->
+  <div class="empty-state error-state" *ngIf="!loading && error">
+    <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+    <h3>Error al cargar artículos</h3>
+    <p>{{ error }}</p>
+    <ion-button fill="outline" (click)="loadArticulos(currentPage)">
+      <ion-icon name="refresh-outline" slot="start"></ion-icon>
+      Reintentar
+    </ion-button>
+  </div>
 
-  <ng-container *ngIf="!loading && !error && filteredArticulos.length === 0">
-    <div class="empty-state">
-      <ion-icon name="cube-outline"></ion-icon>
-      <h3>No hay artículos</h3>
-      <p>No se encontraron artículos que coincidan con los criterios de búsqueda</p>
-    </div>
-  </ng-container>
+  <!-- Empty state -->
+  <div class="empty-state" *ngIf="!loading && !error && articulos.length === 0">
+    <ion-icon name="cube-outline"></ion-icon>
+    <h3>No hay artículos</h3>
+    <p>No se encontraron artículos que coincidan con los criterios de búsqueda</p>
+    <ion-button fill="outline" (click)="nuevoArticulo()" *ngIf="!textoBusqueda && !filtroGrupo && !filtroFamilia">
+      <ion-icon name="add-outline" slot="start"></ion-icon>
+      Crear primer artículo
+    </ion-button>
+  </div>
 
-  <div class="articulos-grid">
-    <ion-card *ngFor="let a of filteredArticulos" class="articulo-card">
+  <!-- Lista de artículos -->
+  <div class="articulos-grid" *ngIf="!loading && !error && articulos.length > 0">
+    <ion-card *ngFor="let a of articulos; trackBy: trackByArticuloId" class="articulo-card">
       <ion-card-header>
         <ion-card-subtitle>
           <ion-chip color="primary">{{ a.codigo }}</ion-chip>
@@ -108,11 +135,11 @@
         </ion-grid>
 
         <div class="card-actions">
-          <ion-button expand="block" fill="outline" (click)="editarArticulo(a._id)">
+          <ion-button expand="block" fill="outline" (click)="editarArticulo(a._id!)">
             <ion-icon name="create-outline" slot="start"></ion-icon>
             Editar
           </ion-button>
-          <ion-button expand="block" fill="outline" color="danger" (click)="eliminarArticulo(a._id)">
+          <ion-button expand="block" fill="outline" color="danger" (click)="eliminarArticulo(a._id!)">
             <ion-icon name="trash-outline" slot="start"></ion-icon>
             Eliminar
           </ion-button>
@@ -120,6 +147,58 @@
       </ion-card-content>
     </ion-card>
   </div>
+
+  <!-- Controles de paginación -->
+  <div class="pagination-controls" *ngIf="!loading && !error && pagination && pagination.totalPages > 1">
+    <ion-grid>
+      <ion-row class="ion-align-items-center">
+        <ion-col size="12" class="ion-text-center">
+          
+          <!-- Botón página anterior -->
+          <ion-button 
+            fill="outline" 
+            size="small" 
+            [disabled]="!pagination.hasPrevPage || loading"
+            (click)="prevPage()">
+            <ion-icon name="chevron-back-outline"></ion-icon>
+            Anterior
+          </ion-button>
+
+          <!-- Números de página -->
+          <ion-button 
+            *ngFor="let page of getPageNumbers()" 
+            [fill]="page === currentPage ? 'solid' : 'outline'"
+            [color]="page === currentPage ? 'primary' : 'medium'"
+            size="small"
+            [disabled]="loading"
+            (click)="goToPage(page)">
+            {{ page }}
+          </ion-button>
+
+          <!-- Botón página siguiente -->
+          <ion-button 
+            fill="outline" 
+            size="small" 
+            [disabled]="!pagination.hasNextPage || loading"
+            (click)="nextPage()">
+            Siguiente
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </ion-button>
+
+        </ion-col>
+      </ion-row>
+      
+      <!-- Información de paginación -->
+      <ion-row>
+        <ion-col size="12" class="ion-text-center">
+          <small>
+            Página {{ pagination.currentPage }} de {{ pagination.totalPages }}
+          </small>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
 </div>
 
 </ion-content>

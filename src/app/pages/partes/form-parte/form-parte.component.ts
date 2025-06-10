@@ -33,11 +33,19 @@ export class FormParteComponent implements OnInit {
   filteredCustomers: any[] = [];
   searchClientTxt: string = '';
 
-  // Variables para el modal de artículos
+  // Modal de artículos
   articulosModalOpen = false;
-  filteredArticulos: Articulo[] = [];
   searchArticuloTxt: string = '';
   articulosSeleccionados: Articulo[] = [];
+  
+  // Paginación para el modal de artículos
+  articulosCurrentPage: number = 1;
+  articulosItemsPerPage: number = 50; // Menos elementos para el modal
+  articulosPagination: any = null;
+  articulosLoading: boolean = false;
+
+  // Para usar Math en el template
+  Math = Math;
 
   constructor(
     private fb: FormBuilder,
@@ -99,10 +107,6 @@ export class FormParteComponent implements OnInit {
     });
   }
 
-  agregarArticulo() {
-    this.articulosFormArray.push(this.crearArticuloFormGroup());
-  }
-
   agregarArticuloExistente(articulo: Articulo) {
     const articuloForm = this.crearArticuloFormGroup();
     articuloForm.patchValue({
@@ -121,14 +125,27 @@ export class FormParteComponent implements OnInit {
     this.articulosFormArray.removeAt(index);
   }
 
-  async loadArticulos() {
-    const req = await this._articulos.getArticulos();
-    req.subscribe((res: any) => {
-      if (res.ok && res.articulos) {
-        this.articulos = res.articulos;
-        this.filteredArticulos = [...this.articulos];
-      }
-    });
+  async loadArticulos(page: number = 1, search: string = '') {
+    this.articulosLoading = true;
+    this.articulosCurrentPage = page;
+    
+    try {
+      const req = await this._articulos.getArticulos(page, this.articulosItemsPerPage, search);
+      req.subscribe((res: any) => {
+        if (res.ok && res.articulos) {
+          this.articulos = res.articulos;
+          this.articulosPagination = res.pagination;
+          this.scrollModalToTop();
+        }
+        this.articulosLoading = false;
+      }, (error) => {
+        console.error('Error al cargar artículos:', error);
+        this.articulosLoading = false;
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      this.articulosLoading = false;
+    }
   }
 
   async loadCustomers() {
@@ -292,7 +309,7 @@ export class FormParteComponent implements OnInit {
 
   openArticulosModal() {
     this.articulosModalOpen = true;
-    this.filteredArticulos = [...this.articulos];
+    this.loadArticulos(1); // Cargar primera página
   }
 
   closeArticulosModal() {
@@ -300,13 +317,9 @@ export class FormParteComponent implements OnInit {
   }
 
   filterArticulos(event: any) {
-    const txt = this.searchArticuloTxt.toLowerCase().trim();
-    this.filteredArticulos = this.articulos.filter(a => 
-      a.codigo.toLowerCase().includes(txt) || 
-      a.descripcionArticulo.toLowerCase().includes(txt) ||
-      a.familia.toLowerCase().includes(txt) ||
-      a.grupo.toLowerCase().includes(txt)
-    );
+    const search = event.detail.value || '';
+    this.searchArticuloTxt = search;
+    this.loadArticulos(1, search); // Recargar desde la primera página con búsqueda
   }
 
   selectArticulo(articulo: Articulo) {
@@ -325,12 +338,63 @@ export class FormParteComponent implements OnInit {
   }
 
   toggleArticuloSelection(articulo: Articulo, event: any) {
-    const isChecked = event.detail.checked;
-    
-    if (isChecked) {
-      this.articulosSeleccionados.push(articulo);
+    if (event.detail.checked) {
+      // Agregar a seleccionados si no está ya
+      if (!this.articulosSeleccionados.find(a => a._id === articulo._id)) {
+        this.articulosSeleccionados.push(articulo);
+      }
     } else {
+      // Remover de seleccionados
       this.articulosSeleccionados = this.articulosSeleccionados.filter(a => a._id !== articulo._id);
+    }
+  }
+
+  // Método para hacer scroll to top en el modal
+  private scrollModalToTop() {
+    console.log('scrollModalToTop llamado');
+    
+    setTimeout(() => {
+      // Método 1: Buscar el contenido del modal activo
+      const modalContent = document.querySelector('ion-modal.show-modal ion-content');
+      if (modalContent) {
+        console.log('Usando modal content scroll');
+        modalContent.scrollTop = 0;
+      } else {
+        // Método 2: Buscar cualquier modal abierto
+        const anyModalContent = document.querySelector('ion-modal ion-content');
+        if (anyModalContent) {
+          console.log('Usando any modal content scroll');
+          anyModalContent.scrollTop = 0;
+        } else {
+          // Método 3: Buscar por clase específica del modal
+          const articulosList = document.querySelector('.modal-content ion-list');
+          if (articulosList) {
+            console.log('Usando articulos list scroll');
+            articulosList.scrollTop = 0;
+          } else {
+            console.log('No se encontró elemento para scroll en modal');
+          }
+        }
+      }
+    }, 150);
+  }
+
+  // Métodos de paginación para el modal
+  articulosNextPage() {
+    if (this.articulosPagination && this.articulosPagination.hasNextPage) {
+      this.loadArticulos(this.articulosCurrentPage + 1, this.searchArticuloTxt);
+    }
+  }
+
+  articulosPrevPage() {
+    if (this.articulosPagination && this.articulosPagination.hasPrevPage) {
+      this.loadArticulos(this.articulosCurrentPage - 1, this.searchArticuloTxt);
+    }
+  }
+
+  articulosGoToPage(page: number) {
+    if (page >= 1 && this.articulosPagination && page <= this.articulosPagination.totalPages) {
+      this.loadArticulos(page, this.searchArticuloTxt);
     }
   }
 }

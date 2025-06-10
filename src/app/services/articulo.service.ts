@@ -19,6 +19,21 @@ export interface Articulo {
   eliminado?: boolean;
 }
 
+export interface PaginationInfo {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+export interface ArticulosResponse {
+  ok: boolean;
+  articulos: Articulo[];
+  pagination: PaginationInfo;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -32,8 +47,20 @@ export class ArticuloService extends BaseService {
     super(http, authService);
   }
 
-  getArticulos(): Observable<any> {
-    return this.get<any>(this.endpoint);
+  getArticulos(page: number = 1, limit: number = 100, search: string = '', grupo: string = '', familia: string = ''): Observable<ArticulosResponse> {
+    let url = `${this.endpoint}?page=${page}&limit=${limit}`;
+
+    if (search.trim()) {
+      url += `&search=${encodeURIComponent(search.trim())}`;
+    }
+    if (grupo.trim()) {
+      url += `&grupo=${encodeURIComponent(grupo.trim())}`;
+    }
+    if (familia.trim()) {
+      url += `&familia=${encodeURIComponent(familia.trim())}`;
+    }
+
+    return this.get<ArticulosResponse>(url);
   }
 
   createArticulo(data: Partial<Articulo>): Observable<any> {
