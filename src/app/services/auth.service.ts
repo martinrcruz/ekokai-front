@@ -18,7 +18,7 @@ interface LoginResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = `${environment.apiUrl}/user`;
+  private baseUrl = `${environment.apiUrl}/auth`;
   private _storage: Storage | null = null;
   private isLoggedInSubject = new BehaviorSubject<boolean>(false);
   private userSubject = new BehaviorSubject<any>(null);
@@ -46,9 +46,11 @@ export class AuthService {
 
   async checkToken() {
     try {
-      const token = await this._storage?.get('token');
+      const token = localStorage.getItem('token');
+      console.log('[AuthService] checkToken token:', token);
       if (token) {
         const decoded: any = jwtDecode(token);
+        console.log('[AuthService] checkToken decoded:', decoded);
         const now = Math.floor(Date.now() / 1000); // en segundos
         this.userSubject.next(decoded.user);
 
@@ -76,13 +78,11 @@ export class AuthService {
       if (!token) {
         throw new Error('Token is empty');
       }
-      
-      await this._storage?.set('token', token);
-      
+      localStorage.setItem('token', token);
       const decoded: any = jwtDecode(token);
+      console.log('[AuthService] setToken decoded:', decoded);
       this.userSubject.next(decoded.user);
       this.isLoggedInSubject.next(true);
-      
       return true;
     } catch (error) {
       console.error('Error setting token', error);
@@ -92,12 +92,10 @@ export class AuthService {
 
   async getToken(): Promise<string | null> {
     try {
-      const token = await this._storage?.get('token');
-      
+      const token = localStorage.getItem('token');
       if (token) {
         const decoded: any = jwtDecode(token);
         const now = Math.floor(Date.now() / 1000);
-        
         if (decoded.exp && decoded.exp > now) {
           return token;
         } else {
@@ -106,7 +104,6 @@ export class AuthService {
           return null;
         }
       }
-      
       return null;
     } catch (error) {
       console.error('Error getting token', error);
@@ -116,7 +113,7 @@ export class AuthService {
 
   async removeToken() {
     try {
-      await this._storage?.remove('token');
+      localStorage.removeItem('token');
       this.userSubject.next(null);
       this.isLoggedInSubject.next(false);
     } catch (error) {
@@ -175,9 +172,10 @@ export class AuthService {
     return this.userSubject.value;
   }
 
-  getRole() {
+  async getRole() {
     const user = this.getUser();
-    return user?.role || null;
+    console.log('[AuthService] getRole user:', user);
+    return user?.rol || null;
   }
 
   async getHeaders() {
@@ -215,7 +213,7 @@ export class AuthService {
       return user._id;
     }
     
-    const token = await this._storage?.get('token');
+    const token = localStorage.getItem('token');
     if (token) {
       try {
         const decoded: any = jwtDecode(token);
@@ -237,5 +235,26 @@ export class AuthService {
       buttons: ['OK']
     });
     await alert.present();
+  }
+
+  /**
+   * Si hay token, decodifica y setea el usuario en userSubject SIEMPRE
+   */
+  async ensureUserFromToken() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token);
+        if (decoded && decoded.user) {
+          this.userSubject.next(decoded.user);
+          this.isLoggedInSubject.next(true);
+        }
+      } catch (e) {
+        await this.removeToken();
+      }
+    } else {
+      this.userSubject.next(null);
+      this.isLoggedInSubject.next(false);
+    }
   }
 }

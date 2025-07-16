@@ -11,11 +11,14 @@ export class WorkerGuard implements CanActivate {
   constructor(private auth: AuthService, private router: Router) {}
 
   async canActivate(): Promise<boolean> {
-    const user = await this.auth.getUser(); // p.ej. un método que retorne la info
-    if (user && user.role === 'worker') {
-      return true;  // worker => OK
+    await this.auth.ensureUserFromToken();
+    const user = this.auth.getUser();
+    const role = user?.rol;
+    
+    if (user && (role === 'worker' || role === 'encargado')) {
+      return true;  // worker o encargado => OK
     }
-    // si no es worker => fallback
+    // si no es worker ni encargado => fallback
     this.router.navigate(['/auth/login']);
     return false;
   }

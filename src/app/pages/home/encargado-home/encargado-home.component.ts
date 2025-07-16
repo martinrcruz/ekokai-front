@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+import { NgChartsModule } from 'ng2-charts';
+import { FormsModule } from '@angular/forms';
 import { EcopuntosService } from 'src/app/services/ecopuntos.service';
 import { UsuariosService } from 'src/app/services/usuarios.service';
 import { ResiduosService } from 'src/app/services/residuos.service';
@@ -6,15 +10,17 @@ import { EstadisticasService } from 'src/app/services/estadisticas.service';
 import { ChartOptions, ChartType, ChartData } from 'chart.js';
 
 @Component({
-  selector: 'app-home',
-  standalone: false,
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
+  selector: 'app-encargado-home',
+  templateUrl: './encargado-home.component.html',
+  styleUrls: ['./encargado-home.component.scss'],
+  standalone: true,
+  imports: [CommonModule, IonicModule, NgChartsModule, FormsModule]
 })
-export class HomeComponent implements OnInit {
-  // Tarjetas superiores
+export class EncargadoHomeComponent implements OnInit {
+  // Tarjetas superiores para encargado
   totalKilos = 0;
   totalUsuarios = 0;
+  tareasPendientes = 0;
   mejorEcopunto = { nombre: '', kilosMes: 0 };
   metaPorcentaje = 0;
 
@@ -42,7 +48,7 @@ export class HomeComponent implements OnInit {
   barChartData: ChartData<'bar'> = {
     labels: [],
     datasets: [
-      { data: [], label: 'Kg reciclados', backgroundColor: '#4CAF50' }
+      { data: [], label: 'Kg reciclados', backgroundColor: '#FF6B35' }
     ]
   };
 
@@ -59,7 +65,7 @@ export class HomeComponent implements OnInit {
   doughnutChartData: ChartData<'doughnut'> = {
     labels: ['Progreso', 'Restante'],
     datasets: [
-      { data: [0, 100], backgroundColor: ['#4CAF50', '#e0e0e0'] }
+      { data: [0, 100], backgroundColor: ['#FF6B35', '#e0e0e0'] }
     ]
   };
 
@@ -90,43 +96,50 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.cargarDashboard();
+    this.cargarDashboardEncargado();
     this.usuariosRecientesFiltrados = this.usuariosRecientes;
   }
 
-  cargarDashboard() {
+  cargarDashboardEncargado() {
     // Total kilos reciclados
     this.estadisticasService.getTotalKilos().subscribe(data => {
-      console.log('[Estadisticas] Total kilos recibidos:', data);
+      console.log('[Encargado Dashboard] Total kilos recibidos:', data);
       this.totalKilos = data.totalKg || 0;
     });
+
+    // Tareas pendientes (mock data por ahora)
+    this.tareasPendientes = 5;
+
     // Mejor sucursal
     this.estadisticasService.getSucursalTop().subscribe(data => {
-      console.log('[Estadisticas] Mejor sucursal recibida:', data);
+      console.log('[Encargado Dashboard] Mejor sucursal recibida:', data);
       this.mejorEcopunto = {
         nombre: data.sucursal || '',
         kilosMes: data.totalKg || 0
       };
     });
-    // Usuarios
+
+    // Usuarios (solo vecinos para encargado)
     this.usuariosService.getUsuarios().subscribe(usuarios => {
-      console.log('[Ecopard] Usuarios recibidos:', usuarios);
-      this.totalUsuarios = usuarios.length;
+      console.log('[Encargado Dashboard] Usuarios recibidos:', usuarios);
+      // Filtrar solo vecinos para el encargado
+      const vecinos = usuarios.filter(u => u.rol === 'vecino');
+      this.totalUsuarios = vecinos.length;
       // Ordenar por fechaCreacion descendente y tomar los 5 más recientes
-      this.usuariosRecientes = usuarios
+      this.usuariosRecientes = vecinos
         .sort((a, b) => new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime())
         .slice(0, 5)
         .map(u => ({
           ...u,
           activo: u.activo !== undefined ? u.activo : false
         }));
-      console.log('[Ecopard] Usuarios recientes para tabla:', this.usuariosRecientes);
-      console.log('[Ecopard] Total usuarios para tarjeta:', this.totalUsuarios);
+      console.log('[Encargado Dashboard] Vecinos recientes para tabla:', this.usuariosRecientes);
+      console.log('[Encargado Dashboard] Total vecinos para tarjeta:', this.totalUsuarios);
     });
 
     // Gráfico de kilos por mes
     this.estadisticasService.getKilosPorMes().subscribe(data => {
-      console.log('[Estadisticas] Kilos por mes recibidos:', data);
+      console.log('[Encargado Dashboard] Kilos por mes recibidos:', data);
       const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
       const year = new Date().getFullYear();
       const kilosPorMes = Array(12).fill(0);
@@ -141,9 +154,10 @@ export class HomeComponent implements OnInit {
       this.barChartData.labels = this.chartLabels;
       this.barChartData.datasets[0].data = this.chartData;
     });
+
     // Meta mensual
     this.estadisticasService.getMetaMensual().subscribe(data => {
-      console.log('[Estadisticas] Meta mensual recibida:', data);
+      console.log('[Encargado Dashboard] Meta mensual recibida:', data);
       this.metaPorcentaje = Math.round((data.porcentaje || 0) * 100);
       // Actualizar datos del gráfico doughnut
       this.doughnutChartData.datasets[0].data = [this.metaPorcentaje, 100 - this.metaPorcentaje];
@@ -151,16 +165,4 @@ export class HomeComponent implements OnInit {
   }
 
   aplicarFiltros() {}
-
-  verUsuario(usuario: any) {
-    console.log('Ver usuario:', usuario);
-    // Aquí puedes implementar la lógica para ver detalles del usuario
-    // Por ejemplo, navegar a una página de detalles o abrir un modal
-  }
-
-  editarUsuario(usuario: any) {
-    console.log('Editar usuario:', usuario);
-    // Aquí puedes implementar la lógica para editar el usuario
-    // Por ejemplo, navegar a la página de gestión de usuarios o abrir un modal
-  }
-}
+} 

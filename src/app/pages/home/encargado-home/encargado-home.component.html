@@ -1,0 +1,186 @@
+<ion-header>
+  <ion-toolbar color="encargado-primary">
+    <ion-title>
+      <img src="assets/logo.png" alt="Ekokai" style="height:32px;vertical-align:middle;margin-right:12px;">
+      Dashboard Encargado
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear">
+        <ion-icon name="notifications-outline"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear">
+        <ion-icon name="calendar-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="encargado-dashboard-content">
+  <!-- Tarjetas superiores para encargado -->
+  <div class="encargado-dashboard-top-cards">
+    <div class="encargado-top-card">
+      <div class="encargado-top-card-icon"><ion-icon name="leaf-outline"></ion-icon></div>
+      <div class="encargado-top-card-value">{{ totalKilos | number }}</div>
+      <div class="encargado-top-card-label">Kg reciclados</div>
+    </div>
+    <div class="encargado-top-card">
+      <div class="encargado-top-card-icon"><ion-icon name="people-outline"></ion-icon></div>
+      <div class="encargado-top-card-value">{{ totalUsuarios }}</div>
+      <div class="encargado-top-card-label">Vecinos registrados</div>
+    </div>
+    <div class="encargado-top-card">
+      <div class="encargado-top-card-icon"><ion-icon name="checkmark-circle-outline"></ion-icon></div>
+      <div class="encargado-top-card-value">{{ tareasPendientes }}</div>
+      <div class="encargado-top-card-label">Tareas pendientes</div>
+    </div>
+    <div class="encargado-top-card">
+      <div class="encargado-top-card-icon"><ion-icon name="star-outline"></ion-icon></div>
+      <div class="encargado-top-card-value">{{ mejorEcopunto.kilosMes }}</div>
+      <div class="encargado-top-card-label">Mejor Ecopunto</div>
+      <div class="encargado-top-card-sub">{{ mejorEcopunto.nombre }}</div>
+    </div>
+  </div>
+
+  <!-- Gráficos -->
+  <div class="encargado-dashboard-graphs-row">
+    <div class="encargado-graph-card">
+      <div class="encargado-graph-title">Reciclaje mensual</div>
+      <canvas baseChart
+        [data]="barChartData"
+        [options]="barChartOptions"
+        [type]="barChartType"
+        [legend]="barChartLegend">
+      </canvas>
+      <div class="encargado-graph-legend">
+        <span class="encargado-legend-dot"></span> Kilos reciclados por mes
+      </div>
+    </div>
+    <div class="encargado-graph-card">
+      <div class="encargado-graph-title">Meta mensual</div>
+      <canvas baseChart
+        [data]="doughnutChartData"
+        [options]="doughnutChartOptions"
+        [type]="doughnutChartType">
+      </canvas>
+      <div class="encargado-circle-chart-value">
+        {{ metaPorcentaje }}%
+      </div>
+      <div class="encargado-graph-legend">
+        <span class="encargado-legend-dot"></span> Progreso meta
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de vecinos recientes -->
+  <div class="encargado-dashboard-table-card">
+    <div class="encargado-table-header">
+      <h3>Vecinos recientes</h3>
+      <ion-button fill="clear" size="small">
+        <ion-icon name="add-outline"></ion-icon>
+        Ver todos
+      </ion-button>
+    </div>
+    <table class="encargado-table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Fecha de registro</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of usuariosRecientes">
+          <td>{{ user.nombre }} {{ user.apellido }}</td>
+          <td>{{ user.correo || user.email }}</td>
+          <td>{{ user.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td>
+            <span class="encargado-status-badge" [class]="user.activo ? 'status-activo' : 'status-inactivo'">
+              {{ user.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td>
+            <ion-button fill="clear" size="small">
+              <ion-icon name="eye-outline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" size="small">
+              <ion-icon name="create-outline"></ion-icon>
+            </ion-button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Tareas pendientes para encargado -->
+  <div class="encargado-tasks-section">
+    <h3>Tareas pendientes</h3>
+    <div class="encargado-tasks-grid">
+      <div class="encargado-task-card">
+        <div class="encargado-task-icon">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+        </div>
+        <div class="encargado-task-content">
+          <h4>Revisar ecopunto Centro</h4>
+          <p>Verificar estado de contenedores</p>
+          <span class="encargado-task-priority alta">Alta prioridad</span>
+        </div>
+        <ion-button fill="clear" size="small">
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </ion-button>
+      </div>
+      
+      <div class="encargado-task-card">
+        <div class="encargado-task-icon">
+          <ion-icon name="people-outline"></ion-icon>
+        </div>
+        <div class="encargado-task-content">
+          <h4>Registrar nuevos vecinos</h4>
+          <p>3 solicitudes pendientes</p>
+          <span class="encargado-task-priority media">Media prioridad</span>
+        </div>
+        <ion-button fill="clear" size="small">
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </ion-button>
+      </div>
+      
+      <div class="encargado-task-card">
+        <div class="encargado-task-icon">
+          <ion-icon name="analytics-outline"></ion-icon>
+        </div>
+        <div class="encargado-task-content">
+          <h4>Reporte semanal</h4>
+          <p>Generar estadísticas</p>
+          <span class="encargado-task-priority baja">Baja prioridad</span>
+        </div>
+        <ion-button fill="clear" size="small">
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acciones rápidas para encargado -->
+  <div class="encargado-quick-actions">
+    <h3>Acciones rápidas</h3>
+    <div class="encargado-actions-grid">
+      <ion-button fill="outline" class="encargado-action-btn">
+        <ion-icon name="person-add-outline"></ion-icon>
+        Registrar Vecino
+      </ion-button>
+      <ion-button fill="outline" class="encargado-action-btn">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        Revisar Ecopunto
+      </ion-button>
+      <ion-button fill="outline" class="encargado-action-btn">
+        <ion-icon name="document-text-outline"></ion-icon>
+        Generar Reporte
+      </ion-button>
+      <ion-button fill="outline" class="encargado-action-btn">
+        <ion-icon name="calendar-outline"></ion-icon>
+        Ver Calendario
+      </ion-button>
+    </div>
+  </div>
+</ion-content> 

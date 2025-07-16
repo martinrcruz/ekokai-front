@@ -26,106 +26,21 @@ export class AuthInterceptor implements HttpInterceptor {
     private toastCtrl: ToastController
   ) {}
 
-  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    return from(this.authService.getToken()).pipe(
-      switchMap(token => {
-        // Ajustamos las cabeceras para CORS
-        const headers: any = {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        };
-
-        if (token) {
-          headers['x-token'] = token;
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    const token = localStorage.getItem('token');
+    console.log('[AuthInterceptor] Token obtenido:', token);
+    if (token) {
+      const authReq = req.clone({
+        setHeaders: {
+          'x-token': token,
+          'Authorization': `Bearer ${token}`
         }
-
-        request = request.clone({
-          setHeaders: headers,
-          withCredentials: false
-        });
-
-        // Comprobar si es una operación que requiere mostrar carga
-        const isLongOperation = this.isLongRunningOperation(request);
-        let loadingElement: HTMLIonLoadingElement | null = null;
-
-        if (isLongOperation) {
-          // Creamos un control de tiempo para evitar que el loading se quede abierto demasiado tiempo
-          from(this.showLoading()).subscribe(loading => {
-            loadingElement = loading;
-            this.activeLoaders.push(loading);
-            
-            // Establecemos un timeout de seguridad para cerrar el loading
-            this.loadingTimeout = setTimeout(() => {
-              this.dismissLoader(loading);
-            }, 5000); // 5 segundos máximo
-          });
-        }
-
-        return next.handle(request).pipe(
-          tap(event => {
-            // Si la respuesta es exitosa y es final (no es un evento de progreso), cerramos el loader
-            if (event instanceof HttpResponse && loadingElement) {
-              clearTimeout(this.loadingTimeout);
-              this.dismissLoader(loadingElement);
-            }
-          }),
-          retry(1),
-          catchError((error: HttpErrorResponse) => {
-            // Cancelamos el timeout y cerramos el loader
-            if (this.loadingTimeout) {
-              clearTimeout(this.loadingTimeout);
-            }
-            
-            if (loadingElement) {
-              this.dismissLoader(loadingElement);
-            }
-
-            // Manejar errores específicos
-            if (error.status === 0) {
-              this.showErrorToast('Error de conexión. Compruebe su conexión a internet o contacte con el administrador.');
-              console.error('Error de conexión:', error);
-              return throwError(() => 'Error de conexión con el servidor. Por favor, compruebe su conexión a internet.');
-            }
-            
-            if (error.status === 401) {
-              this.authService.logout();
-              this.router.navigate(['/auth/login']);
-              return throwError(() => 'Sesión expirada. Por favor, inicie sesión nuevamente.');
-            }
-            
-            if (error.status === 429) {
-              this.showErrorToast('Demasiadas solicitudes. Por favor, espere unos momentos.');
-              return throwError(() => 'Demasiadas solicitudes. Por favor, intente más tarde.');
-            }
-
-            if (error.status === 403) {
-              this.showErrorToast('No tiene permisos para realizar esta acción.');
-              return throwError(() => 'No tiene permisos para realizar esta acción.');
-            }
-
-            if (error.status >= 500) {
-              this.showErrorToast('Error en el servidor. Por favor, inténtelo de nuevo más tarde.');
-              return throwError(() => 'Error interno del servidor. Por favor, intente nuevamente más tarde.');
-            }
-
-            // Para otros errores
-            const errorMsg = error.error?.message || error.message || 'Error desconocido';
-            this.showErrorToast(errorMsg);
-            return throwError(() => errorMsg);
-          }),
-          finalize(() => {
-            // Asegurarnos de que el loader se cierre al finalizar, sea error o éxito
-            if (this.loadingTimeout) {
-              clearTimeout(this.loadingTimeout);
-            }
-            
-            if (loadingElement) {
-              this.dismissLoader(loadingElement);
-            }
-          })
-        );
-      })
-    );
+      });
+      console.log('[AuthInterceptor] Headers enviados:', authReq.headers.keys(), authReq.headers.get('x-token'), authReq.headers.get('Authorization'), 'URL:', authReq.url);
+      return next.handle(authReq);
+    }
+    console.log('[AuthInterceptor] Request sin token. URL:', req.url);
+    return next.handle(req);
   }
 
   private dismissLoader(loader: HTMLIonLoadingElement) {

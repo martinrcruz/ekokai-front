@@ -1,0 +1,193 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Marketplace</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="crearCupon()">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="marketplace-container">
+    <!-- Estadísticas rápidas -->
+    <div class="stats-grid">
+      <ion-card class="stat-card">
+        <ion-card-content>
+          <div class="stat-icon bg-primary">
+            <ion-icon name="ticket-outline"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ estadisticas.totalCupones }}</h3>
+            <p>Total cupones</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="stat-card">
+        <ion-card-content>
+          <div class="stat-icon bg-success">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ estadisticas.cuponesActivos }}</h3>
+            <p>Cupones activos</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="stat-card">
+        <ion-card-content>
+          <div class="stat-icon bg-warning">
+            <ion-icon name="trending-up-outline"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ estadisticas.totalUsos }}</h3>
+            <p>Usos totales</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="stat-card">
+        <ion-card-content>
+          <div class="stat-icon bg-info">
+            <ion-icon name="bag-outline"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ estadisticas.totalVentas }}</h3>
+            <p>Productos vendidos</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters-section">
+      <ion-select 
+        [(ngModel)]="filtroCategoria" 
+        placeholder="Filtrar por categoría"
+        class="category-filter">
+        <ion-select-option value="">Todas las categorías</ion-select-option>
+        <ion-select-option *ngFor="let categoria of categorias" [value]="categoria">
+          {{ categoria }}
+        </ion-select-option>
+      </ion-select>
+
+      <ion-select 
+        [(ngModel)]="filtroEstado" 
+        placeholder="Filtrar por estado"
+        class="status-filter">
+        <ion-select-option value="">Todos los estados</ion-select-option>
+        <ion-select-option *ngFor="let estado of estados" [value]="estado">
+          {{ estado }}
+        </ion-select-option>
+      </ion-select>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="charts-section">
+      <ion-card class="chart-card">
+        <ion-card-header>
+          <ion-card-title>Ventas por Categoría</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <canvas baseChart
+            [data]="pieChartData"
+            [type]="pieChartType"
+            [options]="pieChartOptions">
+          </canvas>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="chart-card">
+        <ion-card-header>
+          <ion-card-title>Cupones Más Populares</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <canvas baseChart
+            [data]="barChartData"
+            [type]="barChartType"
+            [options]="barChartOptions">
+          </canvas>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Cupones -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Cupones ({{ cuponesFiltrados.length }})</ion-card-title>
+        <ion-button fill="clear" (click)="crearCupon()">
+          <ion-icon name="add-outline"></ion-icon>
+          Nuevo Cupón
+        </ion-button>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let cupon of cuponesFiltrados" class="cupon-item">
+            <ion-avatar slot="start">
+              <ion-icon name="ticket-outline"></ion-icon>
+            </ion-avatar>
+            <ion-label>
+              <h3>{{ cupon.nombre }}</h3>
+              <p>{{ cupon.categoria }} - {{ cupon.descuento }}% descuento</p>
+              <p class="cupon-stats">
+                <span class="stat">{{ cupon.usos }}/{{ cupon.maxUsos }} usos</span>
+                <span class="stat">Expira: {{ cupon.fechaExpiracion }}</span>
+                <span class="stat" [class.active]="cupon.activo" [class.inactive]="!cupon.activo">
+                  {{ cupon.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </p>
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button fill="clear" (click)="editarCupon(cupon)">
+                <ion-icon name="create-outline"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" color="danger" (click)="eliminarCupon(cupon)">
+                <ion-icon name="trash-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Productos -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Productos ({{ productosFiltrados.length }})</ion-card-title>
+        <ion-button fill="clear" (click)="crearProducto()">
+          <ion-icon name="add-outline"></ion-icon>
+          Nuevo Producto
+        </ion-button>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let producto of productosFiltrados" class="producto-item">
+            <ion-avatar slot="start">
+              <ion-icon name="bag-outline"></ion-icon>
+            </ion-avatar>
+            <ion-label>
+              <h3>{{ producto.nombre }}</h3>
+              <p>{{ producto.categoria }} - €{{ producto.precio }}</p>
+              <p class="producto-stats">
+                <span class="stat">{{ producto.tokens }} tokens</span>
+                <span class="stat">Stock: {{ producto.stock }}</span>
+                <span class="stat">Vendidos: {{ producto.vendidos }}</span>
+              </p>
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button fill="clear" (click)="editarProducto(producto)">
+                <ion-icon name="create-outline"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" color="danger" (click)="eliminarProducto(producto)">
+                <ion-icon name="trash-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content> 

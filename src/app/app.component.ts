@@ -23,27 +23,16 @@ interface AppPage {
 export class AppComponent {
 
   public showMenu = false;  // Controla si se muestra o no el menú
-  public userRole: 'admin' | 'worker' | '' = '';  // almacenar el rol
+  public userRole: string = '';  // almacenar el rol
 
   // Definimos un conjunto completo de opciones
   private fullAppPages: AppPage[] = [
-    { title: 'Calendario', url: '/calendario',  icon: 'bi-calendar-check' },
-    { title: 'Partes',     url: '/partes',      icon: 'bi-file-text' },
-    { title: 'Contratos',  url: '/clientes',    icon: 'bi-people-fill' },
-    { title: 'Facturación',url: '/facturacion', icon: 'bi-cash-stack' },
-    {
-      title: 'Administración',
-      icon: 'bi-briefcase',
-      expanded: false,
-      subpages: [
-        { title: 'Vehículos',    url: '/vehiculos',    icon: 'bi-truck' },
-        { title: 'Herramientas', url: '/herramientas', icon: 'bi-tools' },
-        { title: 'Zonas',        url: '/zonas',        icon: 'bi-geo-alt' },
-        { title: 'Rutas',        url: '/rutas',        icon: 'bi-map' },
-        { title: 'Usuarios',     url: '/usuarios',     icon: 'bi-people' },
-        { title: 'Artículos',    url: '/articulos',    icon: 'bi-box' },
-      ]
-    }
+    { title: 'Dashboard', url: '/home',  icon: 'bi-speedometer2' },
+    { title: 'Ecopuntos', url: '/ecopuntos',  icon: 'bi-geo-alt' },
+    { title: 'Usuarios', url: '/usuarios-gestion',  icon: 'bi-people' },
+    { title: 'Marketplace', url: '/marketplace',  icon: 'bi-shop' },
+    { title: 'Configuración', url: '/configuracion',  icon: 'bi-gear' },
+    { title: 'Crear Vecino', url: '/vecinos', icon: 'bi-person-plus' }
   ];
 
   // Para el rol worker, solo dejamos Calendario
@@ -73,16 +62,19 @@ export class AppComponent {
     registerLocaleData(localeEs, 'es');
 
     // Suscribirse a un observable del AuthService que retorne la info del usuario
-    this.authService.user$.subscribe(user => {
-      if (user && user.role) {
-        this.userRole = user.role;
+    this.authService.user$.subscribe(async user => {
+      if (!user) {
+        await this.authService.ensureUserFromToken();
+      }
+      const refreshedUser = this.authService.getUser();
+      if (refreshedUser && refreshedUser.rol) {
+        this.userRole = refreshedUser.rol;
         // Redirigir según el rol
         if (this.userRole === 'worker') {
-          // Verificar si ya estamos en worker-dashboard para evitar redirecciones infinitas
           if (!this.router.url.includes('worker-dashboard')) {
             this.router.navigate(['/worker-dashboard']);
           }
-        } else if (this.userRole === 'admin') {
+        } else if (this.userRole === 'admin' || this.userRole === 'administrador') {
           this.router.navigate(['/home']);
         }
       } else {
@@ -99,8 +91,9 @@ export class AppComponent {
    * Verifica el rol al iniciar la aplicación y redirige si es necesario
    */
   private async checkInitialRole() {
-    const user = await this.authService.getUser();
-    if (user && user.role === 'worker') {
+    await this.authService.ensureUserFromToken();
+    const user = this.authService.getUser();
+    if (user && user.rol === 'worker') {
       if (!this.router.url.includes('worker-dashboard')) {
         this.router.navigate(['/worker-dashboard']);
       }

@@ -1,15 +1,100 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>Home</ion-title>
+  <ion-toolbar color="ekokai-dark">
+    <ion-title>
+      <img src="assets/logo.png" alt="Ekokai" style="height:32px;vertical-align:middle;margin-right:12px;">
+      Dashboard Ekokai
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <h2>Bienvenido a la App de Extintores</h2>
-  <ion-button routerLink="/partes" expand="block">Ver Partes</ion-button>
-  <ion-button routerLink="/rutas" expand="block">Ver Rutas</ion-button>
-  <ion-button routerLink="/facturacion" expand="block">Facturación</ion-button>
+<ion-content class="dashboard-content">
+  <!-- Tarjetas superiores -->
+  <div class="dashboard-top-cards">
+    <div class="top-card">
+      <div class="top-card-icon"><ion-icon name="leaf-outline"></ion-icon></div>
+      <div class="top-card-value">{{ totalKilos | number }}</div>
+      <div class="top-card-label">Kg reciclados</div>
+    </div>
+    <div class="top-card">
+      <div class="top-card-icon"><ion-icon name="people-outline"></ion-icon></div>
+      <div class="top-card-value">{{ totalUsuarios }}</div>
+      <div class="top-card-label">Usuarios</div>
+    </div>
+    <div class="top-card">
+      <div class="top-card-icon"><ion-icon name="star-outline"></ion-icon></div>
+      <div class="top-card-value">{{ mejorEcopunto.kilosMes }}</div>
+      <div class="top-card-label">Mejor Ecopunto</div>
+      <div class="top-card-sub">{{ mejorEcopunto.nombre }}</div>
+    </div>
+  </div>
+
+  <!-- Gráficos -->
+  <div class="dashboard-graphs-row">
+    <div class="graph-card">
+      <div class="graph-title">Distribución mensual</div>
+      <canvas baseChart
+        [data]="barChartData"
+        [options]="barChartOptions"
+        [type]="barChartType"
+        [legend]="barChartLegend">
+      </canvas>
+      <div class="graph-legend">
+        <span class="legend-dot green"></span> Kilos reciclados
+      </div>
+    </div>
+    <div class="graph-card">
+      <div class="graph-title">% Meta mensual</div>
+      <canvas baseChart
+        [data]="doughnutChartData"
+        [options]="doughnutChartOptions"
+        [type]="doughnutChartType">
+      </canvas>
+      <div class="circle-chart-value" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.5rem;color:#1B5E20;font-weight:bold;">
+        {{ metaPorcentaje }}%
+      </div>
+      <div class="graph-legend">
+        <span class="legend-dot green"></span> Progreso meta
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de usuarios recientes -->
+  <div class="dashboard-table-card">
+    <div class="table-tabs">
+      <span class="tab active">Usuarios recientes</span>
+      <span class="tab">Ecopuntos</span>
+      <span class="tab">Más</span>
+    </div>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Usuarios recientes ({{ usuariosRecientes.length }})</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let user of usuariosRecientes; let i = index" class="usuario-item" [class.zebra]="i % 2 === 1">
+            <ion-avatar slot="start" [ngClass]="'avatar-' + (user.rol ? user.rol.toLowerCase() : 'default')">
+              <span class="avatar-iniciales">
+                {{ (user.nombre ? user.nombre[0] : '') + (user.apellido ? user.apellido[0] : '') }}
+              </span>
+            </ion-avatar>
+            <ion-label>
+              <h3 class="truncate">{{ user.nombre }} {{ user.apellido }}</h3>
+              <p class="usuario-stats">
+                <span class="stat" [ngClass]="'rol-' + (user.rol ? user.rol.toLowerCase() : 'default')">{{ user.rol | titlecase }}</span>
+                <span class="stat">{{ user.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</span>
+              </p>
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button fill="clear" (click)="verUsuario(user)" title="Ver usuario">
+                <ion-icon name="eye-outline"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" (click)="editarUsuario(user)" title="Editar usuario">
+                <ion-icon name="create-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>

@@ -7,7 +7,7 @@
 }
 
 .login-content {
-  --background: var(--background-color);
+  --background: var(--color-background);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19,9 +19,10 @@
   max-width: 400px;
   margin: auto;
   padding: 2rem;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-medium);
+  border: 1px solid var(--color-border-light);
 }
 
 .header-section {
@@ -38,26 +39,32 @@
 .welcome-text {
   font-size: 1.8rem;
   font-weight: 600;
-  color: var(--text-color);
+  color: var(--color-text);
   margin-bottom: 0.5rem;
 }
 
 .subtitle-text {
   font-size: 1rem;
-  color: #666;
+  color: var(--color-text-light);
   margin-bottom: 2rem;
 }
 
 .login-form {
   .custom-input {
     margin-bottom: 1rem;
-    --background: #f8f9fa;
-    --border-radius: 8px;
+    --background: var(--color-gray);
+    --border-radius: var(--border-radius-sm);
     --padding-start: 1rem;
     --padding-end: 1rem;
+    border: 1px solid var(--color-border-light);
     
     &:hover {
-      --background: #f0f0f0;
+      --background: var(--color-gray-light);
+    }
+
+    &:focus-within {
+      border-color: var(--ekokai-primary);
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
     }
   }
 }
@@ -67,8 +74,12 @@
   align-items: center;
   gap: 0.5rem;
   margin: 0.5rem 0 1rem;
-  padding-left: 1rem;
+  padding: 0.75rem 1rem;
   font-size: 0.875rem;
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.2);
+  border-radius: var(--border-radius-sm);
+  color: var(--color-danger);
   
   ion-icon {
     font-size: 1rem;
@@ -77,7 +88,7 @@
 
 .options-row {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   margin: 1rem 0;
   
@@ -88,15 +99,17 @@
     ion-label {
       margin-left: 0.5rem;
       font-size: 0.9rem;
+      color: var(--color-text-light);
     }
   }
   
   .forgot-password {
     font-size: 0.9rem;
-    --color: var(--primary-color);
+    color: var(--ekokai-primary);
+    text-decoration: none;
     
     &:hover {
-      --color: var(--primary-color-shade);
+      color: var(--ekokai-primary-dark);
       text-decoration: underline;
     }
   }
@@ -104,15 +117,23 @@
 
 .login-button {
   margin-top: 1.5rem;
-  --border-radius: 8px;
-  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --border-radius: var(--border-radius-sm);
+  --box-shadow: var(--shadow-light);
+  --background: var(--ekokai-primary);
+  --color: var(--color-white);
+  height: 48px;
+  font-weight: 600;
   
   &:not([disabled]) {
-    --background: var(--primary-color);
-    
     &:hover {
-      --background: var(--primary-color-shade);
+      --background: var(--ekokai-primary-dark);
+      --box-shadow: var(--shadow-medium);
     }
+  }
+
+  &:disabled {
+    --background: var(--color-text-muted);
+    --color: var(--color-white);
   }
 }
 
@@ -142,5 +163,23 @@
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .login-container {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+
+  .welcome-text {
+    font-size: 1.5rem;
+  }
+
+  .options-row {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
   }
 }

@@ -1,19 +1,15 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { ListUsuarioComponent } from './list-usuario/list-usuario.component';
+import { Routes, RouterModule } from '@angular/router';
 import { FormUsuarioComponent } from './form-usuario/form-usuario.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: ListUsuarioComponent
+    redirectTo: 'crear',
+    pathMatch: 'full'
   },
   {
-    path: 'create',
-    component: FormUsuarioComponent
-  },
-  {
-    path: 'edit/:id',
+    path: 'crear',
     component: FormUsuarioComponent
   }
 ];

@@ -1,0 +1,340 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Gestión de Usuarios</ion-title>
+    <ion-buttons slot="end">
+      <ion-button id="crearUsuarioBtn" expand="block">
+        <ion-icon name="person-add-outline"></ion-icon>
+        Crear usuario
+      </ion-button>
+      <ion-popover trigger="crearUsuarioBtn" triggerAction="click" alignment="end">
+        <ng-template>
+          <ion-list class="popover-list">
+            <ion-item button (click)="crearUsuario('vecino')">
+              <ion-icon name="person-outline" slot="start"></ion-icon>
+              Crear vecino
+            </ion-item>
+            <ion-item button (click)="crearUsuario('encargado')">
+              <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+              Crear encargado
+            </ion-item>
+          </ion-list>
+        </ng-template>
+      </ion-popover>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="usuarios-container">
+    <!-- Filtros UX/UI moderno -->
+    <ion-card class="filters-bar">
+      <div class="filters-flex">
+        <ion-item lines="none" class="filter-item">
+          <ion-icon name="search-outline" slot="start"></ion-icon>
+          <ion-input [(ngModel)]="filtroNombre" placeholder="Buscar por nombre o email" clearInput></ion-input>
+        </ion-item>
+        <ion-item lines="none" class="filter-item">
+          <ion-icon name="people-outline" slot="start"></ion-icon>
+          <ion-select [(ngModel)]="filtroRol" placeholder="Rol">
+            <ion-select-option value="">Todos</ion-select-option>
+            <ion-select-option *ngFor="let rol of roles" [value]="rol">{{ rol }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item lines="none" class="filter-item">
+          <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+          <ion-select [(ngModel)]="filtroEstado" placeholder="Estado">
+            <ion-select-option value="">Todos</ion-select-option>
+            <ion-select-option *ngFor="let estado of estados" [value]="estado">{{ estado }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-button fill="clear" color="medium" class="clear-filters-btn" (click)="limpiarFiltros()">
+          <ion-icon name="close-circle-outline"></ion-icon>
+          Limpiar
+        </ion-button>
+      </div>
+    </ion-card>
+
+    <!-- Estadísticas rápidas -->
+    <div class="stats-grid">
+      <ion-card class="stat-card">
+        <ion-card-content>
+          <div class="stat-icon bg-primary">
+            <ion-icon name="people-outline"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ estadisticas.total }}</h3>
+            <p>Total usuarios</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="stat-card">
+        <ion-card-content>
+          <div class="stat-icon bg-success">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ estadisticas.activos }}</h3>
+            <p>Usuarios activos</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="stat-card">
+        <ion-card-content>
+          <div class="stat-icon bg-warning">
+            <ion-icon name="leaf-outline"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ estadisticas.totalKilos | number:'1.0-0' }}</h3>
+            <p>Kg reciclados</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="stat-card">
+        <ion-card-content>
+          <div class="stat-icon bg-info">
+            <ion-icon name="star-outline"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ estadisticas.totalTokens | number:'1.0-0' }}</h3>
+            <p>Tokens totales</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="charts-section">
+      <ion-card class="chart-card">
+        <ion-card-header>
+          <ion-card-title>Distribución por Rol</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <canvas baseChart
+            [data]="pieChartData"
+            [type]="pieChartType"
+            [options]="pieChartOptions">
+          </canvas>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="chart-card">
+        <ion-card-header>
+          <ion-card-title>Top 10 Usuarios</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <canvas baseChart
+            [data]="barChartData"
+            [type]="barChartType"
+            [options]="barChartOptions">
+          </canvas>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Lista de usuarios -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Usuarios ({{ usuariosFiltrados.length }})</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let usuario of usuariosFiltrados; let i = index" class="usuario-item" [class.zebra]="i % 2 === 1">
+            <ion-avatar slot="start" [ngClass]="'avatar-' + (usuario.rol || 'default')">
+              <span class="avatar-iniciales">
+                {{ (usuario.nombre ? usuario.nombre[0] : '') + (usuario.apellido ? usuario.apellido[0] : '') }}
+              </span>
+            </ion-avatar>
+            <ion-label>
+              <h3 class="truncate">{{ usuario.nombre }} {{ usuario.apellido }}</h3>
+              <p class="truncate">{{ usuario.email }}</p>
+              <p class="usuario-stats">
+                <span class="stat" [ngClass]="{'rol-admin': usuario.rol === 'administrador', 'rol-encargado': usuario.rol === 'encargado', 'rol-vecino': usuario.rol === 'vecino'}">{{ usuario.rol || 'Sin rol' }}</span>
+                <span class="stat" [class.active]="usuario.activo" [class.inactive]="!usuario.activo">
+                  {{ usuario.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+                <span class="stat">{{ usuario.kilosTotal || 0 }} kg total</span>
+                <span class="stat">{{ usuario.tokens || 0 }} tokens</span>
+              </p>
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button fill="clear" (click)="verHistorial(usuario)" title="Ver historial">
+                <ion-icon name="eye-outline"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" (click)="editarUsuario(usuario)" title="Editar usuario">
+                <ion-icon name="create-outline"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" (click)="toggleEstado(usuario)" [title]="usuario.activo ? 'Desactivar' : 'Activar'">
+                <ion-icon [name]="usuario.activo ? 'pause-outline' : 'play-outline'"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" color="danger" (click)="eliminarUsuario(usuario)" title="Eliminar usuario">
+                <ion-icon name="trash-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+
+<!-- Modal para crear encargado -->
+<ion-modal [isOpen]="showCrearEncargadoModal" (didDismiss)="cerrarCrearEncargadoModal()" [presentingElement]="null">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Crear Encargado</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarCrearEncargadoModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <form (ngSubmit)="guardarEncargado()" #encargadoFormRef="ngForm">
+        <ion-item>
+          <ion-label position="stacked">Nombre *</ion-label>
+          <ion-input [(ngModel)]="encargadoForm.nombre" name="nombre" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Apellido *</ion-label>
+          <ion-input [(ngModel)]="encargadoForm.apellido" name="apellido" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">DNI *</ion-label>
+          <ion-input [(ngModel)]="encargadoForm.dni" name="dni" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Email *</ion-label>
+          <ion-input [(ngModel)]="encargadoForm.email" name="email" type="email" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Contraseña *</ion-label>
+          <ion-input [(ngModel)]="encargadoForm.password" name="password" type="password" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Teléfono *</ion-label>
+          <ion-input [(ngModel)]="encargadoForm.telefono" name="telefono" required></ion-input>
+        </ion-item>
+        <div class="modal-actions">
+          <ion-button fill="outline" type="button" (click)="cerrarCrearEncargadoModal()" [disabled]="creandoEncargado">
+            Cancelar
+          </ion-button>
+          <ion-button type="submit" color="success" [disabled]="creandoEncargado || !encargadoFormRef.valid">
+            <ion-icon name="save-outline" slot="start" *ngIf="!creandoEncargado"></ion-icon>
+            <ion-spinner name="crescent" *ngIf="creandoEncargado"></ion-spinner>
+            {{ creandoEncargado ? 'Guardando...' : 'Crear Encargado' }}
+          </ion-button>
+        </div>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Modal para crear vecino -->
+<ion-modal [isOpen]="showCrearVecinoModal" (didDismiss)="cerrarCrearVecinoModal()" [presentingElement]="null">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Crear Vecino</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarCrearVecinoModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <form (ngSubmit)="guardarVecino()" #vecinoFormRef="ngForm">
+        <ion-item>
+          <ion-label position="stacked">Nombre *</ion-label>
+          <ion-input [(ngModel)]="vecinoForm.nombre" name="nombre" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Apellido *</ion-label>
+          <ion-input [(ngModel)]="vecinoForm.apellido" name="apellido" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">DNI *</ion-label>
+          <ion-input [(ngModel)]="vecinoForm.dni" name="dni" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Email *</ion-label>
+          <ion-input [(ngModel)]="vecinoForm.email" name="email" type="email" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Contraseña *</ion-label>
+          <ion-input [(ngModel)]="vecinoForm.password" name="password" type="password" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Teléfono *</ion-label>
+          <ion-input [(ngModel)]="vecinoForm.telefono" name="telefono" required></ion-input>
+        </ion-item>
+        <div class="modal-actions">
+          <ion-button fill="outline" type="button" (click)="cerrarCrearVecinoModal()" [disabled]="creandoVecino">
+            Cancelar
+          </ion-button>
+          <ion-button type="submit" color="success" [disabled]="creandoVecino || !vecinoFormRef.valid">
+            <ion-icon name="save-outline" slot="start" *ngIf="!creandoVecino"></ion-icon>
+            <ion-spinner name="crescent" *ngIf="creandoVecino"></ion-spinner>
+            {{ creandoVecino ? 'Guardando...' : 'Crear Vecino' }}
+          </ion-button>
+        </div>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal> 
+<!-- Modal para editar usuario -->
+<ion-modal [isOpen]="showEditarUsuarioModal" (didDismiss)="cerrarEditarUsuarioModal()" [presentingElement]="null">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Editar Usuario</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarEditarUsuarioModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <form (ngSubmit)="guardarCambiosUsuario()" #editarUsuarioFormRef="ngForm">
+        <ion-item>
+          <ion-label position="stacked">Nombre *</ion-label>
+          <ion-input [(ngModel)]="usuarioEditando.nombre" name="nombre" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Apellido *</ion-label>
+          <ion-input [(ngModel)]="usuarioEditando.apellido" name="apellido" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">DNI *</ion-label>
+          <ion-input [(ngModel)]="usuarioEditando.dni" name="dni" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Email *</ion-label>
+          <ion-input [(ngModel)]="usuarioEditando.email" name="email" type="email" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Teléfono *</ion-label>
+          <ion-input [(ngModel)]="usuarioEditando.telefono" name="telefono" required></ion-input>
+        </ion-item>
+
+        <div class="modal-actions">
+          <ion-button fill="outline" type="button" (click)="cerrarEditarUsuarioModal()" [disabled]="guardandoCambios">
+            Cancelar
+          </ion-button>
+          <ion-button type="submit" color="success" [disabled]="guardandoCambios || !editarUsuarioFormRef.valid">
+            <ion-icon name="save-outline" slot="start" *ngIf="!guardandoCambios"></ion-icon>
+            <ion-spinner name="crescent" *ngIf="guardandoCambios"></ion-spinner>
+            {{ guardandoCambios ? 'Guardando...' : 'Guardar cambios' }}
+          </ion-button>
+        </div>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>

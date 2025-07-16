@@ -1,9 +1,9 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
+      <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ isEdit ? 'Editar Usuario' : 'Nuevo Usuario' }}</ion-title>
+    <ion-title>Crear Vecino</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -15,63 +15,114 @@
   <span class="breadcrumb-current">{{ isEdit ? 'Editar' : 'Crear' }}</span>
 </div> -->
 
-<ion-content>
-  <div class="page-container">
-    <div class="header">
-      <h1>{{ isEdit ? 'Editar Usuario' : 'Nuevo Usuario' }}</h1>
+<ion-content [fullscreen]="true">
+  <div class="form-container">
+    <div class="form-header">
+      <h2>Registrar Nuevo Vecino</h2>
+      <p>Completa la información para crear una nueva cuenta de vecino</p>
     </div>
 
-    <form [formGroup]="usuarioForm" (ngSubmit)="guardar()" class="form-container">
+    <form [formGroup]="usuarioForm" (ngSubmit)="guardar()">
+      <div class="form-card">
       <div class="form-section">
-        <h2>Información Personal</h2>
+          <h3>Información Personal</h3>
 
-        <ion-item *ngIf="isEdit">
-          <ion-label position="stacked">Codigo</ion-label>
-          <ion-input formControlName="code" type="text" placeholder="Codigo de usuario"></ion-input>
+          <ion-item class="form-item">
+            <ion-label position="stacked">Nombre Completo *</ion-label>
+            <ion-input 
+              formControlName="name" 
+              type="text" 
+              placeholder="Ingresa el nombre completo"
+              class="form-input">
+            </ion-input>
         </ion-item>
 
-        <ion-item>
-          <ion-label position="stacked">Nombre</ion-label>
-          <ion-input formControlName="name" type="text" placeholder="Nombre completo"></ion-input>
+          <ion-item class="form-item">
+            <ion-label position="stacked">Email *</ion-label>
+            <ion-input 
+              formControlName="email" 
+              type="email" 
+              placeholder="ejemplo@email.com"
+              class="form-input">
+            </ion-input>
         </ion-item>
 
-        <ion-item>
-          <ion-label position="stacked">Email</ion-label>
-          <ion-input formControlName="email" type="email" placeholder="email@ejemplo.com"></ion-input>
+          <ion-item class="form-item">
+            <ion-label position="stacked">Teléfono</ion-label>
+            <ion-input 
+              formControlName="phone" 
+              type="tel" 
+              placeholder="Número de teléfono"
+              class="form-input">
+            </ion-input>
         </ion-item>
 
-        <ion-item>
-          <ion-label position="stacked">Teléfono</ion-label>
-          <ion-input formControlName="phone" type="tel" placeholder="Número de teléfono"></ion-input>
+          <ion-item class="form-item">
+            <ion-label position="stacked">Dirección</ion-label>
+            <ion-input 
+              formControlName="address" 
+              type="text" 
+              placeholder="Dirección completa"
+              class="form-input">
+            </ion-input>
         </ion-item>
       </div>
 
       <div class="form-section">
-        <h2>Configuración de Cuenta</h2>
-        <ion-item>
-          <ion-label position="stacked">Rol</ion-label>
-          <ion-select formControlName="role" placeholder="Seleccione un rol">
-            <ion-select-option value="worker">Trabajador</ion-select-option>
-            <ion-select-option value="admin">Administrador</ion-select-option>
-          </ion-select>
+          <h3>Configuración de Cuenta</h3>
+          
+          <div class="role-toggle">
+            <ion-label>Tipo de Usuario:</ion-label>
+            <ion-segment formControlName="role" value="vecino">
+              <ion-segment-button value="vecino">
+                <ion-label>Vecino</ion-label>
+              </ion-segment-button>
+              <ion-segment-button value="worker">
+                <ion-label>Encargado</ion-label>
+              </ion-segment-button>
+            </ion-segment>
+          </div>
+
+          <ion-item class="form-item">
+            <ion-label position="stacked">Contraseña *</ion-label>
+            <ion-input 
+              formControlName="password" 
+              type="password" 
+              placeholder="Contraseña segura (mínimo 6 caracteres)"
+              class="form-input">
+            </ion-input>
         </ion-item>
 
-        <ion-item>
-          <ion-label>Junior</ion-label>
-          <ion-toggle formControlName="junior"></ion-toggle>
+          <ion-item class="form-item">
+            <ion-label position="stacked">Confirmar Contraseña *</ion-label>
+            <ion-input 
+              formControlName="confirmPassword" 
+              type="password" 
+              placeholder="Repite la contraseña"
+              class="form-input">
+            </ion-input>
         </ion-item>
 
-        <ion-item *ngIf="!isEdit">
-          <ion-label position="stacked">Contraseña</ion-label>
-          <ion-input formControlName="password" type="password" placeholder="Contraseña segura"></ion-input>
+          <ion-item class="form-item">
+            <ion-label>Usuario Activo</ion-label>
+            <ion-toggle formControlName="active" checked></ion-toggle>
         </ion-item>
+        </div>
       </div>
 
       <div class="form-actions">
-        <ion-button expand="block" type="submit" [disabled]="usuarioForm.invalid">
-          {{ isEdit ? 'Actualizar' : 'Crear' }}
+        <ion-button 
+          type="submit" 
+          [disabled]="usuarioForm.invalid || loading"
+          class="save-btn">
+          <ion-icon name="save-outline" slot="start"></ion-icon>
+          {{ loading ? 'Guardando...' : 'Crear Vecino' }}
         </ion-button>
-        <ion-button expand="block" fill="outline" (click)="cancelar()">
+        <ion-button 
+          fill="outline" 
+          (click)="cancelar()"
+          class="cancel-btn">
+          <ion-icon name="close-outline" slot="start"></ion-icon>
           Cancelar
         </ion-button>
       </div>

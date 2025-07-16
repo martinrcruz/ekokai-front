@@ -2,12 +2,13 @@
  * Variables de color principal
  **********************************************************/
  :root {
-  --ion-color-primary: #BD1E1E;
+
+  --ion-color-primary: #44ba44 ;
   --ion-color-primary-rgb: 189,30,30;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255,255,255;
-  --ion-color-primary-shade: #a51b1b;
-  --ion-color-primary-tint: #c83b3b;
+  --ion-color-primary-shade: #a7b68e;
+  --ion-color-primary-tint: #7ac83b;
 }
 
 /* Para la mayoría de los botones (no los de editar/eliminar) */
@@ -25,119 +26,193 @@ ion-button:not(.edit-btn):not(.delete-btn):not(.cerrar-sesion-btn) {
 /**********************************************************
  * Menú Lateral
  **********************************************************/
-ion-menu ion-content {
-  --background: var(--ion-item-background, var(--ion-background-color, #fff));
+/* Forzar fondo verde en TODOS los elementos del menú lateral */
+ion-menu, 
+ion-menu ion-header, 
+ion-menu ion-footer, 
+ion-menu ion-toolbar, 
+ion-menu ion-title {
+  background: #44ba44 !important;
+  color: #fff !important;
 }
 
-ion-menu.md ion-content {
-  --padding-start: 8px;
-  --padding-end: 8px;
-  --padding-top: 20px;
-  --padding-bottom: 20px;
+/* Elimino fondo y altura en los internos para no tapar el footer */
+div.menu-inner, 
+ion-menu .menu-inner, 
+ion-menu .content-inner, 
+ion-menu ion-content, 
+ion-menu ion-content .inner-scroll, 
+ion-menu ion-content .scroll-content, 
+ion-menu ion-content .ion-content-scroll-host {
+  background: none !important;
+  /* height: auto; */
+  /* min-height: auto; */
+  /* --background: none !important; */
 }
 
-ion-menu.md ion-list {
-  padding: 20px 0;
+ion-menu ion-item, ion-menu ion-item ion-label, ion-menu ion-item ion-icon {
+  color: #fff !important;
 }
 
-ion-menu.md ion-note {
-  margin-bottom: 30px;
-}
-
-ion-menu.md ion-list-header,
-ion-menu.md ion-note {
-  padding-left: 10px;
-}
-
-ion-menu.md ion-list#inbox-list {
-  border-bottom: 1px solid var(--ion-background-color-step-150, #d7d8da);
-}
-
-ion-menu.md ion-list#inbox-list ion-list-header {
-  font-size: 22px;
-  font-weight: 600;
-  min-height: 20px;
-}
-
-ion-menu.md ion-list#labels-list ion-list-header {
-  font-size: 16px;
-  margin-bottom: 18px;
-  color: #757575;
-  min-height: 26px;
-}
-
-ion-menu.md ion-item {
-  --padding-start: 10px;
-  --padding-end: 10px;
-  border-radius: 4px;
-}
-
-ion-menu.md ion-item.selected {
-  --background: rgba(var(--ion-color-primary-rgb), 0.14);
-}
-
-ion-menu.md ion-item.selected ion-icon {
-  color: white !important;
-}
-
-ion-menu.md ion-item ion-icon {
-  color: #616e7e;
-}
-
-ion-menu.md ion-item ion-label {
+ion-menu ion-item {
+  --background: transparent;
+  --color: #fff;
   font-weight: 500;
-}
-
-ion-menu.ios ion-content {
-  --padding-bottom: 20px;
-}
-
-ion-menu.ios ion-list {
-  padding: 20px 0 0 0;
-}
-
-ion-menu.ios ion-note {
-  line-height: 24px;
-  margin-bottom: 20px;
-}
-
-ion-menu.ios ion-item {
+  border-radius: 8px;
+  margin: 4px 8px;
+  transition: background 0.2s;
   --padding-start: 16px;
   --padding-end: 16px;
-  --min-height: 50px;
+  --inner-padding-end: 0;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+}
+ion-menu ion-item.selected, ion-menu ion-item:focus, ion-menu ion-item:hover {
+  --background: #369a36 !important;
+  --color: #fff !important;
+  color: #fff !important;
+}
+ion-menu ion-item.selected ion-icon, ion-menu ion-item:focus ion-icon, ion-menu ion-item:hover ion-icon {
+  color: #fff !important;
 }
 
-ion-menu.ios ion-item.selected ion-icon {
-  color: white !important;
+.cerrar-sesion-btn {
+  background: #44ba44 !important;
+  color: #fff !important;
+  border-radius: 10px;
+  font-weight: 600;
+
+  margin: 15 10px;
+  box-shadow: 0 2px 8px rgba(68,186,68,0.08);
+  border: 2px solid #fff;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.cerrar-sesion-btn:hover, .cerrar-sesion-btn:focus {
+  background: #369a36 !important;
+  color: #fff !important;
 }
 
-ion-menu.ios ion-item ion-icon {
-  font-size: 24px;
-  color: #73849a;
+ion-menu ion-toolbar.footer-toolbar {
+  background: #44ba44 !important;
+  color: #fff !important;
+  border: none;
 }
 
-ion-menu.ios ion-list#labels-list ion-list-header {
-  margin-bottom: 8px;
+ion-menu ion-list-header {
+  display: none !important;
 }
 
-ion-menu.ios ion-list-header,
-ion-menu.ios ion-note {
-  padding-left: 16px;
-  padding-right: 16px;
+ion-menu {
+  --width: 200px !important;
+  width: 200px !important;
+  max-width: 220px !important;
+  background: #44ba44 !important;
+  box-shadow: 2px 0 16px rgba(0,0,0,0.07);
+  height: 100vh !important;
+  --background: #44ba44 !important;
 }
-
-ion-menu.ios ion-note {
-  margin-bottom: 8px;
+ion-menu .menu-inner,
+ion-menu .content-inner {
+  /* min-height: 100vh; */
+  /* height: 100vh; */
 }
-
-ion-note {
-  display: inline-block;
-  font-size: 16px;
-  color: var(--ion-color-medium-shade);
+ion-menu ion-content {
+  /* height: 100%; */
+  /* min-height: 100vh; */
 }
-
-ion-item.selected {
-  --color: var(--ion-color-primary);
+/* Forzar fondo verde en el overlay del menú */
+ion-menu.overlay-visible {
+  background: #44ba44 !important;
+  --background: #44ba44 !important;
+}
+ion-menu.overlay-visible .menu-inner {
+  background: #44ba44 !important;
+  --background: #44ba44 !important;
+}
+ion-menu ion-header {
+  background: #44ba44 !important;
+  border-radius: 0;
+  border-bottom: none;
+  padding: 24px 0 0 0;
+}
+ion-menu ion-title {
+  color: #fff !important;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-left: 12px;
+}
+ion-menu ion-list {
+  background: transparent;
+  margin-top: 24px;
+}
+ion-menu ion-list-header {
+  display: none !important;
+}
+ion-menu ion-item {
+  --background: transparent;
+  --color: #fff;
+  font-weight: 500;
+  border-radius: 8px;
+  margin: 4px 8px;
+  transition: background 0.2s;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --inner-padding-end: 0;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+}
+ion-menu ion-item.selected, ion-menu ion-item:focus, ion-menu ion-item:hover {
+  --background: #369a36;
+  --color: #fff;
+  color: #fff !important;
+}
+ion-menu ion-item.selected ion-icon, ion-menu ion-item:focus ion-icon, ion-menu ion-item:hover ion-icon {
+  color: #fff !important;
+}
+ion-menu ion-item ion-icon {
+  font-size: 1.2rem;
+  margin-right: 12px;
+  color: #fff;
+  transition: color 0.2s;
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+}
+ion-menu ion-footer {
+  background: #44ba44 !important;
+  border-top: none;
+  padding: 0 0 18px 0;
+}
+@media (max-width: 900px) {
+  ion-menu {
+    --width: 100vw !important;
+    min-width: 100vw !important;
+    max-width: 100vw !important;
+    border-radius: 0;
+    background: #44ba44 !important;
+    --background: #44ba44 !important;
+  }
+  ion-menu .menu-inner {
+    border-radius: 0;
+    background: #44ba44 !important;
+    --background: #44ba44 !important;
+  }
+  /* Asegurar que el overlay en móvil también sea verde */
+  ion-menu.overlay-visible {
+    background: #44ba44 !important;
+    --background: #44ba44 !important;
+  }
+  ion-menu.overlay-visible .menu-inner {
+    background: #44ba44 !important;
+    --background: #44ba44 !important;
+  }
 }
 
 /**********************************************************
@@ -186,3 +261,119 @@ ion-item.selected {
 .tag-corr { background-color: #dc3545; }
 .tag-visit { background-color: #28a745; }
 .tag-other { background-color: #6c757d; }
+
+/* Refuerzo para eliminar cualquier fondo blanco en el sidebar menu */
+ion-menu,
+ion-menu .menu-inner,
+ion-menu .content-inner,
+ion-menu ion-content,
+ion-menu ion-content .inner-scroll,
+ion-menu ion-content .scroll-content,
+ion-menu ion-content .ion-content-scroll-host,
+ion-menu .ion-page,
+ion-menu .ion-page .ion-page,
+ion-menu .ion-page .ion-page .ion-page {
+  background: #44ba44 !important;
+  --background: #44ba44 !important;
+}
+
+ion-menu ion-content {
+  --background: #44ba44 !important;
+  background: #44ba44 !important;
+  height: 100%;
+  min-height: 100vh;
+}
+ion-menu .menu-inner,
+ion-menu .content-inner {
+  /* min-height: 100vh; */
+  /* height: 100vh; */
+}
+ion-menu .inner-scroll,
+ion-menu .scroll-content,
+ion-menu .ion-content-scroll-host {
+  background: #44ba44 !important;
+  --background: #44ba44 !important;
+}
+
+/* Ítem de cerrar sesión como opción del menú, con separación y padding igual a los otros ítems */
+ion-menu .cerrar-sesion-item {
+  margin-top: 48px;
+  margin-bottom: 8px;
+  padding-left: 16px;
+  padding-right: 16px;
+  min-height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  background: #44ba44 !important;
+  color: #fff !important;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+ion-menu .cerrar-sesion-item:hover,
+ion-menu .cerrar-sesion-item:focus {
+  background: #369a36 !important;
+  color: #fff !important;
+}
+
+.menu-flex-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100vh;
+}
+.menu-flex-container ion-list {
+  flex: 1 1 auto;
+}
+.menu-flex-container .cerrar-sesion-item {
+  flex-shrink: 0;
+  margin-top: auto;
+  margin-bottom: 8px;
+  padding-left: 16px;
+  padding-right: 16px;
+  min-height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  background: #44ba44 !important;
+  color: #fff !important;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.menu-flex-container .cerrar-sesion-item:hover,
+.menu-flex-container .cerrar-sesion-item:focus {
+  background: #369a36 !important;
+  color: #fff !important;
+}
+
+ion-content.sidebar-content-flex {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100vh;
+}
+ion-content.sidebar-content-flex ion-list {
+  flex: 1 1 auto;
+}
+.sidebar-logout-btn-container {
+  margin-top: auto;
+  padding: 0 8px 0 8px;
+  display: flex;
+}
+.sidebar-logout-btn {
+  width: 100%;
+  border-radius: 10px;
+  font-weight: 600;
+  background: #44ba44 !important;
+  color: #fff !important;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(68,186,68,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.sidebar-logout-btn:hover, .sidebar-logout-btn:focus {
+  background: #369a36 !important;
+  color: #fff !important;
+}

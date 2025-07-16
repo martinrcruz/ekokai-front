@@ -5,7 +5,7 @@
 
 .page-container {
   padding: 16px;
-  background: var(--ion-color-light);
+  background: var(--color-background);
   min-height: 100vh;
 }
 
@@ -19,16 +19,17 @@
     margin: 0;
     font-size: 24px;
     font-weight: 600;
-    color: var(--ion-color-dark);
+    color: var(--color-text);
   }
 }
 
 .form-container {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: var(--color-white);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-light);
   padding: 20px;
   margin-bottom: 20px;
+  border: 1px solid var(--color-border-light);
 }
 
 .form-section {
@@ -37,25 +38,32 @@
   h2 {
     font-size: 1.1rem;
     font-weight: 600;
-    color: var(--ion-color-dark);
+    color: var(--color-text);
     margin-bottom: 16px;
     padding-bottom: 8px;
-    border-bottom: 1px solid var(--ion-color-light-shade);
+    border-bottom: 1px solid var(--color-border);
   }
 
   ion-item {
-    --background: var(--ion-color-light);
-    --border-radius: 8px;
+    --background: var(--color-gray);
+    --border-radius: var(--border-radius-sm);
     --padding-start: 12px;
     --padding-end: 12px;
     margin-bottom: 12px;
+    border: 1px solid var(--color-border-light);
+    transition: all 0.2s ease;
 
     &:last-child {
       margin-bottom: 0;
     }
 
+    &:focus-within {
+      border-color: var(--ekokai-primary);
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+    }
+
     ion-label {
-      color: var(--ion-color-dark);
+      color: var(--color-text);
       font-weight: 500;
       margin-bottom: 8px;
     }
@@ -63,8 +71,8 @@
     ion-input, ion-select, ion-datetime, ion-textarea {
       --padding-start: 12px;
       --padding-end: 12px;
-      --background: white;
-      --border-radius: 4px;
+      --background: var(--color-white);
+      --border-radius: var(--border-radius-sm);
       font-size: 0.9rem;
       margin-top: 4px;
     }
@@ -78,22 +86,33 @@
   margin-top: 24px;
 
   ion-button {
-    --border-radius: 8px;
-    --box-shadow: none;
+    --border-radius: var(--border-radius-sm);
+    --box-shadow: var(--shadow-light);
     font-size: 1rem;
     font-weight: 500;
     height: 48px;
+    transition: all 0.2s ease;
 
     &[type="submit"] {
-      --background: var(--ion-color-primary);
-      --background-activated: var(--ion-color-primary-shade);
-      --background-hover: var(--ion-color-primary-tint);
+      --background: var(--ekokai-primary);
+      --background-activated: var(--ekokai-primary-dark);
+      --background-hover: var(--ekokai-primary-dark);
+      --color: var(--color-white);
+
+      &:hover {
+        box-shadow: var(--shadow-medium);
+      }
     }
 
     &[fill="outline"] {
       --background: transparent;
-      --color: var(--ion-color-medium);
-      --border-color: var(--ion-color-medium);
+      --color: var(--color-text);
+      --border-color: var(--color-border);
+
+      &:hover {
+        --background: var(--color-gray);
+        box-shadow: var(--shadow-medium);
+      }
     }
   }
 }
@@ -103,18 +122,19 @@
   margin-bottom: 20px;
 
   ion-item {
-    --background: var(--ion-color-light);
-    --border-radius: 8px;
+    --background: var(--color-gray);
+    --border-radius: var(--border-radius-sm);
     --padding-start: 12px;
     --padding-end: 12px;
+    border: 1px solid var(--color-border-light);
   }
 
   input[type="file"] {
     width: 100%;
     padding: 8px;
-    border: 1px dashed var(--ion-color-medium);
-    border-radius: 4px;
-    background: white;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--border-radius-sm);
+    background: var(--color-white);
   }
 }
 
@@ -130,8 +150,8 @@
     width: 150px;
     height: 150px;
     object-fit: cover;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-light);
   }
 
   ion-button {
@@ -145,7 +165,7 @@
 
 // Estilos para validación de formularios
 .form-error {
-  color: var(--ion-color-danger);
+  color: var(--color-danger);
   font-size: 0.8rem;
   margin-top: 4px;
   margin-left: 12px;
@@ -154,7 +174,7 @@
 }
 
 ion-item.invalid {
-  --border-color: var(--ion-color-danger);
+  --border-color: var(--color-danger);
   --border-width: 1px;
   --border-style: solid;
   animation: shake 0.4s ease-in-out;
@@ -170,7 +190,7 @@ ion-item.invalid {
 // Estilo para elementos con validación required
 ion-item.required ion-label::after {
   content: " *";
-  color: var(--ion-color-danger);
+  color: var(--color-danger);
 }
 
 // Estilos para modales de selección
@@ -179,12 +199,56 @@ ion-item.required ion-label::after {
 
   ion-searchbar {
     --box-shadow: none;
-    --background: var(--ion-color-light);
-    --border-radius: 8px;
-    --placeholder-color: var(--ion-color-medium);
+    --background: var(--color-gray);
+    --border-radius: var(--border-radius-sm);
+    --placeholder-color: var(--color-text-muted);
   }
 
   ion-list {
     margin-top: 16px;
+  }
+}
+
+// Estilos específicos para formularios de usuario
+.form-item {
+  --background: var(--color-gray);
+  --border-radius: var(--border-radius-sm);
+  --padding-start: 16px;
+  --padding-end: 16px;
+  margin-bottom: 16px;
+  border: 1px solid var(--color-border-light);
+  transition: all 0.2s ease;
+
+  &:focus-within {
+    border-color: var(--ekokai-primary);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+  }
+
+  ion-label {
+    color: var(--color-text);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  ion-input, ion-select, ion-textarea {
+    --background: var(--color-white);
+    --border-radius: var(--border-radius-sm);
+    --padding-start: 12px;
+    --padding-end: 12px;
+    font-size: 1rem;
+    margin-top: 4px;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .form-container {
+    padding: 16px;
+  }
+
+  .form-actions {
+    ion-button {
+      width: 100%;
+    }
   }
 } 

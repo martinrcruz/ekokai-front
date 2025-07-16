@@ -1,0 +1,291 @@
+.ecopuntos-container {
+  padding: 16px;
+  background: var(--color-background);
+  min-height: 100vh;
+
+  .filters-bar {
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-light);
+    border-radius: var(--border-radius-md);
+    padding: 12px 20px;
+    background: var(--color-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .filters-flex {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      width: 100%;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .filter-item {
+      flex: 1 1 180px;
+      min-width: 180px;
+      max-width: 260px;
+      background: var(--color-gray-light);
+      border-radius: 8px;
+      margin: 0;
+      --background: var(--color-gray-light);
+      --padding-start: 8px;
+      --padding-end: 8px;
+      --inner-padding-end: 0;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      ion-icon {
+        font-size: 1.2rem;
+        color: var(--ekokai-primary);
+        margin-right: 8px;
+      }
+      ion-input, ion-select {
+        font-size: 1rem;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        width: 100%;
+        min-width: 0;
+      }
+    }
+
+    .clear-filters-btn {
+      margin-left: 8px;
+      color: var(--color-danger);
+      font-weight: 500;
+      --background: transparent;
+      --color: var(--color-danger);
+      ion-icon {
+        margin-right: 4px;
+      }
+    }
+  }
+
+  .chart-card {
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--color-border-light);
+    margin-bottom: 24px;
+
+    canvas {
+      max-height: 300px;
+    }
+  }
+
+  ion-list {
+    .ecopunto-item {
+      --padding-start: 16px;
+      --padding-end: 16px;
+      --inner-padding-end: 0;
+      margin-bottom: 8px;
+      border-radius: var(--border-radius-sm);
+      border: 1px solid var(--color-border-light);
+      transition: all 0.2s ease;
+      align-items: flex-start;
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-medium);
+      }
+
+      ion-avatar {
+        width: 40px;
+        height: 40px;
+        background: var(--ekokai-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        ion-icon {
+          font-size: 20px;
+          color: var(--color-white);
+        }
+
+        .avatar-encargado-nombre {
+          color: var(--color-white);
+          font-weight: 600;
+          font-size: 0.85rem;
+          text-align: center;
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          white-space: normal;
+          line-height: 1.1;
+          padding: 0 2px;
+        }
+      }
+
+      ion-label {
+        h3 {
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: var(--color-text);
+          margin-bottom: 4px;
+        }
+
+        p {
+          font-size: 0.9rem;
+          color: var(--color-text-light);
+          margin-bottom: 8px;
+        }
+
+        .ecopunto-stats {
+          display: flex;
+          gap: 16px;
+          flex-wrap: wrap;
+
+          .stat {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            background: var(--color-gray);
+            padding: 4px 8px;
+            border-radius: 12px;
+          }
+        }
+
+        .encargado-asignado {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          background: var(--ekokai-primary);
+          color: var(--color-white);
+          padding: 6px 12px;
+          border-radius: 16px;
+          margin-top: 8px;
+          font-size: 0.85rem;
+          font-weight: 500;
+          max-width: fit-content;
+
+          ion-icon {
+            font-size: 1rem;
+            color: var(--color-white);
+          }
+
+          span {
+            color: var(--color-white);
+            font-weight: 500;
+          }
+        }
+      }
+
+      .truncate {
+        max-width: 120px;
+      }
+    }
+  }
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+// Modal styles
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border-light);
+}
+
+// Estilos para el modal de enrolamiento
+.ecopunto-info {
+  margin-bottom: 20px;
+  
+  ion-card {
+    margin: 0;
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-light);
+    
+    ion-card-header {
+      padding: 16px;
+      
+      ion-card-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--color-text);
+        margin-bottom: 4px;
+      }
+      
+      ion-card-subtitle {
+        font-size: 0.9rem;
+        color: var(--color-text-light);
+      }
+    }
+  }
+}
+
+.no-encargados {
+  margin: 20px 0;
+  
+  ion-card {
+    border-radius: var(--border-radius-md);
+    
+    ion-card-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      
+      ion-icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+      }
+      
+      p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--color-text);
+        line-height: 1.4;
+      }
+    }
+  }
+}
+
+// Botón de enrolar mejorado
+ion-button[color="success"] {
+  --background: var(--ekokai-primary);
+  --color: var(--color-white);
+  --border-radius: 8px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  
+  &:hover {
+    --background: var(--ekokai-primary-dark);
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .ecopuntos-container {
+    padding: 8px;
+
+    .filters-bar .filters-flex {
+      flex-direction: column;
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .filters-bar .filter-item {
+      min-width: 120px;
+      max-width: 100%;
+    }
+
+    .truncate {
+      max-width: 100px;
+    }
+
+    .modal-actions {
+      flex-direction: column;
+    }
+  }
+} 

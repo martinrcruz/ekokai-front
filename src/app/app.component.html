@@ -10,13 +10,11 @@
         </ion-toolbar>
       </ion-header>
 
-      <ion-content>
+      <ion-content class="sidebar-content-flex">
         <ion-list>
-          <ion-list-header>Secciones</ion-list-header>
-
+          <!-- <ion-list-header>Secciones</ion-list-header> -->
           <!-- Recorremos appPages -->
           <ng-container *ngFor="let p of appPages">
-            
             <!-- Si NO tiene subpages, es un item normal -->
             <ion-menu-toggle auto-hide="false" *ngIf="!p.subpages">
               <ion-item
@@ -28,7 +26,6 @@
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>
             </ion-menu-toggle>
-
             <!-- Si TIENE subpages, es un menú desplegable -->
             <div *ngIf="p.subpages">
               <!-- Item principal del submenú -->
@@ -41,7 +38,6 @@
                   slot="end">
                 </ion-icon>
               </ion-item>
-
               <!-- Sub-items, visibles si expanded = true -->
               <ion-list *ngIf="p.expanded">
                 <ion-menu-toggle auto-hide="false" *ngFor="let sp of p.subpages">
@@ -59,19 +55,14 @@
               </ion-list>
             </div>
           </ng-container>
-
         </ion-list>
-      </ion-content>
-
-      <ion-footer>
-        <ion-toolbar class="footer-toolbar ">
-          <ion-button expand="full" (click)="logout()" class="logout-button cerrar-sesion-btn">
+        <div class="sidebar-logout-btn-container">
+          <ion-button expand="full" (click)="logout()" class="logout-button cerrar-sesion-btn sidebar-logout-btn">
             <i class="bi bi-box-arrow-right icon-logout"></i>
             <span>Cerrar Sesión</span>
           </ion-button>
-        </ion-toolbar>
-      </ion-footer>
-      
+        </div>
+      </ion-content>
     </ion-menu>
 
     <!-- Contenido principal -->

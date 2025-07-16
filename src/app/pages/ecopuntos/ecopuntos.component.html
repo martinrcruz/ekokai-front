@@ -1,0 +1,299 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Gestión de Ecopuntos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="crearEcopunto()">
+        <ion-icon name="add-outline"></ion-icon>
+        Nuevo Ecopunto
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="ecopuntos-container">
+    <!-- Filtros mejorados -->
+    <ion-card class="filters-bar">
+      <div class="filters-flex">
+        <ion-item lines="none" class="filter-item">
+          <ion-icon name="search-outline" slot="start"></ion-icon>
+          <ion-input [(ngModel)]="filtroNombre" placeholder="Buscar ecopunto..." clearInput></ion-input>
+        </ion-item>
+        
+        <ion-item lines="none" class="filter-item">
+          <ion-icon name="location-outline" slot="start"></ion-icon>
+          <ion-select [(ngModel)]="filtroZona" placeholder="Filtrar por zona">
+            <ion-select-option value="">Todas las zonas</ion-select-option>
+            <ion-select-option *ngFor="let zona of zonas" [value]="zona">
+              {{ zona }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-button fill="clear" color="medium" class="clear-filters-btn" (click)="limpiarFiltros()">
+          <ion-icon name="close-circle-outline"></ion-icon>
+          Limpiar
+        </ion-button>
+      </div>
+    </ion-card>
+
+    <!-- Gráfico de rendimiento -->
+    <ion-card class="chart-card">
+      <ion-card-header>
+        <ion-card-title>Rendimiento por Ecopunto</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <canvas baseChart
+          [data]="barChartData"
+          [type]="barChartType"
+          [options]="barChartOptions">
+        </canvas>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Lista de ecopuntos -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Ecopuntos Activos ({{ ecopuntosFiltrados.length }})</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let ecopunto of ecopuntosFiltrados" class="ecopunto-item">
+            <ion-avatar slot="start">
+              <ng-container *ngIf="!ecopunto.encargado; else encargadoAvatar">
+                <ion-icon name="location-outline"></ion-icon>
+              </ng-container>
+              <ng-template #encargadoAvatar>
+                <span class="avatar-encargado-nombre">
+                  {{ ecopunto.encargado.email }}
+                </span>
+              </ng-template>
+            </ion-avatar>
+            <ion-label>
+              <h3 class="truncate">{{ ecopunto.nombre }}</h3>
+              <p class="truncate">{{ ecopunto.direccion }}</p>
+              <p class="ecopunto-stats">
+                <span class="stat">{{ ecopunto.kilosMes || 0 }} kg este mes</span>
+                <span class="stat">{{ ecopunto.usuariosActivos || 0 }} usuarios activos</span>
+                <span class="stat">{{ ecopunto.zona || 'Sin zona' }}</span>
+              </p>
+              <!-- Encargado asignado -->
+              <div *ngIf="ecopunto.encargado" class="encargado-asignado">
+                <ion-icon name="person-checkmark-outline"></ion-icon>
+                <span>{{ ecopunto.encargado.nombre }} <span *ngIf="ecopunto.encargado.email">({{ ecopunto.encargado.email }})</span></span>
+              </div>
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button 
+                fill="clear" 
+                (click)="abrirModalEnrolar(ecopunto)" 
+                color="success"
+                *ngIf="!ecopunto.encargado">
+                <ion-icon name="person-add-outline"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" (click)="verMetricas(ecopunto)">
+                <ion-icon name="analytics-outline"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" (click)="editarEcopunto(ecopunto)">
+                <ion-icon name="create-outline"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" color="danger" (click)="eliminarEcopunto(ecopunto)">
+                <ion-icon name="trash-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+
+<!-- Modal para crear ecopunto -->
+<ion-modal [isOpen]="showCreateModal" (didDismiss)="cerrarModal()" [presentingElement]="null">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Crear Nuevo Ecopunto</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <form (ngSubmit)="guardarEcopunto()" #ecopuntoForm="ngForm">
+        <ion-item>
+          <ion-label position="stacked">Nombre del Ecopunto *</ion-label>
+          <ion-input 
+            [(ngModel)]="nuevoEcopunto.nombre" 
+            name="nombre"
+            placeholder="Ej: Ecopunto Norte"
+            required>
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Dirección *</ion-label>
+          <ion-input 
+            [(ngModel)]="nuevoEcopunto.direccion" 
+            name="direccion"
+            placeholder="Ej: Calle Norte 456, Recoleta"
+            required>
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Zona</ion-label>
+          <ion-input 
+            [(ngModel)]="nuevoEcopunto.zona" 
+            name="zona"
+            placeholder="Ej: Norte, Sur, Centro">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Descripción</ion-label>
+          <ion-textarea 
+            [(ngModel)]="nuevoEcopunto.descripcion" 
+            name="descripcion"
+            placeholder="Descripción del ecopunto"
+            rows="3">
+          </ion-textarea>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Horario de Apertura</ion-label>
+          <ion-input 
+            [(ngModel)]="nuevoEcopunto.horarioApertura" 
+            name="horarioApertura"
+            type="time">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Horario de Cierre</ion-label>
+          <ion-input 
+            [(ngModel)]="nuevoEcopunto.horarioCierre" 
+            name="horarioCierre"
+            type="time">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Capacidad Máxima (kg)</ion-label>
+          <ion-input 
+            [(ngModel)]="nuevoEcopunto.capacidadMaxima" 
+            name="capacidadMaxima"
+            type="number"
+            placeholder="1000">
+          </ion-input>
+        </ion-item>
+
+        <div class="modal-actions">
+          <ion-button fill="outline" type="button" (click)="cerrarModal()" [disabled]="saving">
+            Cancelar
+          </ion-button>
+          <ion-button type="submit" color="primary" [disabled]="!ecopuntoForm.valid || saving">
+            <ion-icon name="save-outline" slot="start" *ngIf="!saving"></ion-icon>
+            <ion-spinner name="crescent" *ngIf="saving"></ion-spinner>
+            {{ saving ? 'Guardando...' : 'Crear Ecopunto' }}
+          </ion-button>
+        </div>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Modal para enrolar encargado -->
+<ion-modal [isOpen]="showEnrolarModal" (didDismiss)="cerrarModalEnrolar()" [presentingElement]="null">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Enrolar Encargado</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarModalEnrolar()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <div *ngIf="ecopuntoSeleccionado" class="ecopunto-info">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>{{ ecopuntoSeleccionado.nombre }}</ion-card-title>
+            <ion-card-subtitle>{{ ecopuntoSeleccionado.direccion }}</ion-card-subtitle>
+          </ion-card-header>
+        </ion-card>
+      </div>
+
+      <ion-item>
+        <ion-label position="stacked">Seleccionar Encargado *</ion-label>
+        <ion-select [(ngModel)]="encargadoSeleccionado" placeholder="Elegir encargado">
+          <ion-select-option *ngFor="let encargado of getEncargadosDisponibles()" [value]="encargado._id">
+            {{ encargado.nombre }} {{ encargado.apellido }} - {{ encargado.email }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <div *ngIf="getEncargadosDisponibles().length === 0" class="no-encargados">
+        <ion-card color="warning">
+          <ion-card-content>
+            <ion-icon name="warning-outline" color="warning"></ion-icon>
+            <p>No hay encargados disponibles para enrolar. Todos los encargados ya están asignados a un ecopunto.</p>
+          </ion-card-content>
+        </ion-card>
+      </div>
+
+      <div class="modal-actions">
+        <ion-button fill="outline" type="button" (click)="cerrarModalEnrolar()" [disabled]="enrolando">
+          Cancelar
+        </ion-button>
+        <ion-button 
+          type="button" 
+          color="success" 
+          (click)="enrolarEncargado()" 
+          [disabled]="!encargadoSeleccionado || enrolando || getEncargadosDisponibles().length === 0">
+          <ion-icon name="person-add-outline" slot="start" *ngIf="!enrolando"></ion-icon>
+          <ion-spinner name="crescent" *ngIf="enrolando"></ion-spinner>
+          {{ enrolando ? 'Enrolando...' : 'Enrolar Encargado' }}
+        </ion-button>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Modal para detalle de ecopunto -->
+<ion-modal [isOpen]="showDetalleModal" (didDismiss)="cerrarDetalleModal()" [presentingElement]="null">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Detalle del Ecopunto</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarDetalleModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <ion-card *ngIf="ecopuntoDetalle">
+        <ion-card-header>
+          <ion-card-title>{{ ecopuntoDetalle.nombre }}</ion-card-title>
+          <ion-card-subtitle>{{ ecopuntoDetalle.direccion }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <p><strong>Zona:</strong> {{ ecopuntoDetalle.zona || 'Sin zona' }}</p>
+          <p><strong>Activo:</strong> {{ ecopuntoDetalle.activo ? 'Sí' : 'No' }}</p>
+          <p><strong>Fecha de creación:</strong> {{ ecopuntoDetalle.fechaCreacion | date:'medium' }}</p>
+          <p><strong>Encargado:</strong> <span *ngIf="ecopuntoDetalle.encargado">{{ ecopuntoDetalle.encargado.nombre }} ({{ ecopuntoDetalle.encargado.email }})</span><span *ngIf="!ecopuntoDetalle.encargado">Sin encargado</span></p>
+          <p><strong>Vecinos:</strong> {{ ecopuntoDetalle.vecinos?.length || 0 }}</p>
+          <p *ngIf="ecopuntoDetalle.descripcion"><strong>Descripción:</strong> {{ ecopuntoDetalle.descripcion }}</p>
+        </ion-card-content>
+      </ion-card>
+    </ion-content>
+  </ng-template>
+</ion-modal> 
