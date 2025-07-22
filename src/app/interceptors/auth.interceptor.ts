@@ -36,8 +36,22 @@ export class AuthInterceptor implements HttpInterceptor {
           'Authorization': `Bearer ${token}`
         }
       });
-      console.log('[AuthInterceptor] Headers enviados:', authReq.headers.keys(), authReq.headers.get('x-token'), authReq.headers.get('Authorization'), 'URL:', authReq.url);
-      return next.handle(authReq);
+      // LOG DETALLADO
+      console.log('[AuthInterceptor] Headers enviados:', authReq.headers.keys(), {
+        'x-token': authReq.headers.get('x-token'),
+        'Authorization': authReq.headers.get('Authorization')
+      }, 'URL:', authReq.url, 'Método:', authReq.method);
+      return next.handle(authReq).pipe(
+        tap(event => {
+          if (event instanceof HttpResponse) {
+            console.log('[AuthInterceptor] Respuesta recibida:', event.status, event.url);
+          }
+        }),
+        catchError((error: HttpErrorResponse) => {
+          console.error('[AuthInterceptor] Error en la petición:', error.status, error.message, error.url);
+          return throwError(() => error);
+        })
+      );
     }
     console.log('[AuthInterceptor] Request sin token. URL:', req.url);
     return next.handle(req);
