@@ -242,21 +242,37 @@ export class AuthService {
    * Si hay token, decodifica y setea el usuario en userSubject SIEMPRE
    */
   async ensureUserFromToken() {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
         const decoded: any = jwtDecode(token);
-        if (decoded && decoded.user) {
-          console.log('[AuthService] ensureUserFromToken decoded.user:', decoded.user);
-          this.userSubject.next(decoded.user);
-          this.isLoggedInSubject.next(true);
+        const now = Math.floor(Date.now() / 1000);
+        
+        // Verificar si el token no ha expirado
+        if (decoded.exp && decoded.exp > now) {
+          if (decoded.user) {
+            this.userSubject.next(decoded.user);
+            this.isLoggedInSubject.next(true);
+          } else if (decoded.id) {
+            // Si no hay user pero hay id, crear un objeto usuario básico
+            this.userSubject.next({
+              _id: decoded.id,
+              email: decoded.email,
+              rol: decoded.rol
+            });
+            this.isLoggedInSubject.next(true);
+          }
+        } else {
+          // Token expirado
+          await this.removeToken();
         }
-      } catch (e) {
-        await this.removeToken();
+      } else {
+        this.userSubject.next(null);
+        this.isLoggedInSubject.next(false);
       }
-    } else {
-      this.userSubject.next(null);
-      this.isLoggedInSubject.next(false);
+    } catch (error) {
+      console.error('Error en ensureUserFromToken:', error);
+      await this.removeToken();
     }
   }
 }
