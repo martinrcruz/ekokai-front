@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar color="ekokai-dark">
     <ion-title>
-      <img src="assets/logo.png" alt="Ekokai" style="height:32px;vertical-align:middle;margin-right:12px;">
+      <img src="assets/icon/reciclar.png" alt="Ekokai" style="height:32px;vertical-align:middle;margin-right:12px;">
       Dashboard Ekokai
     </ion-title>
   </ion-toolbar>
@@ -9,7 +9,7 @@
 
 <ion-content class="dashboard-content">
   <!-- Tarjetas superiores -->
-  <div class="dashboard-top-cards">
+  <div class="dashboard-top-cards" style="margin-top: 40px;">
     <div class="top-card">
       <div class="top-card-icon"><ion-icon name="leaf-outline"></ion-icon></div>
       <div class="top-card-value">{{ totalKilos | number }}</div>
@@ -49,7 +49,7 @@
         [options]="doughnutChartOptions"
         [type]="doughnutChartType">
       </canvas>
-      <div class="circle-chart-value" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.5rem;color:#1B5E20;font-weight:bold;">
+      <div class="circle-chart-value" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.5rem;color:#28b463;font-weight:bold;">
         {{ metaPorcentaje }}%
       </div>
       <div class="graph-legend">
@@ -59,7 +59,7 @@
   </div>
 
   <!-- Tabla de usuarios recientes -->
-  <div class="dashboard-table-card">
+  <!-- <div class="dashboard-table-card">
     <div class="table-tabs">
       <span class="tab active">Usuarios recientes</span>
       <span class="tab">Ecopuntos</span>
@@ -96,5 +96,5 @@
         </ion-list>
       </ion-card-content>
     </ion-card>
-  </div>
+  </div> -->
 </ion-content>

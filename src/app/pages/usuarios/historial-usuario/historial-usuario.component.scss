@@ -1,0 +1,17 @@
+.historial-container {
+  padding: 16px;
+}
+ion-card {
+  margin-bottom: 24px;
+}
+ion-list {
+  background: transparent;
+}
+.entregado {
+  color: var(--color-success, #388e3c);
+  font-weight: bold;
+}
+.pendiente {
+  color: var(--color-warning, #fbc02d);
+  font-weight: bold;
+} 

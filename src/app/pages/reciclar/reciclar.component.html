@@ -1,0 +1,24 @@
+<div class="reciclar-container">
+  <h2>Reciclar</h2>
+  <form (ngSubmit)="generarCanje()" autocomplete="off">
+    <ion-item>
+      <ion-label position="stacked">Vecino</ion-label>
+      <ion-select [(ngModel)]="vecinoSeleccionado" name="vecino" interface="popover" required>
+        <ion-select-option *ngFor="let vecino of vecinos" [value]="vecino">
+          {{ vecino.nombre }} {{ vecino.apellido }} ({{ vecino.telefono }})
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Peso (kg)</ion-label>
+      <ion-input [value]="peso ?? ''" readonly></ion-input>
+      <ion-button (click)="conectarBalanza()" [disabled]="conectando" slot="end">
+        {{ conectando ? 'Conectando...' : 'Obtener peso' }}
+      </ion-button>
+    </ion-item>
+    <ion-button expand="block" type="submit" [disabled]="!vecinoSeleccionado || !peso || canjeando">
+      {{ canjeando ? 'Generando canje...' : 'Generar canje' }}
+    </ion-button>
+    <ion-text color="danger" *ngIf="error">{{ error }}</ion-text>
+  </form>
+</div> 

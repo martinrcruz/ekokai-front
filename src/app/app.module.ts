@@ -11,6 +11,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { WebBluetoothModule } from '@manekinekko/angular-web-bluetooth';
 
 @NgModule({
   declarations: [AppComponent],
@@ -19,7 +20,10 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     IonicModule.forRoot(),
     AppRoutingModule,
     HttpClientModule,
-    IonicStorageModule.forRoot()
+    IonicStorageModule.forRoot(),
+    WebBluetoothModule.forRoot({
+      enableTracing: true
+    })
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

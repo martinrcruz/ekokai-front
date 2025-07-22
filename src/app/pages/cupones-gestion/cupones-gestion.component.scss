@@ -1,0 +1,19 @@
+.cupones-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px;
+}
+.filters-bar {
+  margin-bottom: 16px;
+}
+.filters-flex {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.filter-item {
+  flex: 1;
+}
+.clear-filters-btn {
+  margin-left: auto;
+} 

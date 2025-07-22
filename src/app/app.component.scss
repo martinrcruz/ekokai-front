@@ -3,7 +3,7 @@
  **********************************************************/
  :root {
 
-  --ion-color-primary: #44ba44 ;
+  --ion-color-primary: #28b463 ;
   --ion-color-primary-rgb: 189,30,30;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255,255,255;
@@ -32,7 +32,7 @@ ion-menu ion-header,
 ion-menu ion-footer, 
 ion-menu ion-toolbar, 
 ion-menu ion-title {
-  background: #44ba44 !important;
+  background: #28b463 !important;
   color: #fff !important;
 }
 
@@ -69,7 +69,7 @@ ion-menu ion-item {
   align-items: center;
 }
 ion-menu ion-item.selected, ion-menu ion-item:focus, ion-menu ion-item:hover {
-  --background: #369a36 !important;
+  --background: #28b463 !important;
   --color: #fff !important;
   color: #fff !important;
 }
@@ -78,7 +78,7 @@ ion-menu ion-item.selected ion-icon, ion-menu ion-item:focus ion-icon, ion-menu 
 }
 
 .cerrar-sesion-btn {
-  background: #44ba44 !important;
+  background: #28b463 !important;
   color: #fff !important;
   border-radius: 10px;
   font-weight: 600;
@@ -98,7 +98,7 @@ ion-menu ion-item.selected ion-icon, ion-menu ion-item:focus ion-icon, ion-menu 
 }
 
 ion-menu ion-toolbar.footer-toolbar {
-  background: #44ba44 !important;
+  background: #28b463 !important;
   color: #fff !important;
   border: none;
 }
@@ -111,10 +111,10 @@ ion-menu {
   --width: 200px !important;
   width: 200px !important;
   max-width: 220px !important;
-  background: #44ba44 !important;
+  background: #28b463 !important;
   box-shadow: 2px 0 16px rgba(0,0,0,0.07);
   height: 100vh !important;
-  --background: #44ba44 !important;
+  --background: #28b463 !important;
 }
 ion-menu .menu-inner,
 ion-menu .content-inner {
@@ -127,15 +127,15 @@ ion-menu ion-content {
 }
 /* Forzar fondo verde en el overlay del menú */
 ion-menu.overlay-visible {
-  background: #44ba44 !important;
-  --background: #44ba44 !important;
+  background: #28b463 !important;
+  --background: #28b463 !important;
 }
 ion-menu.overlay-visible .menu-inner {
-  background: #44ba44 !important;
-  --background: #44ba44 !important;
+  background: #28b463 !important;
+  --background: #28b463 !important;
 }
 ion-menu ion-header {
-  background: #44ba44 !important;
+  background: #28b463 !important;
   border-radius: 0;
   border-bottom: none;
   padding: 24px 0 0 0;
@@ -186,7 +186,7 @@ ion-menu ion-item ion-icon {
   text-align: center;
 }
 ion-menu ion-footer {
-  background: #44ba44 !important;
+  background: #28b463 !important;
   border-top: none;
   padding: 0 0 18px 0;
 }
@@ -196,22 +196,22 @@ ion-menu ion-footer {
     min-width: 100vw !important;
     max-width: 100vw !important;
     border-radius: 0;
-    background: #44ba44 !important;
-    --background: #44ba44 !important;
+    background: #28b463 !important;
+    --background: #28b463 !important;
   }
   ion-menu .menu-inner {
     border-radius: 0;
-    background: #44ba44 !important;
-    --background: #44ba44 !important;
+    background: #28b463 !important;
+    --background: #28b463 !important;
   }
   /* Asegurar que el overlay en móvil también sea verde */
   ion-menu.overlay-visible {
-    background: #44ba44 !important;
-    --background: #44ba44 !important;
+    background: #28b463 !important;
+    --background: #28b463 !important;
   }
   ion-menu.overlay-visible .menu-inner {
-    background: #44ba44 !important;
-    --background: #44ba44 !important;
+    background: #28b463 !important;
+    --background: #28b463 !important;
   }
 }
 
@@ -273,13 +273,13 @@ ion-menu ion-content .ion-content-scroll-host,
 ion-menu .ion-page,
 ion-menu .ion-page .ion-page,
 ion-menu .ion-page .ion-page .ion-page {
-  background: #44ba44 !important;
-  --background: #44ba44 !important;
+  background: #28b463 !important;
+  --background: #28b463 !important;
 }
 
 ion-menu ion-content {
-  --background: #44ba44 !important;
-  background: #44ba44 !important;
+  --background: #28b463 !important;
+  background: #28b463 !important;
   height: 100%;
   min-height: 100vh;
 }
@@ -291,8 +291,8 @@ ion-menu .content-inner {
 ion-menu .inner-scroll,
 ion-menu .scroll-content,
 ion-menu .ion-content-scroll-host {
-  background: #44ba44 !important;
-  --background: #44ba44 !important;
+  background: #28b463 !important;
+  --background: #28b463 !important;
 }
 
 /* Ítem de cerrar sesión como opción del menú, con separación y padding igual a los otros ítems */
@@ -305,7 +305,7 @@ ion-menu .cerrar-sesion-item {
   border-radius: 8px;
   display: flex;
   align-items: center;
-  background: #44ba44 !important;
+  background: #28b463 !important;
   color: #fff !important;
   font-weight: 600;
   transition: background 0.2s;
@@ -335,7 +335,7 @@ ion-menu .cerrar-sesion-item:focus {
   border-radius: 8px;
   display: flex;
   align-items: center;
-  background: #44ba44 !important;
+  background: #28b463 !important;
   color: #fff !important;
   font-weight: 600;
   transition: background 0.2s;
@@ -349,22 +349,28 @@ ion-menu .cerrar-sesion-item:focus {
 ion-content.sidebar-content-flex {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
   min-height: 100vh;
+  position: relative;
 }
+
 ion-content.sidebar-content-flex ion-list {
   flex: 1 1 auto;
 }
+
 .sidebar-logout-btn-container {
   margin-top: auto;
-  padding: 0 8px 0 8px;
+  padding: 0;
+  width: 100%;
   display: flex;
+  z-index: 10;
+  position: static;
 }
 .sidebar-logout-btn {
   width: 100%;
   border-radius: 10px;
   font-weight: 600;
-  background: #44ba44 !important;
+  background: #28b463 !important;
   color: #fff !important;
   border: 2px solid #fff;
   box-shadow: 0 2px 8px rgba(68,186,68,0.08);
@@ -376,4 +382,14 @@ ion-content.sidebar-content-flex ion-list {
 .sidebar-logout-btn:hover, .sidebar-logout-btn:focus {
   background: #369a36 !important;
   color: #fff !important;
+}
+
+.logout-button {
+  --background: #0e9345 !important;
+  --background-hover: #229954 !important;
+  --color: #fff !important;
+  width: 100%;
+  border-radius: 0 0 10px 10px;
+  /* Elimina margen lateral */
+  margin: 0;
 }

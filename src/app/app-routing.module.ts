@@ -84,6 +84,26 @@ const routes: Routes = [
     canActivate: [AuthGuard, AdminGuard]
   },
 
+  {
+    path: 'cupones-gestion',
+    loadComponent: () => import('./pages/cupones-gestion/cupones-gestion.component').then(m => m.CuponesGestionComponent),
+    canActivate: [AuthGuard, AdminGuard]
+  },
+
+  {
+    path: 'tipos-residuo-gestion',
+    loadComponent: () =>
+      import('./pages/tipos-residuo-gestion/tipos-residuo-gestion.component').then(m => m.TiposResiduoGestionComponent),
+    canActivate: [AuthGuard, AdminGuard]
+  },
+
+  {
+    path: 'reciclar',
+    loadComponent: () =>
+      import('./pages/reciclar/reciclar.component').then(m => m.ReciclarComponent),
+    canActivate: [AuthGuard, AdminGuard]
+  },
+
   // ---------------------------------
   // Ruta comodín
   // ---------------------------------

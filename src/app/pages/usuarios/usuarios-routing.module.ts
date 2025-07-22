@@ -11,6 +11,10 @@ const routes: Routes = [
   {
     path: 'crear',
     component: FormUsuarioComponent
+  },
+  {
+    path: 'historial/:id',
+    loadComponent: () => import('./historial-usuario/historial-usuario.component').then(m => m.HistorialUsuarioComponent)
   }
 ];
 

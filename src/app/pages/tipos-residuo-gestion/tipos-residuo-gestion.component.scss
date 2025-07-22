@@ -1,0 +1,22 @@
+.tipos-residuo-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+ion-card {
+  margin-bottom: 24px;
+}
+
+ion-item {
+  --background: #fff;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+} 

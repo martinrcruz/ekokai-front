@@ -1,0 +1,55 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Historial de Interacciones</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="historial-container" *ngIf="!loading; else loadingTpl">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Entregas de Reciclaje</ion-card-title>
+      </ion-card-header>
+      <ion-card-content *ngIf="entregas.length > 0; else noEntregasTpl">
+        <ion-list>
+          <ion-item *ngFor="let entrega of entregas">
+            <ion-label>
+              <h3>{{ entrega.tipoResiduo?.nombre || 'Tipo desconocido' }}</h3>
+              <p>Fecha: {{ entrega.fecha | date:'short' }}</p>
+              <p>Peso: {{ entrega.pesoKg }} kg</p>
+              <p>Tokens otorgados: {{ entrega.tokensOtorgados }}</p>
+              <p>Ecopunto: {{ entrega.ecopunto?.nombre || '-' }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Canjes de Premios</ion-card-title>
+      </ion-card-header>
+      <ion-card-content *ngIf="canjes.length > 0; else noCanjesTpl">
+        <ion-list>
+          <ion-item *ngFor="let canje of canjes">
+            <ion-label>
+              <h3>{{ canje.premio?.nombre || 'Premio desconocido' }}</h3>
+              <p>Fecha: {{ canje.fecha | date:'short' }}</p>
+              <p>Tokens usados: {{ canje.tokens }}</p>
+              <p>Estado: <span [ngClass]="{'entregado': canje.estado === 'Entregado', 'pendiente': canje.estado === 'Pendiente'}">{{ canje.estado }}</span></p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </div>
+  <ng-template #loadingTpl>
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando historial...</p>
+  </ng-template>
+  <ng-template #noEntregasTpl>
+    <p>No hay entregas registradas.</p>
+  </ng-template>
+  <ng-template #noCanjesTpl>
+    <p>No hay canjes registrados.</p>
+  </ng-template>
+</ion-content> 

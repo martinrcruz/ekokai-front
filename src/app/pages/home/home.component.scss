@@ -1,6 +1,6 @@
 :root {
   --ekokai-green: #4CAF50;
-  --ekokai-dark: #1B5E20;
+  --ekokai-dark: #28b463;
   --ekokai-white: #fff;
   --ekokai-light: #f6faf6;
   --ekokai-gray: #f3f4f6;
@@ -438,7 +438,7 @@ ion-button[color="ekokai-green"] {
 }
 :host ::ng-deep .chartjs-render-monitor .tick {
   font-size: 1rem;
-  color: #1B5E20;
+  color: #28b463;
 }
 
 @media (max-width: 1200px) {

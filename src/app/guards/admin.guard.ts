@@ -9,6 +9,7 @@ export class AdminGuard implements CanActivate {
   async canActivate() {
     await this.authService.ensureUserFromToken();
     const user = this.authService.getUser();
+    console.log('[AdminGuard] Usuario:', user);
     const role = user?.rol;
     console.log('[AdminGuard] Rol detectado:', role);
     if (role === 'admin' || role === 'administrador' || role === 'encargado') {

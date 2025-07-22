@@ -30,9 +30,12 @@ export class AppComponent {
     { title: 'Dashboard', url: '/home',  icon: 'bi-speedometer2' },
     { title: 'Ecopuntos', url: '/ecopuntos',  icon: 'bi-geo-alt' },
     { title: 'Usuarios', url: '/usuarios-gestion',  icon: 'bi-people' },
+    { title: 'Cupones', url: '/cupones-gestion', icon: 'bi-ticket' },
     { title: 'Marketplace', url: '/marketplace',  icon: 'bi-shop' },
+    { title: 'Tipos de Residuo', url: '/tipos-residuo-gestion', icon: 'bi-recycle' },
     { title: 'Configuración', url: '/configuracion',  icon: 'bi-gear' },
-    { title: 'Crear Vecino', url: '/vecinos', icon: 'bi-person-plus' }
+    { title: 'Crear Vecino', url: '/vecinos', icon: 'bi-person-plus' },
+    { title: 'Reciclar', url: '/reciclar', icon: 'bi-recycle' }
   ];
 
   // Para el rol worker, solo dejamos Calendario

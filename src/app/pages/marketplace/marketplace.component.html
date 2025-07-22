@@ -85,34 +85,7 @@
       </ion-select>
     </div>
 
-    <!-- Gráficos -->
-    <div class="charts-section">
-      <ion-card class="chart-card">
-        <ion-card-header>
-          <ion-card-title>Ventas por Categoría</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <canvas baseChart
-            [data]="pieChartData"
-            [type]="pieChartType"
-            [options]="pieChartOptions">
-          </canvas>
-        </ion-card-content>
-      </ion-card>
-
-      <ion-card class="chart-card">
-        <ion-card-header>
-          <ion-card-title>Cupones Más Populares</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <canvas baseChart
-            [data]="barChartData"
-            [type]="barChartType"
-            [options]="barChartOptions">
-          </canvas>
-        </ion-card-content>
-      </ion-card>
-    </div>
+   
 
     <!-- Cupones -->
     <ion-card>

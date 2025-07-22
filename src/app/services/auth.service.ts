@@ -52,7 +52,8 @@ export class AuthService {
         const decoded: any = jwtDecode(token);
         console.log('[AuthService] checkToken decoded:', decoded);
         const now = Math.floor(Date.now() / 1000); // en segundos
-        this.userSubject.next(decoded.user);
+        console.log('[AuthService] checkToken decoded.user:', decoded);
+        this.userSubject.next(decoded);
 
         if (decoded.exp && decoded.exp > now) {
           this.isLoggedInSubject.next(true);
@@ -80,8 +81,7 @@ export class AuthService {
       }
       localStorage.setItem('token', token);
       const decoded: any = jwtDecode(token);
-      console.log('[AuthService] setToken decoded:', decoded);
-      this.userSubject.next(decoded.user);
+      this.userSubject.next(decoded);
       this.isLoggedInSubject.next(true);
       return true;
     } catch (error) {
@@ -143,6 +143,7 @@ export class AuthService {
       })
     }).pipe(
       tap(response => {
+        console.log('[AuthService] login response:', response);
         if (response.ok && response.data?.token) {
           this.setToken(response.data.token);
           if (response.data.role) {
@@ -246,6 +247,7 @@ export class AuthService {
       try {
         const decoded: any = jwtDecode(token);
         if (decoded && decoded.user) {
+          console.log('[AuthService] ensureUserFromToken decoded.user:', decoded.user);
           this.userSubject.next(decoded.user);
           this.isLoggedInSubject.next(true);
         }

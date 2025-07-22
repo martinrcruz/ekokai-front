@@ -271,8 +271,7 @@ export class UsuariosGestionComponent implements OnInit {
   }
 
   verHistorial(usuario: any) {
-    console.log('Ver historial de usuario:', usuario);
-    // Aquí puedes implementar navegación a otra página
+    this.router.navigate(['/usuarios/historial', usuario._id]);
   }
 
   toggleEstado(usuario: any) {

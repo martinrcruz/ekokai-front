@@ -58,7 +58,7 @@ ion-toolbar {
 }
 
 .button-primary {
-  --background: var(--primary-color);
+  --background: #0d7438 !important;
   --color: #ffffff;
 }
 
@@ -99,7 +99,7 @@ ion-menu-button {
 }
 
 .footer-toolbar {
-  --background: #44ba44 !important;
+  --background: #28b463 !important;
   color: #ffffff;
 
   .logout-item {
@@ -122,10 +122,11 @@ ion-menu-button {
   }
   
   .logout-button {
-    --background: #44ba44 !important;
+    --background: #0e9345 !important;
     --border-radius: 0;
     --padding-top: 12px;
     --padding-bottom: 12px;
+    background-color: #28b463 !important;
     margin: 0;
     
     .icon-logout {
