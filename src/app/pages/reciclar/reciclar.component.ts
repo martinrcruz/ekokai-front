@@ -38,13 +38,13 @@ export class ReciclarComponent implements OnInit {
     this.conectando = true;
 
     try {
-      const scan = await navigator.bluetooth.requestLEScan({
+      const scan = await (navigator as any).bluetooth.requestLEScan({
         acceptAllAdvertisements: true,
         keepRepeatedDevices: true
       });
       console.log('🔍 Escaneando… súbete a la balanza 😊');
 
-      navigator.bluetooth.addEventListener('advertisementreceived', event => {
+      (navigator as any).bluetooth.addEventListener('advertisementreceived', (event: any) => {
         const md = event.manufacturerData.get(0x0157);
         if (!md) return;
 
