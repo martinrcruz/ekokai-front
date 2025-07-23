@@ -96,6 +96,21 @@ ion-toolbar {
 
 ion-menu-button {
   color: white !important;
+  --color: white !important;
+  --background: transparent !important;
+  --background-hover: rgba(255, 255, 255, 0.1) !important;
+  --background-activated: rgba(255, 255, 255, 0.2) !important;
+  --background-focused: rgba(255, 255, 255, 0.1) !important;
+  --border-radius: 4px !important;
+  --padding-start: 8px !important;
+  --padding-end: 8px !important;
+  --padding-top: 8px !important;
+  --padding-bottom: 8px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .footer-toolbar {

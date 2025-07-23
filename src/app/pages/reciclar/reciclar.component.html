@@ -1,5 +1,15 @@
-<div class="reciclar-container">
-  <h2>Reciclar</h2>
+<ion-header>
+  <ion-toolbar color="ekokai-dark">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Reciclar</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="reciclar-container">
+    <h2>Reciclar</h2>
   <form (ngSubmit)="generarCanje()" autocomplete="off">
     <ion-item>
       <ion-label position="stacked">Vecino</ion-label>
@@ -21,4 +31,5 @@
     </ion-button>
     <ion-text color="danger" *ngIf="error">{{ error }}</ion-text>
   </form>
-</div> 
+  </div>
+</ion-content>

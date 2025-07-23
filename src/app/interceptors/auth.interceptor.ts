@@ -29,17 +29,76 @@ export class AuthInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = localStorage.getItem('token');
     
+    // Clonar la request y agregar headers de autorización si hay token
+    let authReq = req;
     if (token) {
-      const authReq = req.clone({
+      authReq = req.clone({
         setHeaders: {
           'x-token': token,
           'Authorization': `Bearer ${token}`
         }
       });
-      return next.handle(authReq);
     }
-    
-    return next.handle(req);
+
+    // Mostrar loading para operaciones largas
+    let loader: HTMLIonLoadingElement | null = null;
+    if (this.isLongRunningOperation(req)) {
+      this.showLoading().then(l => loader = l);
+    }
+
+    return next.handle(authReq).pipe(
+      tap((event) => {
+        if (event instanceof HttpResponse) {
+          // Manejar respuesta exitosa
+          this.handleSuccessResponse(event);
+        }
+      }),
+      catchError((error: HttpErrorResponse) => {
+        // Manejar errores
+        return this.handleError(error, req);
+      }),
+      finalize(() => {
+        // Limpiar loading
+        if (loader) {
+          this.dismissLoader(loader);
+        }
+      })
+    );
+  }
+
+  private handleSuccessResponse(response: HttpResponse<any>) {
+    // Aquí puedes agregar lógica para manejar respuestas exitosas
+    console.log('Response success:', response.status);
+  }
+
+  private handleError(error: HttpErrorResponse, request: HttpRequest<any>): Observable<never> {
+    console.error('HTTP Error:', error);
+
+    // Manejar diferentes tipos de errores
+    if (error.status === 401) {
+      // Token expirado o inválido
+      this.authService.logout();
+      this.showErrorToast('Sesión expirada. Por favor, inicie sesión nuevamente.');
+      this.router.navigate(['/auth/login']);
+    } else if (error.status === 403) {
+      // Sin permisos
+      this.showErrorToast('No tiene permisos para realizar esta acción.');
+    } else if (error.status === 404) {
+      // Recurso no encontrado
+      this.showErrorToast('Recurso no encontrado.');
+    } else if (error.status === 500) {
+      // Error del servidor
+      this.showErrorToast('Error interno del servidor. Intente nuevamente más tarde.');
+    } else if (error.status === 0) {
+      // Error de conexión
+      this.showErrorToast('No se pudo conectar con el servidor. Verifique su conexión a internet.');
+    } else {
+      // Otros errores
+      const errorMessage = error.error?.message || error.message || 'Error desconocido';
+      this.showErrorToast(errorMessage);
+    }
+
+    return throwError(() => error);
   }
 
   private dismissLoader(loader: HTMLIonLoadingElement) {
@@ -67,6 +126,7 @@ export class AuthInterceptor implements HttpInterceptor {
       spinner: 'crescent'
     });
     await loading.present();
+    this.activeLoaders.push(loading);
     return loading;
   }
 

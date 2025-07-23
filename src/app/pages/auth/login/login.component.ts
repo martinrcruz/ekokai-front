@@ -28,12 +28,16 @@ export class LoginComponent {
 
       console.log('📥 Respuesta del backend:', response);
 
+      // El backend devuelve {token, usuario} directamente, no {ok, data}
       if (response?.token && response?.usuario) {
+        console.log('✅ Login exitoso. Token recibido.');
+        
+        // Establecer el token manualmente
         await this.authService.setToken(response.token);
-        // Forzar actualización del observable de usuario
-        (this.authService as any).userSubject.next(response.usuario);
+        
         console.log('✅ Login exitoso. Navegando según rol...');
-        const role = response?.usuario?.rol || response?.role;
+        const user = this.authService.getUser();
+        const role = user?.rol || response?.usuario?.rol;
 
         if (role === 'admin' || role === 'administrador') {
           console.log('👑 Redirigiendo administrador a /home');
@@ -46,7 +50,7 @@ export class LoginComponent {
           this.navCtrl.navigateRoot('/home', { animated: true });
         } else {
           console.warn('⚠️ Rol no reconocido:', role, '. Redirigiendo a /home');
-        this.navCtrl.navigateRoot('/home', { animated: true });
+          this.navCtrl.navigateRoot('/home', { animated: true });
         }
 
       } else {

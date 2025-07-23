@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Storage } from '@ionic/storage-angular';
 import { environment } from '../../environments/environment';
-import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError, from } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
 import { Router } from '@angular/router';
@@ -48,24 +48,43 @@ export class AuthService {
     try {
       const token = localStorage.getItem('token');
       console.log('[AuthService] checkToken token:', token);
-      if (token) {
-        const decoded: any = jwtDecode(token);
-        console.log('[AuthService] checkToken decoded:', decoded);
-        const now = Math.floor(Date.now() / 1000); // en segundos
-        console.log('[AuthService] checkToken decoded.user:', decoded);
-        this.userSubject.next(decoded);
-
-        if (decoded.exp && decoded.exp > now) {
-          this.isLoggedInSubject.next(true);
-        } else {
-          console.log('Token expired');
-          await this.removeToken();
-        }
-      } else {
+      
+      if (!token) {
+        console.log('[AuthService] No token found');
         this.isLoggedInSubject.next(false);
+        this.userSubject.next(null);
+        return;
+      }
+
+      // Verificar que el token no esté vacío
+      if (token.trim() === '') {
+        console.log('[AuthService] Empty token found');
+        await this.removeToken();
+        return;
+      }
+
+      const decoded: any = jwtDecode(token);
+      console.log('[AuthService] checkToken decoded:', decoded);
+      
+      if (!decoded) {
+        console.log('[AuthService] Invalid token structure');
+        await this.removeToken();
+        return;
+      }
+
+      const now = Math.floor(Date.now() / 1000); // en segundos
+      
+      // Verificar si el token ha expirado
+      if (decoded.exp && decoded.exp > now) {
+        console.log('[AuthService] Token is valid');
+        this.userSubject.next(decoded);
+        this.isLoggedInSubject.next(true);
+      } else {
+        console.log('[AuthService] Token expired');
+        await this.removeToken();
       }
     } catch (error) {
-      console.error('Error checking token', error);
+      console.error('[AuthService] Error checking token:', error);
       await this.removeToken();
     }
   }
@@ -74,18 +93,44 @@ export class AuthService {
     return this.isLoggedInSubject.asObservable();
   }
 
+  /**
+   * Método síncrono para verificar si el usuario está logueado
+   */
+  isLoggedInSync(): boolean {
+    return this.isLoggedInSubject.value;
+  }
+
   async setToken(token: string) {
     try {
+      console.log('[AuthService] setToken - Starting with token:', token ? 'exists' : 'null');
+      
       if (!token) {
         throw new Error('Token is empty');
       }
+
+      // Verificar que el token no esté vacío
+      if (token.trim() === '') {
+        throw new Error('Token is empty string');
+      }
+
       localStorage.setItem('token', token);
+      console.log('[AuthService] setToken - Token saved to localStorage');
+      
       const decoded: any = jwtDecode(token);
+      console.log('[AuthService] setToken - Token decoded:', decoded);
+      
+      if (!decoded) {
+        throw new Error('Invalid token structure');
+      }
+
       this.userSubject.next(decoded);
       this.isLoggedInSubject.next(true);
+      console.log('[AuthService] setToken - User and login state updated');
+      
       return true;
     } catch (error) {
-      console.error('Error setting token', error);
+      console.error('[AuthService] Error setting token:', error);
+      await this.removeToken();
       return false;
     }
   }
@@ -114,10 +159,15 @@ export class AuthService {
   async removeToken() {
     try {
       localStorage.removeItem('token');
-      this.userSubject.next(null);
-      this.isLoggedInSubject.next(false);
+      // Solo actualizar si el estado actual no es null
+      if (this.userSubject.value !== null) {
+        this.userSubject.next(null);
+      }
+      if (this.isLoggedInSubject.value !== false) {
+        this.isLoggedInSubject.next(false);
+      }
     } catch (error) {
-      console.error('Error removing token', error);
+      console.error('[AuthService] Error removing token:', error);
     }
   }
 
@@ -133,26 +183,31 @@ export class AuthService {
   }
 
   login(credentials: { email: string; password: string }): Observable<ApiResponse<LoginResponse>> {
-    // Eliminamos el token anterior si existe
-    this.removeToken();
+    console.log('[AuthService] login - Starting login process');
     
-    return this.http.post<ApiResponse<LoginResponse>>(`${this.baseUrl}/login`, credentials, {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      })
-    }).pipe(
-      tap(response => {
+    return from(this.removeToken()).pipe(
+      switchMap(() => {
+        console.log('[AuthService] login - Token removed, making HTTP request');
+        return this.http.post<ApiResponse<LoginResponse>>(`${this.baseUrl}/login`, credentials, {
+          headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          })
+        });
+      }),
+      tap((response: any) => {
         console.log('[AuthService] login response:', response);
-        if (response.ok && response.data?.token) {
-          this.setToken(response.data.token);
-          if (response.data.role) {
-            this.userSubject.next({ ...this.userSubject.value, role: response.data.role });
+        // El backend devuelve {token, usuario} directamente
+        if (response?.token) {
+          console.log('[AuthService] login - Setting token and user data');
+          this.setToken(response.token);
+          if (response.usuario) {
+            this.userSubject.next(response.usuario);
           }
         }
       }),
       catchError(error => {
-        console.error('Error en login:', error);
+        console.error('[AuthService] Error en login:', error);
         let errorMessage = 'Error al iniciar sesión';
         
         if (error.status === 401) {
@@ -244,34 +299,76 @@ export class AuthService {
   async ensureUserFromToken() {
     try {
       const token = localStorage.getItem('token');
-      if (token) {
-        const decoded: any = jwtDecode(token);
-        const now = Math.floor(Date.now() / 1000);
+      console.log('[AuthService] ensureUserFromToken - token:', token ? 'exists' : 'null');
+      
+      if (!token) {
+        console.log('[AuthService] ensureUserFromToken - No token found');
+        // Solo actualizar si el usuario actual no es null
+        if (this.userSubject.value !== null) {
+          this.userSubject.next(null);
+          this.isLoggedInSubject.next(false);
+        }
+        return;
+      }
+
+      // Verificar que el token no esté vacío
+      if (token.trim() === '') {
+        console.log('[AuthService] ensureUserFromToken - Empty token found');
+        await this.removeToken();
+        return;
+      }
+
+      const decoded: any = jwtDecode(token);
+      console.log('[AuthService] ensureUserFromToken - decoded:', decoded);
+      
+      if (!decoded) {
+        console.log('[AuthService] ensureUserFromToken - Invalid token structure');
+        await this.removeToken();
+        return;
+      }
+
+      const now = Math.floor(Date.now() / 1000);
+      
+      // Verificar si el token no ha expirado
+      if (decoded.exp && decoded.exp > now) {
+        console.log('[AuthService] ensureUserFromToken - Token is valid');
         
-        // Verificar si el token no ha expirado
-        if (decoded.exp && decoded.exp > now) {
-          if (decoded.user) {
-            this.userSubject.next(decoded.user);
-            this.isLoggedInSubject.next(true);
-          } else if (decoded.id) {
-            // Si no hay user pero hay id, crear un objeto usuario básico
-            this.userSubject.next({
-              _id: decoded.id,
-              email: decoded.email,
-              rol: decoded.rol
-            });
-            this.isLoggedInSubject.next(true);
-          }
+        // Crear el objeto usuario
+        let userObject;
+        if (decoded.user) {
+          userObject = decoded.user;
+          console.log('[AuthService] ensureUserFromToken - Using decoded.user');
+        } else if (decoded.id) {
+          userObject = {
+            _id: decoded.id,
+            email: decoded.email,
+            rol: decoded.rol
+          };
+          console.log('[AuthService] ensureUserFromToken - Created user object from decoded.id');
         } else {
-          // Token expirado
-          await this.removeToken();
+          userObject = decoded;
+          console.log('[AuthService] ensureUserFromToken - Using full decoded as user');
+        }
+        
+        // Solo actualizar si el usuario cambió
+        const currentUser = this.userSubject.value;
+        const userChanged = !currentUser || 
+                          currentUser._id !== userObject._id || 
+                          currentUser.rol !== userObject.rol;
+        
+        if (userChanged) {
+          console.log('[AuthService] ensureUserFromToken - User changed, updating subject');
+          this.userSubject.next(userObject);
+          this.isLoggedInSubject.next(true);
+        } else {
+          console.log('[AuthService] ensureUserFromToken - User unchanged, skipping update');
         }
       } else {
-        this.userSubject.next(null);
-        this.isLoggedInSubject.next(false);
+        console.log('[AuthService] ensureUserFromToken - Token expired');
+        await this.removeToken();
       }
     } catch (error) {
-      console.error('Error en ensureUserFromToken:', error);
+      console.error('[AuthService] Error en ensureUserFromToken:', error);
       await this.removeToken();
     }
   }

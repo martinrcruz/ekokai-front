@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class EstadisticasService {
-  private baseUrl = 'http://localhost:3000/estadisticas';
 
+  private baseUrl = environment.apiUrl + '/estadisticas';
+  
   constructor(private http: HttpClient) {}
 
   getTotalKilos(): Observable<any> {
