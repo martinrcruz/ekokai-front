@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <title>Xiaomi S400 BLE Scan</title>
 </head>
+
 <body>
   <h1>Escaneo Xiaomi S400</h1>
   <button id="scanBtn">Escanear báscula</button>
@@ -24,14 +26,21 @@
 
         output.textContent = '🔍 Escaneando... pisa la báscula S400';
         navigator.bluetooth.addEventListener('advertisementreceived', event => {
-          const data = event.serviceData.get(S400_SERVICE);
-          if (!data) return;
-          const hex = [...new Uint8Array(data.buffer)]
-                        .map(b=>b.toString(16).padStart(2,'0')).join('');
-          output.textContent = `RAW: ${hex}`;
-          // Aquí puedes llamar a parseS400Payload(hex)
+          console.log('escuchando');
+          console.log('event', event);
+          console.log('Advertisement received.');
+          console.log('Device Name: ' + event.device.name);
+          console.log('Device ID: ' + event.device.id);
+          console.log('RSSI: ' + event.rssi);
+          console.log('TX Power: ' + event.txPower);
+          console.log('UUIDs: ' + event.uuids);
+          event.manufacturerData.forEach((valueDataView, key) => {
+            console.log('Manufacturer', key, valueDataView);
+          });
+          event.serviceData.forEach((valueDataView, key) => {
+            console.log('Service', key, valueDataView);
+          });
         });
-
         setTimeout(() => {
           scan.stop();
           output.textContent += '\n🔵 Escaneo detenido tras 30 s.';
@@ -43,4 +52,5 @@
     });
   </script>
 </body>
+
 </html>

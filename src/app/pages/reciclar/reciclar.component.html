@@ -22,7 +22,7 @@
     <ion-item>
       <ion-label position="stacked">Peso (kg)</ion-label>
       <ion-input [value]="peso ?? ''" readonly></ion-input>
-      <ion-button (click)="conectarBalanza()" [disabled]="conectando" slot="end">
+      <ion-button (click)="startBleScan()"  slot="end">
         {{ conectando ? 'Conectando...' : 'Obtener peso' }}
       </ion-button>
     </ion-item>

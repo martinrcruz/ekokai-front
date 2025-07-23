@@ -3,11 +3,13 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": ["web-bluetooth", "node"],
+    "lib": ["es2020", "dom", "es2021.intl"]
   },
   "files": [
     "src/main.ts",
-    "src/polyfills.ts"
+    "src/polyfills.ts",
+    "src/types/web-bluetooth-aug.d.ts"
   ],
   "include": [
     "src/**/*.d.ts",

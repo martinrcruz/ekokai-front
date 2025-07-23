@@ -4,6 +4,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
+    
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitOverride": true,
@@ -19,13 +20,15 @@
     "target": "es2021",
     "module": "es2020",
     "lib": [
-      "es2018", 
+      "es2020", 
       "dom",
       "es2021.intl"
     ],
+    "types": ["web-bluetooth", "node"],
     "skipLibCheck": true,
     "useDefineForClassFields": false
   },
+  
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
