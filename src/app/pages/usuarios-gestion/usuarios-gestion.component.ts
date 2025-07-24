@@ -42,7 +42,6 @@ export class UsuariosGestionComponent implements OnInit {
     apellido: '',
     dni: '',
     email: '',
-    password: '',
     telefono: ''
   };
   creandoVecino = false;
@@ -177,7 +176,6 @@ export class UsuariosGestionComponent implements OnInit {
       apellido: '',
       dni: '',
       email: '',
-      password: '',
       telefono: ''
     };
   }
@@ -202,7 +200,7 @@ export class UsuariosGestionComponent implements OnInit {
   }
 
   guardarVecino() {
-    if (!this.vecinoForm.nombre.trim() || !this.vecinoForm.apellido.trim() || !this.vecinoForm.dni.trim() || !this.vecinoForm.email.trim() || !this.vecinoForm.password.trim() || !this.vecinoForm.telefono.trim()) {
+    if (!this.vecinoForm.nombre.trim() || !this.vecinoForm.apellido.trim() || !this.vecinoForm.dni.trim() || !this.vecinoForm.email.trim() || !this.vecinoForm.telefono.trim()) {
       alert('Completa todos los campos');
       return;
     }
@@ -304,4 +302,41 @@ export class UsuariosGestionComponent implements OnInit {
     const totalTokens = this.usuarios.reduce((sum, u) => sum + (u.tokens || 0), 0);
     return { total, activos, totalKilos, totalTokens };
   }
+
+
+  // 🔹 variables para la paginación
+currentPage: number = 1;
+itemsPerPage: number = 4;
+
+// 👉 calcula el total de páginas dinámicamente
+get totalPages(): number {
+  return Math.ceil(this.usuariosFiltrados.length / this.itemsPerPage);
+}
+
+// 👉 devuelve los usuarios de la página actual
+get usuariosPaginados() {
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  const endIndex = startIndex + this.itemsPerPage;
+  return this.usuariosFiltrados.slice(startIndex, endIndex);
+}
+
+// 👉 métodos para cambiar de página
+irAPagina(pagina: number) {
+  if (pagina >= 1 && pagina <= this.totalPages) {
+    this.currentPage = pagina;
+  }
+}
+
+paginaSiguiente() {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+  }
+}
+
+paginaAnterior() {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+  }
+}
+
 }

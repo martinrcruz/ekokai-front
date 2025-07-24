@@ -32,10 +32,6 @@
         <ion-label position="stacked">Email</ion-label>
         <ion-input [(ngModel)]="nuevoVecino.email" name="email" type="email" required></ion-input>
       </ion-item>
-      <ion-item class="eco-form-item" lines="none">
-        <ion-label position="stacked">Password</ion-label>
-        <ion-input [(ngModel)]="nuevoVecino.password" name="password" type="password" required></ion-input>
-      </ion-item>
       <div class="eco-form-actions">
         <ion-button expand="block" type="submit" [disabled]="loading" class="eco-save-btn">
           {{ loading ? 'Guardando...' : 'Guardar' }}

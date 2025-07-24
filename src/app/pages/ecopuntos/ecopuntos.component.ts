@@ -42,6 +42,11 @@ export class EcopuntosComponent implements OnInit {
   encargadoSeleccionado: string = '';
   enrolando = false;
 
+  // Modal de edición
+  showEditModal = false;
+  ecopuntoEditando: any = null;
+  editando = false;
+
   // Gráfico de rendimiento por ecopunto
   barChartOptions: ChartOptions<'bar'> = {
     responsive: true,
@@ -81,13 +86,13 @@ export class EcopuntosComponent implements OnInit {
     this.ecopuntosService.getEcopuntos().subscribe({
       next: (ecopuntos) => {
         console.log('[Ecopuntos] Datos recibidos:', ecopuntos);
-        this.ecopuntos = ecopuntos;
+        this.ecopuntos = Array.isArray(ecopuntos) ? ecopuntos : [];
         
         // Extraer zonas únicas
-        this.zonas = [...new Set(ecopuntos.map(e => e.zona || 'Sin zona'))];
+        this.zonas = [...new Set(this.ecopuntos.map(e => e.zona || 'Sin zona'))];
         
         // Preparar datos para gráfico
-        const ecopuntosTop = ecopuntos
+        const ecopuntosTop = this.ecopuntos
           .sort((a, b) => (b.kilosMes || 0) - (a.kilosMes || 0))
           .slice(0, 10);
         
@@ -98,6 +103,9 @@ export class EcopuntosComponent implements OnInit {
       },
       error: (error) => {
         console.error('[Ecopuntos] Error al cargar:', error);
+        this.ecopuntos = [];
+        this.zonas = [];
+        this.loading = false;
         this.loading = false;
       }
     });
@@ -221,11 +229,27 @@ export class EcopuntosComponent implements OnInit {
     });
   }
 
-  async mostrarMensajeExito() {
+  async mostrarMensajeExito(mensaje: string = '¡Encargado enrolado exitosamente!') {
     const toast = document.createElement('ion-toast');
-    toast.message = '¡Encargado enrolado exitosamente!';
+    toast.message = mensaje;
     toast.duration = 3000;
     toast.color = 'success';
+    toast.position = 'top';
+    
+    document.body.appendChild(toast);
+    await toast.present();
+    
+    const { role } = await toast.onDidDismiss();
+    if (role === 'confirm') {
+      console.log('Toast confirmado');
+    }
+  }
+
+  async mostrarMensajeError(mensaje: string) {
+    const toast = document.createElement('ion-toast');
+    toast.message = mensaje;
+    toast.duration = 3000;
+    toast.color = 'danger';
     toast.position = 'top';
     
     document.body.appendChild(toast);
@@ -243,12 +267,79 @@ export class EcopuntosComponent implements OnInit {
 
   editarEcopunto(ecopunto: any) {
     console.log('Editar ecopunto:', ecopunto);
-    // Implementar modal o navegación
+    this.ecopuntoEditando = { ...ecopunto };
+    this.showEditModal = true;
+  }
+
+  cerrarModalEdicion() {
+    this.showEditModal = false;
+    this.ecopuntoEditando = null;
+    this.editando = false;
+  }
+
+  guardarEdicion() {
+    if (!this.validarFormularioEdicion()) {
+      return;
+    }
+
+    this.editando = true;
+    
+    this.ecopuntosService.actualizarEcopunto(
+      this.ecopuntoEditando._id, 
+      this.ecopuntoEditando
+    ).subscribe({
+      next: (response) => {
+        console.log('[Ecopuntos] Ecopunto actualizado exitosamente:', response);
+        
+        // Actualizar el ecopunto en la lista local
+        const index = this.ecopuntos.findIndex(e => e._id === this.ecopuntoEditando._id);
+        if (index !== -1) {
+          this.ecopuntos[index] = { ...this.ecopuntos[index], ...response };
+        }
+        
+        this.cerrarModalEdicion();
+        this.cargarEcopuntos(); // Recargar para obtener datos actualizados
+        
+        // Mostrar mensaje de éxito
+        this.mostrarMensajeExito('¡Ecopunto actualizado exitosamente!');
+      },
+      error: (error) => {
+        console.error('[Ecopuntos] Error al actualizar ecopunto:', error);
+        this.editando = false;
+        this.mostrarMensajeError('Error al actualizar ecopunto');
+      }
+    });
+  }
+
+  validarFormularioEdicion(): boolean {
+    if (!this.ecopuntoEditando.nombre || !this.ecopuntoEditando.direccion || !this.ecopuntoEditando.zona) {
+      this.mostrarMensajeError('Por favor complete todos los campos requeridos');
+      return false;
+    }
+    return true;
   }
 
   eliminarEcopunto(ecopunto: any) {
     console.log('Eliminar ecopunto:', ecopunto);
-    // Implementar confirmación y eliminación
+    
+    // Mostrar confirmación
+    if (confirm(`¿Está seguro que desea eliminar el ecopunto "${ecopunto.nombre}"? Esta acción no se puede deshacer.`)) {
+      this.ecopuntosService.eliminarEcopunto(ecopunto._id).subscribe({
+        next: (response) => {
+          console.log('[Ecopuntos] Ecopunto eliminado exitosamente:', response);
+          
+          // Remover el ecopunto de la lista local
+          this.ecopuntos = this.ecopuntos.filter(e => e._id !== ecopunto._id);
+          
+          // Mostrar mensaje de éxito
+          this.mostrarMensajeExito('¡Ecopunto eliminado exitosamente!');
+        },
+        error: (error) => {
+          console.error('[Ecopuntos] Error al eliminar ecopunto:', error);
+          this.mostrarMensajeError('Error al eliminar ecopunto');
+        }
+      });
+    }
   }
 
   verMetricas(ecopunto: any) {
@@ -262,6 +353,9 @@ export class EcopuntosComponent implements OnInit {
   }
 
   get ecopuntosFiltrados() {
+    if (!this.ecopuntos || !Array.isArray(this.ecopuntos)) {
+      return [];
+    }
     return this.ecopuntos.filter(ecopunto => {
       const nombreMatch = !this.filtroNombre || 
         ecopunto.nombre.toLowerCase().includes(this.filtroNombre.toLowerCase());

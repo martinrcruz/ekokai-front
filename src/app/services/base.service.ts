@@ -22,7 +22,7 @@ export class BaseService {
     return {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        'x-token': token || '',
+        'Authorization': token ? `Bearer ${token}` : '',
         'Accept': 'application/json'
       })
     };

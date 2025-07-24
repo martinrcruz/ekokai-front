@@ -8,7 +8,6 @@ interface VecinoForm {
   apellido: string;
   dni: string;
   email: string;
-  password: string;
   telefono: string;
 }
 
@@ -25,7 +24,6 @@ export class VecinosComponent {
     apellido: '',
     dni: '',
     email: '',
-    password: '',
     telefono: ''
   };
   loading = false;

@@ -1,169 +1,285 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="true" class="ecommerce-header">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Marketplace</ion-title>
+    <ion-title class="header-title">
+      <ion-icon name="storefront-outline"></ion-icon>
+      Marketplace
+    </ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="crearCupon()">
+      <ion-button (click)="selectedTab === 'cupones' ? crearCupon() : crearProducto()" class="action-btn">
         <ion-icon name="add-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="cargarDatos()" class="action-btn">
+        <ion-icon name="refresh-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="ecommerce-content">
   <div class="marketplace-container">
-    <!-- Estadísticas rápidas -->
-    <div class="stats-grid">
-      <ion-card class="stat-card">
-        <ion-card-content>
-          <div class="stat-icon bg-primary">
+    <!-- Hero Section con Estadísticas -->
+    <div class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">Gestión de Marketplace</h1>
+        <p class="hero-subtitle">Administra cupones, productos y estadísticas del sistema</p>
+      </div>
+      
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">
             <ion-icon name="ticket-outline"></ion-icon>
           </div>
-          <div class="stat-info">
+          <div class="stat-content">
             <h3>{{ estadisticas.totalCupones }}</h3>
-            <p>Total cupones</p>
+            <p>Cupones disponibles</p>
+            <small>{{ estadisticas.cuponesActivos }} activos</small>
           </div>
-        </ion-card-content>
-      </ion-card>
+        </div>
 
-      <ion-card class="stat-card">
-        <ion-card-content>
-          <div class="stat-icon bg-success">
-            <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <ion-icon name="cube-outline"></ion-icon>
           </div>
-          <div class="stat-info">
-            <h3>{{ estadisticas.cuponesActivos }}</h3>
-            <p>Cupones activos</p>
+          <div class="stat-content">
+            <h3>{{ productos.length }}</h3>
+            <p>Productos en catálogo</p>
+            <small>{{ estadisticas.productosEnStock }} en stock</small>
           </div>
-        </ion-card-content>
-      </ion-card>
+        </div>
 
-      <ion-card class="stat-card">
-        <ion-card-content>
-          <div class="stat-icon bg-warning">
+        <div class="stat-card">
+          <div class="stat-icon">
             <ion-icon name="trending-up-outline"></ion-icon>
           </div>
-          <div class="stat-info">
+          <div class="stat-content">
             <h3>{{ estadisticas.totalUsos }}</h3>
-            <p>Usos totales</p>
+            <p>Canjes realizados</p>
+            <small>Total histórico</small>
           </div>
-        </ion-card-content>
-      </ion-card>
+        </div>
 
-      <ion-card class="stat-card">
-        <ion-card-content>
-          <div class="stat-icon bg-info">
+        <div class="stat-card">
+          <div class="stat-icon">
             <ion-icon name="bag-outline"></ion-icon>
           </div>
-          <div class="stat-info">
+          <div class="stat-content">
             <h3>{{ estadisticas.totalVentas }}</h3>
             <p>Productos vendidos</p>
+            <small>€{{ estadisticas.valorTotalVentas.toFixed(2) }} total</small>
           </div>
-        </ion-card-content>
-      </ion-card>
+        </div>
+      </div>
     </div>
 
-    <!-- Filtros -->
-    <div class="filters-section">
-      <ion-select 
-        [(ngModel)]="filtroCategoria" 
-        placeholder="Filtrar por categoría"
-        class="category-filter">
-        <ion-select-option value="">Todas las categorías</ion-select-option>
-        <ion-select-option *ngFor="let categoria of categorias" [value]="categoria">
-          {{ categoria }}
-        </ion-select-option>
-      </ion-select>
+    <!-- Search and Filters Section -->
+    <div class="search-section">
+      <div class="search-container">
+        <ion-item class="search-item">
+          <ion-icon name="search-outline" slot="start"></ion-icon>
+          <ion-input [(ngModel)]="filtroBusqueda" placeholder="Buscar productos, cupones..." clearInput></ion-input>
+        </ion-item>
+        
+        <div class="filters-row">
+          <ion-item class="filter-item">
+            <ion-icon name="pricetag-outline" slot="start"></ion-icon>
+            <ion-select [(ngModel)]="filtroCategoria" placeholder="Categoría">
+              <ion-select-option value="">Todas las categorías</ion-select-option>
+              <ion-select-option *ngFor="let categoria of categorias" [value]="categoria">
+                {{ categoria }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
 
-      <ion-select 
-        [(ngModel)]="filtroEstado" 
-        placeholder="Filtrar por estado"
-        class="status-filter">
-        <ion-select-option value="">Todos los estados</ion-select-option>
-        <ion-select-option *ngFor="let estado of estados" [value]="estado">
-          {{ estado }}
-        </ion-select-option>
-      </ion-select>
+          <ion-item class="filter-item">
+            <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+            <ion-select [(ngModel)]="filtroEstado" placeholder="Estado">
+              <ion-select-option value="">Todos los estados</ion-select-option>
+              <ion-select-option *ngFor="let estado of estados" [value]="estado">
+                {{ estado }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-button fill="clear" class="clear-btn" (click)="limpiarFiltros()">
+            <ion-icon name="close-circle-outline"></ion-icon>
+            Limpiar filtros
+          </ion-button>
+        </div>
+      </div>
     </div>
 
-   
+    <!-- Tabs Section -->
+    <div class="tabs-section">
+      <ion-segment [(ngModel)]="selectedTab" class="ecommerce-tabs">
+        <ion-segment-button value="cupones">
+          <ion-icon name="ticket-outline"></ion-icon>
+          <ion-label>Cupones ({{ cuponesFiltrados.length }})</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="productos">
+          <ion-icon name="bag-outline"></ion-icon>
+          <ion-label>Productos ({{ productosFiltrados.length }})</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
 
-    <!-- Cupones -->
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Cupones ({{ cuponesFiltrados.length }})</ion-card-title>
-        <ion-button fill="clear" (click)="crearCupon()">
+    <!-- Cupones Grid -->
+    <div *ngIf="selectedTab === 'cupones'" class="products-grid">
+      <div class="section-header">
+        <h2>Gestión de Cupones</h2>
+        <ion-button (click)="crearCupon()" class="add-btn">
           <ion-icon name="add-outline"></ion-icon>
-          Nuevo Cupón
+          Crear Cupón
         </ion-button>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-list>
-          <ion-item *ngFor="let cupon of cuponesFiltrados" class="cupon-item">
-            <ion-avatar slot="start">
-              <ion-icon name="ticket-outline"></ion-icon>
-            </ion-avatar>
-            <ion-label>
-              <h3>{{ cupon.nombre }}</h3>
-              <p>{{ cupon.categoria }} - {{ cupon.descuento }}% descuento</p>
-              <p class="cupon-stats">
-                <span class="stat">{{ cupon.usos }}/{{ cupon.maxUsos }} usos</span>
-                <span class="stat">Expira: {{ cupon.fechaExpiracion }}</span>
-                <span class="stat" [class.active]="cupon.activo" [class.inactive]="!cupon.activo">
-                  {{ cupon.activo ? 'Activo' : 'Inactivo' }}
-                </span>
-              </p>
-            </ion-label>
-            <ion-buttons slot="end">
-              <ion-button fill="clear" (click)="editarCupon(cupon)">
+      </div>
+      
+      <div class="grid-container">
+        <div *ngFor="let cupon of cuponesFiltrados" class="product-card cupon-card">
+          <div class="card-header">
+            <div class="card-badge" [class.active]="cupon.activo" [class.inactive]="!cupon.activo">
+              {{ cupon.activo ? 'Activo' : 'Inactivo' }}
+            </div>
+            <div class="card-actions">
+              <div class="action-icon edit-icon" (click)="editarCupon(cupon)" title="Editar cupón">
                 <ion-icon name="create-outline"></ion-icon>
-              </ion-button>
-              <ion-button fill="clear" color="danger" (click)="eliminarCupon(cupon)">
+              </div>
+              <div class="action-icon delete-icon" (click)="eliminarCupon(cupon)" title="Eliminar cupón">
                 <ion-icon name="trash-outline"></ion-icon>
-              </ion-button>
-            </ion-buttons>
-          </ion-item>
-        </ion-list>
-      </ion-card-content>
-    </ion-card>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card-content">
+            <div class="product-image cupon-image">
+              <ion-icon name="pricetag-outline"></ion-icon>
+            </div>
+            
+            <div class="product-info">
+              <h3 class="product-title">{{ cupon.nombre }}</h3>
+              <p class="product-category">{{ cupon.categoria }}</p>
+              <div class="product-price">
+                <span class="tokens-badge">{{ cupon.tokensRequeridos }} tokens</span>
+              </div>
+              
+              <div class="product-stats">
+                <div class="stat-item">
+                  <ion-icon name="people-outline"></ion-icon>
+                  <span>{{ cupon.usos }}/{{ cupon.maxUsos }} usos</span>
+                </div>
+                <div class="stat-item">
+                  <ion-icon name="calendar-outline"></ion-icon>
+                  <span>{{ cupon.fechaExpiracion }}</span>
+                </div>
+                <div class="stat-item">
+                  <ion-icon name="pricetag-outline"></ion-icon>
+                  <span>{{ cupon.categoria }}</span>
+                </div>
+                <div class="stat-item">
+                  <ion-icon name="checkmark-circle-outline"></ion-icon>
+                  <span>{{ cupon.activo ? 'Disponible' : 'No disponible' }}</span>
+                </div>
+              </div>
+              
+              <div class="card-footer">
+                <ion-button fill="outline" (click)="editarCupon(cupon)" class="edit-action-btn">
+                  <ion-icon name="create-outline"></ion-icon>
+                  Editar Cupón
+                </ion-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <!-- Productos -->
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Productos ({{ productosFiltrados.length }})</ion-card-title>
-        <ion-button fill="clear" (click)="crearProducto()">
+    <!-- Productos Grid -->
+    <div *ngIf="selectedTab === 'productos'" class="products-grid">
+      <div class="section-header">
+        <h2>Gestión de Productos</h2>
+        <ion-button (click)="crearProducto()" class="add-btn">
           <ion-icon name="add-outline"></ion-icon>
-          Nuevo Producto
+          Crear Producto
         </ion-button>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-list>
-          <ion-item *ngFor="let producto of productosFiltrados" class="producto-item">
-            <ion-avatar slot="start">
-              <ion-icon name="bag-outline"></ion-icon>
-            </ion-avatar>
-            <ion-label>
-              <h3>{{ producto.nombre }}</h3>
-              <p>{{ producto.categoria }} - €{{ producto.precio }}</p>
-              <p class="producto-stats">
-                <span class="stat">{{ producto.tokens }} tokens</span>
-                <span class="stat">Stock: {{ producto.stock }}</span>
-                <span class="stat">Vendidos: {{ producto.vendidos }}</span>
-              </p>
-            </ion-label>
-            <ion-buttons slot="end">
-              <ion-button fill="clear" (click)="editarProducto(producto)">
+      </div>
+      
+      <div class="grid-container">
+        <div *ngFor="let producto of productosFiltrados" class="product-card">
+          <div class="card-header">
+            <div class="card-badge" [class.in-stock]="producto.stock > 0" [class.out-of-stock]="producto.stock <= 0">
+              {{ producto.stock > 0 ? 'En Stock' : 'Agotado' }}
+            </div>
+            <div class="card-actions">
+              <div class="action-icon edit-icon" (click)="editarProducto(producto)" title="Editar producto">
                 <ion-icon name="create-outline"></ion-icon>
-              </ion-button>
-              <ion-button fill="clear" color="danger" (click)="eliminarProducto(producto)">
+              </div>
+              <div class="action-icon delete-icon" (click)="eliminarProducto(producto)" title="Eliminar producto">
                 <ion-icon name="trash-outline"></ion-icon>
-              </ion-button>
-            </ion-buttons>
-          </ion-item>
-        </ion-list>
-      </ion-card-content>
-    </ion-card>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card-content">
+            <div class="product-image producto-image">
+              <ion-icon name="cube-outline"></ion-icon>
+            </div>
+            
+            <div class="product-info">
+              <h3 class="product-title">{{ producto.nombre }}</h3>
+              <p class="product-category">{{ producto.categoria }}</p>
+              <div class="product-price">
+                <span class="price">€{{ producto.precio }}</span>
+                <span class="tokens">{{ producto.tokens }} tokens</span>
+              </div>
+              
+              <div class="product-stats">
+                <div class="stat-item">
+                  <ion-icon name="cube-outline"></ion-icon>
+                  <span>Stock: {{ producto.stock }}</span>
+                </div>
+                <div class="stat-item">
+                  <ion-icon name="trending-up-outline"></ion-icon>
+                  <span>Vendidos: {{ producto.vendidos }}</span>
+                </div>
+                <div class="stat-item">
+                  <ion-icon name="barcode-outline"></ion-icon>
+                  <span>{{ producto.codigo || 'Sin código' }}</span>
+                </div>
+                <div class="stat-item">
+                  <ion-icon name="folder-outline"></ion-icon>
+                  <span>{{ producto.familia || 'Sin familia' }}</span>
+                </div>
+              </div>
+              
+              <div class="card-footer">
+                <ion-button fill="outline" (click)="editarProducto(producto)" class="edit-action-btn">
+                  <ion-icon name="create-outline"></ion-icon>
+                  Editar Producto
+                </ion-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="(selectedTab === 'cupones' && cuponesFiltrados.length === 0) || (selectedTab === 'productos' && productosFiltrados.length === 0)" class="empty-state">
+      <ion-icon name="search-outline"></ion-icon>
+      <h3>No se encontraron resultados</h3>
+      <p>Intenta ajustar los filtros o crear un nuevo {{ selectedTab === 'cupones' ? 'cupón' : 'producto' }}</p>
+      <ion-button (click)="selectedTab === 'cupones' ? crearCupon() : crearProducto()" class="add-btn" style="margin-top: 16px;">
+        <ion-icon name="add-outline"></ion-icon>
+        Crear {{ selectedTab === 'cupones' ? 'Cupón' : 'Producto' }}
+      </ion-button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-state">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando datos...</p>
+    </div>
   </div>
 </ion-content> 

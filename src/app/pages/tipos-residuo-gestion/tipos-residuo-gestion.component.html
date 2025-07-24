@@ -5,7 +5,7 @@
     </ion-buttons>
     <ion-title>Gestión de Tipos de Residuo</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="abrirCrearModal()">
+      <ion-button (click)="abrirCrearModal()" class="btn-primary">
         <ion-icon name="add-outline"></ion-icon>
         Nuevo tipo
       </ion-button>
@@ -15,52 +15,181 @@
 
 <ion-content [fullscreen]="true">
   <div class="tipos-residuo-container">
-    <ion-card>
+    <!-- Barra de filtros -->
+    <ion-card class="filters-bar">
+      <div class="filters-flex">
+        <ion-item lines="none" class="filter-item">
+          <ion-icon name="search-outline" slot="start"></ion-icon>
+          <ion-input [(ngModel)]="filtroNombre" (ionInput)="onFiltroNombreChange()" placeholder="Buscar tipo de residuo..." clearInput></ion-input>
+        </ion-item>
+        
+        <ion-item lines="none" class="filter-item">
+          <ion-icon name="trending-up-outline" slot="start"></ion-icon>
+          <ion-select [(ngModel)]="filtroTokens" (ionChange)="onFiltroTokensChange()" placeholder="Filtrar por tokens">
+            <ion-select-option value="">Todos los tokens</ion-select-option>
+            <ion-select-option value="bajo">0-10 tokens</ion-select-option>
+            <ion-select-option value="medio">11-20 tokens</ion-select-option>
+            <ion-select-option value="alto">21+ tokens</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-button fill="clear" color="medium" class="clear-filters-btn" (click)="limpiarFiltros()">
+          <ion-icon name="close-circle-outline"></ion-icon>
+          Limpiar
+        </ion-button>
+      </div>
+    </ion-card>
+
+    <!-- Estadísticas -->
+    <ion-card class="stats-card">
       <ion-card-header>
-        <ion-card-title>Tipos de residuo</ion-card-title>
+        <ion-card-title>Estadísticas</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <ion-list>
-          <ion-item *ngFor="let residuo of residuos">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <ion-icon name="leaf-outline"></ion-icon>
+            <div class="stat-content">
+              <h3>{{ residuos.length }}</h3>
+              <p>Tipos de residuo</p>
+            </div>
+          </div>
+          <div class="stat-item">
+            <ion-icon name="trending-up-outline"></ion-icon>
+            <div class="stat-content">
+              <h3>{{ promedioTokens | number:'1.0-1' }}</h3>
+              <p>Promedio tokens/kg</p>
+            </div>
+          </div>
+          <div class="stat-item">
+            <ion-icon name="star-outline"></ion-icon>
+            <div class="stat-content">
+              <h3>{{ maxTokens }}</h3>
+              <p>Máximo tokens/kg</p>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Lista de tipos de residuo -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Tipos de Residuo ({{ residuosFiltrados.length }})</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div *ngIf="loading" class="loading-container">
+          <ion-spinner></ion-spinner>
+          <p>Cargando tipos de residuo...</p>
+        </div>
+        
+        <ion-list *ngIf="!loading">
+          <ion-item *ngFor="let residuo of residuosFiltrados" class="residuo-item">
+            <ion-avatar slot="start">
+              <ion-icon name="leaf-outline"></ion-icon>
+            </ion-avatar>
             <ion-label>
-              <h3>{{ residuo.nombre }}</h3>
-              <p>{{ residuo.descripcion }}</p>
-              <p>Tokens por Kg: <strong>{{ residuo.tokensPorKg }}</strong></p>
+              <h3 class="truncate">{{ residuo.nombre }}</h3>
+              <p class="truncate">{{ residuo.descripcion }}</p>
+              <div class="residuo-stats">
+                <span class="stat tokens-stat">
+                  <ion-icon name="trending-up-outline"></ion-icon>
+                  {{ residuo.tokensPorKg }} tokens/kg
+                </span>
+                <span class="stat category-stat" [class]="getTokenCategory(residuo.tokensPorKg)">
+                  {{ getTokenCategory(residuo.tokensPorKg) }}
+                </span>
+              </div>
             </ion-label>
-            <ion-button fill="clear" (click)="editarResiduo(residuo)">
-              <ion-icon name="create-outline"></ion-icon>
-            </ion-button>
-            <ion-button fill="clear" color="danger" (click)="eliminarResiduo(residuo)" [disabled]="eliminando">
-              <ion-icon name="trash-outline"></ion-icon>
-            </ion-button>
+            <ion-buttons slot="end">
+              <ion-button fill="clear" (click)="editarResiduo(residuo)" class="btn-edit">
+                <ion-icon name="create-outline"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" color="danger" (click)="eliminarResiduo(residuo)" [disabled]="eliminando" class="btn-delete">
+                <ion-icon name="trash-outline" *ngIf="!eliminando"></ion-icon>
+                <ion-spinner *ngIf="eliminando"></ion-spinner>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+          
+          <ion-item *ngIf="residuosFiltrados.length === 0 && !loading" class="empty-state">
+            <ion-label>
+              <div class="empty-content">
+                <ion-icon name="leaf-outline"></ion-icon>
+                <h3>No hay tipos de residuo</h3>
+                <p>Crea el primer tipo de residuo para comenzar</p>
+                <ion-button (click)="abrirCrearModal()" fill="outline">
+                  <ion-icon name="add-outline"></ion-icon>
+                  Crear primer tipo
+                </ion-button>
+              </div>
+            </ion-label>
           </ion-item>
         </ion-list>
       </ion-card-content>
     </ion-card>
 
     <!-- Modal de edición -->
-    <ion-modal [isOpen]="showEditarModal" (didDismiss)="cerrarEditarModal()">
+    <ion-modal [isOpen]="showEditarModal" (didDismiss)="cerrarEditarModal()" class="custom-modal">
       <ng-template>
         <ion-header>
           <ion-toolbar>
-            <ion-title>Editar tokens por Kg</ion-title>
+            <ion-buttons slot="start">
+              <ion-button (click)="cancelarEdicion()" fill="clear">
+                <ion-icon name="close-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+            <ion-title>Editar tipo de residuo</ion-title>
           </ion-toolbar>
         </ion-header>
-        <ion-content>
-          <form (ngSubmit)="guardarEdicion()">
-            <ion-item>
-              <ion-label position="stacked">Nombre</ion-label>
-              <ion-input [value]="residuoEditando?.nombre" readonly></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Tokens por Kg</ion-label>
-              <ion-input type="number" [(ngModel)]="residuoEditando.tokensPorKg" name="tokensPorKg" required min="0"></ion-input>
-            </ion-item>
-            <div class="modal-actions">
-              <ion-button type="submit" [disabled]="guardando">Guardar</ion-button>
-              <ion-button color="medium" (click)="cancelarEdicion()" [disabled]="guardando">Cancelar</ion-button>
+        <ion-content class="modal-content">
+          <div class="modal-container">
+            <div class="modal-header">
+              <ion-icon name="create-outline" class="modal-icon"></ion-icon>
+              <h2>Editar información del residuo</h2>
+              <p>Modifica los datos del tipo de residuo seleccionado</p>
             </div>
-          </form>
+            
+            <form (ngSubmit)="guardarEdicion()" class="modal-form">
+              <ion-item class="form-item">
+                <ion-label position="stacked">
+                  <ion-icon name="leaf-outline"></ion-icon>
+                  Nombre del residuo
+                </ion-label>
+                <ion-input [(ngModel)]="residuoEditando.nombre" name="nombre" required placeholder="Ej: Plástico PET"></ion-input>
+              </ion-item>
+              
+              <ion-item class="form-item">
+                <ion-label position="stacked">
+                  <ion-icon name="document-text-outline"></ion-icon>
+                  Descripción
+                </ion-label>
+                <ion-textarea [(ngModel)]="residuoEditando.descripcion" name="descripcion" required 
+                             placeholder="Describe el tipo de residuo" rows="3"></ion-textarea>
+              </ion-item>
+              
+              <ion-item class="form-item">
+                <ion-label position="stacked">
+                  <ion-icon name="trending-up-outline"></ion-icon>
+                  Tokens por kilogramo
+                </ion-label>
+                <ion-input type="number" [(ngModel)]="residuoEditando.tokensPorKg" name="tokensPorKg" 
+                          required min="0" step="0.1" placeholder="Ej: 15.5"></ion-input>
+                <ion-note slot="helper">Ingresa cuántos tokens se otorgan por kilogramo de este residuo</ion-note>
+              </ion-item>
+              
+              <div class="modal-actions">
+                <ion-button type="submit" [disabled]="guardando" class="btn-primary">
+                  <ion-icon name="save-outline" *ngIf="!guardando"></ion-icon>
+                  <ion-spinner *ngIf="guardando"></ion-spinner>
+                  {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
+                </ion-button>
+                <ion-button color="medium" (click)="cancelarEdicion()" [disabled]="guardando" fill="outline">
+                  Cancelar
+                </ion-button>
+              </div>
+            </form>
+          </div>
         </ion-content>
       </ng-template>
     </ion-modal>
@@ -70,28 +199,48 @@
       <ng-template>
         <ion-header>
           <ion-toolbar>
+            <ion-buttons slot="start">
+              <ion-button (click)="cancelarCreacion()" fill="clear">
+                <ion-icon name="close-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
             <ion-title>Nuevo tipo de residuo</ion-title>
           </ion-toolbar>
         </ion-header>
         <ion-content>
-          <form (ngSubmit)="crearResiduo()">
-            <ion-item>
-              <ion-label position="stacked">Nombre</ion-label>
-              <ion-input [(ngModel)]="nuevoResiduo.nombre" name="nombre" required></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Descripción</ion-label>
-              <ion-input [(ngModel)]="nuevoResiduo.descripcion" name="descripcion"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Tokens por Kg</ion-label>
-              <ion-input type="number" [(ngModel)]="nuevoResiduo.tokensPorKg" name="tokensPorKg" required min="0"></ion-input>
-            </ion-item>
-            <div class="modal-actions">
-              <ion-button type="submit" [disabled]="guardando">Crear</ion-button>
-              <ion-button color="medium" (click)="cancelarCreacion()" [disabled]="guardando">Cancelar</ion-button>
-            </div>
-          </form>
+          <div style="padding: 20px;">
+            <h2 style="text-align: center; margin-bottom: 20px;">Crear nuevo tipo de residuo</h2>
+            
+            <form (ngSubmit)="crearResiduo()">
+              <ion-item>
+                <ion-label position="stacked">Nombre</ion-label>
+                <ion-input [(ngModel)]="nuevoResiduo.nombre" name="nombre" required placeholder="Ej: Plástico PET"></ion-input>
+              </ion-item>
+              
+              <ion-item>
+                <ion-label position="stacked">Descripción</ion-label>
+                <ion-textarea [(ngModel)]="nuevoResiduo.descripcion" name="descripcion" required 
+                             placeholder="Describe el tipo de residuo" rows="3"></ion-textarea>
+              </ion-item>
+              
+              <ion-item>
+                <ion-label position="stacked">Tokens por kilogramo</ion-label>
+                <ion-input type="number" [(ngModel)]="nuevoResiduo.tokensPorKg" name="tokensPorKg" 
+                          required min="0" step="0.1" placeholder="Ej: 15.5"></ion-input>
+              </ion-item>
+              
+              <div style="display: flex; justify-content: center; gap: 16px; margin-top: 24px;">
+                <ion-button type="submit" [disabled]="guardando">
+                  <ion-icon name="add-outline" *ngIf="!guardando"></ion-icon>
+                  <ion-spinner *ngIf="guardando"></ion-spinner>
+                  {{ guardando ? 'Creando...' : 'Crear' }}
+                </ion-button>
+                <ion-button color="medium" (click)="cancelarCreacion()" [disabled]="guardando" fill="outline">
+                  Cancelar
+                </ion-button>
+              </div>
+            </form>
+          </div>
         </ion-content>
       </ng-template>
     </ion-modal>
