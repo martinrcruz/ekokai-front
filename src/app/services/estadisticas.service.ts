@@ -10,19 +10,28 @@ export class EstadisticasService {
   
   constructor(private http: HttpClient) {}
 
-  getTotalKilos(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/total-kilos`);
+  getTotalKilos(ecopuntoId?: string): Observable<any> {
+    const url = ecopuntoId
+      ? `${this.baseUrl}/total-kilos?ecopuntoId=${encodeURIComponent(ecopuntoId)}`
+      : `${this.baseUrl}/total-kilos`;
+    return this.http.get<any>(url);
   }
 
   getSucursalTop(): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/sucursal-top`);
   }
 
-  getKilosPorMes(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/kilos-por-mes`);
+  getKilosPorMes(ecopuntoId?: string): Observable<any[]> {
+    const url = ecopuntoId
+      ? `${this.baseUrl}/kilos-por-mes?ecopuntoId=${encodeURIComponent(ecopuntoId)}`
+      : `${this.baseUrl}/kilos-por-mes`;
+    return this.http.get<any[]>(url);
   }
 
-  getMetaMensual(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/meta-mensual`);
+  getMetaMensual(ecopuntoId?: string): Observable<any> {
+    const url = ecopuntoId
+      ? `${this.baseUrl}/meta-mensual?ecopuntoId=${encodeURIComponent(ecopuntoId)}`
+      : `${this.baseUrl}/meta-mensual`;
+    return this.http.get<any>(url);
   }
 } 

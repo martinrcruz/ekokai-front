@@ -27,20 +27,28 @@ export class AppComponent {
 
   // Definimos un conjunto completo de opciones
   private fullAppPages: AppPage[] = [
-    { title: 'Dashboard', url: '/home',  icon: 'bi-speedometer2' },
-    { title: 'Ecopuntos', url: '/ecopuntos',  icon: 'bi-geo-alt' },
-    { title: 'Usuarios', url: '/usuarios-gestion',  icon: 'bi-people' },
-    { title: 'Cupones', url: '/cupones-gestion', icon: 'bi-ticket' },
-    { title: 'Marketplace', url: '/marketplace',  icon: 'bi-shop' },
-    { title: 'Tipos de Residuo', url: '/tipos-residuo-gestion', icon: 'bi-recycle' },
-    { title: 'Configuración', url: '/configuracion',  icon: 'bi-gear' },
-    { title: 'Crear Vecino', url: '/vecinos', icon: 'bi-person-plus' },
-    { title: 'Reciclar', url: '/reciclar', icon: 'bi-recycle' }
+    { title: 'Dashboard', url: '/administrador/home',  icon: 'bi-speedometer2' },
+    { title: 'Ecopuntos', url: '/administrador/ecopuntos',  icon: 'bi-geo-alt' },
+    { title: 'Usuarios', url: '/administrador/usuarios-gestion',  icon: 'bi-people' },
+    { title: 'Cupones', url: '/administrador/cupones', icon: 'bi-ticket' },
+    { title: 'Marketplace', url: '/administrador/marketplace',  icon: 'bi-shop' },
+    { title: 'Tipos de Residuo', url: '/administrador/tiposresiduos', icon: 'bi-recycle' },
+    { title: 'Configuración', url: '/administrador/configuracion',  icon: 'bi-gear' },
+    { title: 'Reciclar', url: '/administrador/reciclar', icon: 'bi-recycle' }
   ];
 
   // Para el rol worker, solo dejamos Calendario
   private workerAppPages: AppPage[] = [
     { title: 'Calendario', url: '/worker-dashboard',  icon: 'bi-calendar-check' }
+  ];
+
+  // Menú para encargado (sin gestión de ecopuntos ni gestión de usuarios, mantiene crear vecino)
+  private encargadoAppPages: AppPage[] = [
+    { title: 'Dashboard', url: '/encargado/home', icon: 'bi-speedometer2' },
+    { title: 'Marketplace', url: '/encargado/marketplace', icon: 'bi-shop' },
+    { title: 'Tipos de Residuo', url: '/encargado/tiposresiduos', icon: 'bi-recycle' },
+    { title: 'Crear Vecino', url: '/encargado/vecinos', icon: 'bi-person-plus' },
+    { title: 'Reciclar', url: '/encargado/reciclar', icon: 'bi-recycle' }
   ];
 
   // Este es el array que se renderiza en la plantilla:
@@ -77,8 +85,14 @@ export class AppComponent {
           if (!this.router.url.includes('worker-dashboard')) {
             this.router.navigate(['/worker-dashboard']);
           }
+        } else if (this.userRole === 'encargado') {
+          if (!this.router.url.startsWith('/encargado')) {
+            this.router.navigate(['/encargado/home']);
+          }
         } else if (this.userRole === 'admin' || this.userRole === 'administrador') {
-          this.router.navigate(['/home']);
+          if (!this.router.url.startsWith('/administrador')) {
+            this.router.navigate(['/administrador/home']);
+          }
         }
       } else {
         this.userRole = '';
@@ -96,9 +110,18 @@ export class AppComponent {
   private async checkInitialRole() {
     await this.authService.ensureUserFromToken();
     const user = this.authService.getUser();
-    if (user && user.rol === 'worker') {
+    if (!user) return;
+    if (user.rol === 'worker') {
       if (!this.router.url.includes('worker-dashboard')) {
         this.router.navigate(['/worker-dashboard']);
+      }
+    } else if (user.rol === 'encargado') {
+      if (!this.router.url.startsWith('/encargado')) {
+        this.router.navigate(['/encargado/home']);
+      }
+    } else if (user.rol === 'admin' || user.rol === 'administrador') {
+      if (!this.router.url.startsWith('/administrador')) {
+        this.router.navigate(['/administrador/home']);
       }
     }
   }
@@ -109,10 +132,14 @@ export class AppComponent {
   updateMenuByRole() {
     if (this.userRole === 'worker') {
       this.appPages = this.workerAppPages;
-    } else {
-      // Admin o cualquiera => menú completo
-      this.appPages = this.fullAppPages;
+      return;
     }
+    if (this.userRole === 'encargado') {
+      this.appPages = this.encargadoAppPages;
+      return;
+    }
+    // Admin o cualquiera => menú completo
+    this.appPages = this.fullAppPages;
   }
 
   /**

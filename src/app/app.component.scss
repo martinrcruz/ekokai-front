@@ -13,7 +13,7 @@
 
 /* Para la mayoría de los botones (no los de editar/eliminar) */
 ion-button:not(.edit-btn):not(.delete-btn):not(.cerrar-sesion-btn) {
-  background: var(--ion-color-primary) !important; 
+  background: var(--ion-color-primary) !important;
   color: #fff !important;
   border-radius: 6px;
 }
@@ -27,22 +27,22 @@ ion-button:not(.edit-btn):not(.delete-btn):not(.cerrar-sesion-btn) {
  * Menú Lateral
  **********************************************************/
 /* Forzar fondo verde en TODOS los elementos del menú lateral */
-ion-menu, 
-ion-menu ion-header, 
-ion-menu ion-footer, 
-ion-menu ion-toolbar, 
+ion-menu,
+ion-menu ion-header,
+ion-menu ion-footer,
+ion-menu ion-toolbar,
 ion-menu ion-title {
   background: #28b463 !important;
   color: #fff !important;
 }
 
 /* Elimino fondo y altura en los internos para no tapar el footer */
-div.menu-inner, 
-ion-menu .menu-inner, 
-ion-menu .content-inner, 
-ion-menu ion-content, 
-ion-menu ion-content .inner-scroll, 
-ion-menu ion-content .scroll-content, 
+div.menu-inner,
+ion-menu .menu-inner,
+ion-menu .content-inner,
+ion-menu ion-content,
+ion-menu ion-content .inner-scroll,
+ion-menu ion-content .scroll-content,
 ion-menu ion-content .ion-content-scroll-host {
   background: none !important;
   /* height: auto; */

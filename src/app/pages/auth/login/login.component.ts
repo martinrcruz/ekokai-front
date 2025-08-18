@@ -31,23 +31,23 @@ export class LoginComponent {
       // El backend devuelve {token, usuario} directamente, no {ok, data}
       if (response?.token && response?.usuario) {
         console.log('✅ Login exitoso. Token recibido.');
-        
+
         // Establecer el token manualmente
         await this.authService.setToken(response.token);
-        
+
         console.log('✅ Login exitoso. Navegando según rol...');
         const user = this.authService.getUser();
         const role = user?.rol || response?.usuario?.rol;
 
         if (role === 'admin' || role === 'administrador') {
-          console.log('👑 Redirigiendo administrador a /home');
-          this.navCtrl.navigateRoot('/home', { animated: true });
+          console.log('👑 Redirigiendo administrador a /administrador/home');
+          this.navCtrl.navigateRoot('/administrador/home', { animated: true });
         } else if (role === 'encargado') {
-          console.log('👨‍💼 Redirigiendo encargado a /encargado-home');
-          this.navCtrl.navigateRoot('/encargado-home', { animated: true });
+          console.log('👨‍💼 Redirigiendo encargado a /encargado/home');
+          this.navCtrl.navigateRoot('/encargado/home', { animated: true });
         } else if (role === 'vecino') {
-          console.log('🏠 Redirigiendo vecino a /home');
-          this.navCtrl.navigateRoot('/home', { animated: true });
+          console.log('🏠 Redirigiendo vecino a /administrador/home');
+          this.navCtrl.navigateRoot('/administrador/home', { animated: true });
         } else {
           console.warn('⚠️ Rol no reconocido:', role, '. Redirigiendo a /home');
           this.navCtrl.navigateRoot('/home', { animated: true });

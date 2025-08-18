@@ -1,0 +1,192 @@
+:host {
+  --card-radius: 12px;
+  --card-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  --muted: #607d8b;
+}
+
+/* Espaciado general */
+.dashboard-content {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --padding-top: 8px;
+  --padding-bottom: 24px;
+}
+
+/* TOP CARDS */
+.top-grid {
+  margin-top: 24px;
+}
+
+.top-card {
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+}
+
+.top-card ion-card-content {
+  position: relative;
+  padding: 16px;
+}
+
+.top-card-icon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  color: #4caf50;
+  font-size: 20px;
+}
+
+.top-card-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #4caf50;
+}
+
+.top-card-label {
+  margin-top: 4px;
+  color: var(--muted);
+}
+
+/* GRÁFICOS */
+.graphs-row {
+  margin-top: 16px;
+}
+
+.graph-card {
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+}
+
+.graph-title {
+  font-weight: 700;
+}
+
+.graph-legend {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.legend-dot.green { background: #4caf50; }
+
+/* Área del gráfico de barras:
+   - el canvas ocupa 100% del contenedor
+   - NO se sale del card
+*/
+.chart-box {
+  position: relative;
+  height: 168px; /* alto visible del gráfico */
+  width: 100%;
+  overflow: hidden; /* por si acaso */
+}
+
+/* ng2-charts / Chart.js canvas */
+.chart-box canvas {
+  position: absolute;
+  inset: 0;                 /* top/right/bottom/left:0 */
+  width: 100% !important;   /* ocupa todo el ancho del box */
+  height: 100% !important;  /* ocupa todo el alto del box */
+  display: block;
+}
+
+/* Donut centrado y tamaño fijo */
+.chart-wrap {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin: 8px auto 0;
+}
+
+.chart-wrap canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.circle-chart-value {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 700;
+  color: #28b463;
+}
+
+/* TABLA (ion-grid) */
+.table-card {
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  margin-top: 20px;
+}
+
+.table-card__header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between; /* Esto manda título a la izquierda y botón a la derecha */
+  align-items: center; /* Esto los alinea verticalmente en el centro */
+  padding: 8px 16px 12px;
+}
+
+.table-card__title {
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+}
+
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.ek-grid-table {
+  width: 100%;
+}
+
+.table-head {
+  --ion-grid-column-padding: 12px 14px;
+  background: #f7fafb;
+  color: #4a5b67;
+  font-weight: 600;
+  font-size: 20;
+  border-bottom: 1px solid #eef2f4;
+}
+
+.table-row {
+  --ion-grid-column-padding: 12px 14px;
+  border-bottom: 1px solid #eef2f4;
+}
+
+.table-row:hover {
+  background: #fbfdfc;
+}
+
+.num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.truncate {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.table-empty {
+  --ion-grid-column-padding: 24px 14px 24px 14px;
+  color: #90a4ae;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .chart-box { height: 260px; }
+}

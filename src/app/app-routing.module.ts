@@ -1,121 +1,39 @@
+// src/app/app-routing.module.ts
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from './guards/auth.guard';
-import { WorkerGuard } from './guards/worker.guard';
-import { AdminGuard } from './guards/admin.guard';
+import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
-  {
-    path: '',
-    redirectTo: 'auth/login',
-    pathMatch: 'full'
-  },
-  // ---------------------------------
-  // Rutas de autenticación
-  // ---------------------------------
+  { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
+
+  // Auth (ya funcionando). Si Auth ya tiene su módulo, deja su loadChildren aquí:
   {
     path: 'auth',
     loadChildren: () =>
-      import('./pages/auth/auth.module').then(m => m.AuthModule),
+      import('./pages/auth/auth.module').then(m => m.AuthModule)
   },
 
-  // ---------------------------------
-  // Rutas protegidas (requieren AuthGuard)
-  // ---------------------------------
-  
+  // Área Encargado (lazy)
   {
-    path: 'home',
+    path: 'encargado',
     loadChildren: () =>
-      import('./pages/home/home.module').then(m => m.HomeModule),
-    canActivate: [AuthGuard]
+      import('./pages/encargado/encargado.module').then(m => m.EncargadoModule)
   },
 
-  // ---------------------------------
-  // Rutas específicas por rol (componentes standalone)
-  // ---------------------------------
+  // Área Administrador (lazy)
   {
-    path: 'encargado-home',
-    loadComponent: () =>
-      import('./pages/home/encargado-home/encargado-home.component').then(m => m.EncargadoHomeComponent),
-    canActivate: [AuthGuard, WorkerGuard]
-  },
-  
-  {
-    path: 'usuarios',
+    path: 'administrador',
     loadChildren: () =>
-      import('./pages/usuarios/usuarios.module').then(m => m.UsuariosModule),
-    canActivate: [AuthGuard, AdminGuard]
-  },
-  
-  {
-    path: 'vecinos',
-    loadChildren: () => import('./pages/vecinos/vecinos.module').then(m => m.VecinosModule),
-    canActivate: [AuthGuard, AdminGuard]
-  },
-  
-  // ---------------------------------
-  // Nuevas páginas standalone
-  // ---------------------------------
-  {
-    path: 'ecopuntos',
-    loadComponent: () =>
-      import('./pages/ecopuntos/ecopuntos.component').then(m => m.EcopuntosComponent),
-    canActivate: [AuthGuard, AdminGuard]
+      import('./pages/administrador/administrador.module').then(m => m.AdministradorModule)
   },
 
-  {
-    path: 'usuarios-gestion',
-    loadComponent: () =>
-      import('./pages/usuarios-gestion/usuarios-gestion.component').then(m => m.UsuariosGestionComponent),
-    canActivate: [AuthGuard, AdminGuard]
-  },
-
-  {
-    path: 'marketplace',
-    loadComponent: () =>
-      import('./pages/marketplace/marketplace.component').then(m => m.MarketplaceComponent),
-    canActivate: [AuthGuard, AdminGuard]
-  },
-
-  {
-    path: 'configuracion',
-    loadComponent: () =>
-      import('./pages/configuracion/configuracion.component').then(m => m.ConfiguracionComponent),
-    canActivate: [AuthGuard, AdminGuard]
-  },
-
-  {
-    path: 'cupones-gestion',
-    loadComponent: () => import('./pages/cupones-gestion/cupones-gestion.component').then(m => m.CuponesGestionComponent),
-    canActivate: [AuthGuard, AdminGuard]
-  },
-
-  {
-    path: 'tipos-residuo-gestion',
-    loadComponent: () =>
-      import('./pages/tipos-residuo-gestion/tipos-residuo-gestion.component').then(m => m.TiposResiduoGestionComponent),
-    canActivate: [AuthGuard, AdminGuard]
-  },
-
-  {
-    path: 'reciclar',
-    loadComponent: () =>
-      import('./pages/reciclar/reciclar.component').then(m => m.ReciclarComponent),
-    canActivate: [AuthGuard, AdminGuard]
-  },
-
-  // ---------------------------------
-  // Ruta comodín
-  // ---------------------------------
-  {
-    path: '**',
-    redirectTo: 'auth/login',
-    pathMatch: 'full'
-  }
+  // Wildcard
+  { path: '**', redirectTo: 'auth/login' }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {
+    preloadingStrategy: PreloadAllModules
+  })],
   exports: [RouterModule]
 })
 export class AppRoutingModule {}
