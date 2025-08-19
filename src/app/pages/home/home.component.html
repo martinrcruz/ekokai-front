@@ -1,5 +1,5 @@
-<ion-header>
-  <ion-toolbar color="ekokai-dark">
+<ion-header [translucent]="true">
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
@@ -10,9 +10,8 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="dashboard-content">
-  <!-- Tarjetas superiores -->
-  <div class="dashboard-top-cards" style="margin-top: 40px;">
+<ion-content class="ion-padding dashboard-content">
+  <div class="dashboard-section dashboard-top-cards">
     <div class="top-card">
       <div class="top-card-icon"><ion-icon name="leaf-outline"></ion-icon></div>
       <div class="top-card-value">{{ totalKilos | number }}</div>
@@ -29,40 +28,32 @@
       <div class="top-card-label">Mejor Ecopunto</div>
       <div class="top-card-sub">{{ mejorEcopunto.nombre }}</div>
     </div>
+    <div class="top-card">
+      <div class="top-card-icon"><ion-icon name="star-outline"></ion-icon></div>
+      <div class="top-card-value">{{ mejorEcopunto.kilosMes }}</div>
+      <div class="top-card-label">Peor Ecopunto</div>
+      <div class="top-card-sub">{{ mejorEcopunto.nombre }}</div>
+    </div>
   </div>
 
-  <!-- Gráficos -->
-  <div class="dashboard-graphs-row">
+  <div class="dashboard-section dashboard-graphs-row">
     <div class="graph-card">
       <div class="graph-title">Distribución mensual</div>
-      <canvas baseChart
-        [data]="barChartData"
-        [options]="barChartOptions"
-        [type]="barChartType"
-        [legend]="barChartLegend">
-      </canvas>
+      <canvas baseChart [data]="barChartData" [options]="barChartOptions" [type]="barChartType" [legend]="barChartLegend"></canvas>
       <div class="graph-legend">
         <span class="legend-dot green"></span> Kilos reciclados
       </div>
     </div>
-    <div class="graph-card">
+    <div class="graph-card doughnut-card">
       <div class="graph-title">% Meta mensual</div>
-      <canvas baseChart
-        [data]="doughnutChartData"
-        [options]="doughnutChartOptions"
-        [type]="doughnutChartType">
-      </canvas>
-      <div class="circle-chart-value" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.5rem;color:#28b463;font-weight:bold;">
+      <canvas baseChart [data]="doughnutChartData" [options]="doughnutChartOptions" [type]="doughnutChartType"></canvas>
+      <div class="circle-chart-value">
         {{ metaPorcentaje }}%
-      </div>
-      <div class="graph-legend">
-        <span class="legend-dot green"></span> Progreso meta
       </div>
     </div>
   </div>
 
-  <!-- Tabla de usuarios recientes -->
-  <!-- <div class="dashboard-table-card">
+  <!-- <div class="dashboard-section dashboard-table-card">
     <div class="table-tabs">
       <span class="tab active">Usuarios recientes</span>
       <span class="tab">Ecopuntos</span>

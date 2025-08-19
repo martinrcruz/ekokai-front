@@ -89,7 +89,7 @@
     }
 
     .filter-item {
-      flex: 1 1 180px;
+      // flex: 1 1 180px;
       min-width: 180px;
       max-width: 260px;
       background: var(--color-gray-light);
@@ -261,8 +261,8 @@
       padding-bottom: 0;
     }
     ion-list .usuario-item ion-label .usuario-stats {
-      flex-direction: column;
-      gap: 4px;
+      // flex-direction: column;
+      // gap: 4px;
     }
   }
 }
@@ -424,16 +424,16 @@
     }
   }
 
-  @media (max-width: 768px) {
-    .form-actions {
-      flex-direction: column;
-      gap: 12px;
+  // @media (max-width: 768px) {
+  //   .form-actions {
+  //     flex-direction: column;
+  //     gap: 12px;
 
-      ion-button {
-        min-width: 100%;
-      }
-    }
-  }
+  //     ion-button {
+  //       min-width: 100%;
+  //     }
+  //   }
+  // }
 }
 
   .modal-actions {
@@ -564,22 +564,22 @@
   }
 }
 
-@media (max-width: 900px) {
-  .eco-form-wrapper {
-    padding: 10px 6px;
-    min-height: 100%;
-  }
+// @media (max-width: 900px) {
+//   .eco-form-wrapper {
+//     padding: 10px 6px;
+//     min-height: 100%;
+//   }
 
-  .eco-form-actions {
-    flex-direction: column;
-    gap: 6px;
+//   .eco-form-actions {
+//     flex-direction: column;
+//     gap: 6px;
 
-    ion-button {
-      min-width: 100%;
-      max-width: none;
-    }
-  }
-}
+//     ion-button {
+//       min-width: 100%;
+//       max-width: none;
+//     }
+//   }
+// }
 .close-btn {
   --color: var(--color-white); /* color del icono sobre toolbar oscura */
   font-size: 1.2rem;
@@ -590,22 +590,22 @@
 }
 
 
-@media (max-width: 900px) {
-  .eco-form-wrapper {
-    padding: 16px 8px 8px 8px;
-    min-height: 100%;
-  }
+// @media (max-width: 900px) {
+//   .eco-form-wrapper {
+//     padding: 16px 8px 8px 8px;
+//     min-height: 100%;
+//   }
 
-  .eco-form-actions {
-    flex-direction: column;
-    gap: 8px;
+//   .eco-form-actions {
+//     flex-direction: column;
+//     gap: 8px;
 
-    ion-button {
-      min-width: 100%;
-      max-width: none;
-    }
-  }
-}
+//     ion-button {
+//       min-width: 100%;
+//       max-width: none;
+//     }
+//   }
+// }
 
 
 .eco-form-actions {
@@ -619,7 +619,7 @@
   ion-button {
     font-size: 0.98rem;
     height: 44px;
-    min-height: 44px;
+    // min-height: 44px;
     --border-radius: var(--border-radius-sm);
     --padding-start: 0;
     --padding-end: 0;
@@ -672,33 +672,33 @@
 }
 
 
-@media (max-width: 900px) {
-  .eco-form-wrapper {
-    padding: 18px 8px 12px 8px;
-    min-height: 100vh;
-  }
+// @media (max-width: 900px) {
+//   .eco-form-wrapper {
+//     padding: 18px 8px 12px 8px;
+//     min-height: 100vh;
+//   }
 
-  .eco-form-actions {
-    flex-direction: column;
-    gap: 10px;
+//   .eco-form-actions {
+//     flex-direction: column;
+//     gap: 10px;
 
-    ion-button {
-      min-width: 100%;
-      max-width: none;
-    }
-  }
-}
+//     ion-button {
+//       min-width: 100%;
+//       max-width: none;
+//     }
+//   }
+// }
 
 
-@media (max-width: 700px) {
-  .usuario-item {
-    flex-direction: column;
-    align-items: flex-start;
-    ion-buttons {
-      margin-top: 8px;
-      width: 100%;
-      display: flex;
-      justify-content: flex-end;
-    }
-  }
-} 
+// @media (max-width: 700px) {
+//   .usuario-item {
+//     flex-direction: column;
+//     align-items: flex-start;
+//     ion-buttons {
+//       margin-top: 8px;
+//       width: 100%;
+//       display: flex;
+//       justify-content: flex-end;
+//     }
+//   }
+// } 

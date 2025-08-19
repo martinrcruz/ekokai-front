@@ -9,6 +9,7 @@
  * https://ionicframework.com/docs/layout/global-stylesheets
  */
 
+
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
 
@@ -180,3 +181,20 @@ ion-menu-button {
  * - image-preview: Contenedor para previsualización de imágenes
  * - form-error: Estilo para mensajes de error en formularios
  */
+
+
+ :root {
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #000;
+    color: #fff;
+  }
+}
+
+:root {
+  --ion-background-color: #ffffff;
+  --ion-text-color: #000000;
+}

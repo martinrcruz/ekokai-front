@@ -1,5 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
     <ion-title>Gestión de Ecopuntos</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="crearEcopunto()">
@@ -37,71 +40,51 @@
       </div>
     </ion-card>
 
-    <!-- Gráfico de rendimiento -->
-    <ion-card class="chart-card">
-      <ion-card-header>
-        <ion-card-title>Rendimiento por Ecopunto</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <canvas baseChart
-          [data]="barChartData"
-          [type]="barChartType"
-          [options]="barChartOptions">
-        </canvas>
-      </ion-card-content>
-    </ion-card>
-
     <!-- Lista de ecopuntos -->
     <ion-card>
       <ion-card-header>
         <ion-card-title>Ecopuntos Activos ({{ ecopuntosFiltrados.length }})</ion-card-title>
       </ion-card-header>
       <ion-card-content>
+
         <ion-list>
-          <ion-item *ngFor="let ecopunto of ecopuntosFiltrados" class="ecopunto-item">
-            <ion-avatar slot="start">
-              <ng-container *ngIf="!ecopunto.encargado; else encargadoAvatar">
-                <ion-icon name="location-outline"></ion-icon>
-              </ng-container>
-              <ng-template #encargadoAvatar>
-                <span class="avatar-encargado-nombre">
-                  {{ ecopunto.encargado.email }}
-                </span>
-              </ng-template>
-            </ion-avatar>
-            <ion-label>
-              <h3 class="truncate">{{ ecopunto.nombre }}</h3>
-              <p class="truncate">{{ ecopunto.direccion }}</p>
-              <p class="ecopunto-stats">
-                <span class="stat">{{ ecopunto.kilosMes || 0 }} kg este mes</span>
-                <span class="stat">{{ ecopunto.usuariosActivos || (ecopunto.vecinos?.length || 0) }} usuarios activos</span>
-                <span class="stat">{{ ecopunto.zona || 'Sin zona' }}</span>
-              </p>
-              <!-- Encargado asignado -->
-              <div *ngIf="ecopunto.encargado" class="encargado-asignado">
-                <ion-icon name="person-checkmark-outline"></ion-icon>
-                <span>{{ ecopunto.encargado.nombre }} <span *ngIf="ecopunto.encargado.email">({{ ecopunto.encargado.email }})</span></span>
-              </div>
-            </ion-label>
-            <ion-buttons slot="end">
-              <ion-button
-                fill="clear"
-                (click)="abrirModalEnrolar(ecopunto)"
-                color="success"
-                *ngIf="!ecopunto.encargado">
-                <ion-icon name="person-add-outline"></ion-icon>
-              </ion-button>
-              <ion-button fill="clear" (click)="verMetricas(ecopunto)">
-                <ion-icon name="analytics-outline"></ion-icon>
-              </ion-button>
-              <ion-button fill="clear" (click)="editarEcopunto(ecopunto)">
-                <ion-icon name="create-outline"></ion-icon>
-              </ion-button>
-              <ion-button fill="clear" color="danger" (click)="eliminarEcopunto(ecopunto)">
-                <ion-icon name="trash-outline"></ion-icon>
-              </ion-button>
-            </ion-buttons>
-          </ion-item>
+
+          <ion-card *ngFor="let ecopunto of ecopuntosFiltrados" class="ecopunto-item">
+            <ion-card-content>
+              <ion-label>
+                <h3 class="truncate">{{ ecopunto.nombre }}</h3>
+                <br>
+                <p class="truncate">{{ ecopunto.direccion }}</p>
+                <p class="ecopunto-stats">
+                  <span class="stat"><strong>Reciclado hasta ahora: </strong> {{ ecopunto.kilosMes || 0 }} KG.</span>
+                  <br>
+                  <span class="stat"><strong>Vecinos Activos: </strong>{{ ecopunto.usuariosActivos ||
+                    (ecopunto.vecinos?.length || 0) }} </span>
+                  <br>
+                  <span class="stat"><strong>Zona: </strong>{{ ecopunto.zona || 'Sin zona' }}</span>
+                </p>
+                <div *ngIf="ecopunto.encargado" class="encargado-asignado">
+                  <ion-icon name="person-checkmark-outline"></ion-icon>
+                  <span>{{ ecopunto.encargado.nombre }} <span *ngIf="ecopunto.encargado.email">({{
+                      ecopunto.encargado.email }})</span></span>
+                </div>
+              </ion-label>
+              <ion-buttons slot="center">
+                <ion-button (click)="abrirModalEnrolar(ecopunto)">
+                  <ion-icon name="person-add" size="large"></ion-icon>
+                </ion-button>
+                <ion-button fill="clear" (click)="verMetricas(ecopunto)">
+                  <ion-icon name="analytics" size="large"></ion-icon>
+                </ion-button>
+                <ion-button fill="clear" (click)="editarEcopunto(ecopunto)">
+                  <ion-icon name="create" size="large"></ion-icon>
+                </ion-button>
+                <ion-button fill="clear" color="danger" (click)="eliminarEcopunto(ecopunto)">
+                  <ion-icon name="trash" size="large"></ion-icon>
+                </ion-button>
+              </ion-buttons>
+            </ion-card-content>
+          </ion-card>
         </ion-list>
       </ion-card-content>
     </ion-card>
@@ -126,67 +109,45 @@
       <form (ngSubmit)="guardarEcopunto()" #ecopuntoForm="ngForm">
         <ion-item>
           <ion-label position="stacked">Nombre del Ecopunto *</ion-label>
-          <ion-input
-            [(ngModel)]="nuevoEcopunto.nombre"
-            name="nombre"
-            placeholder="Ej: Ecopunto Norte"
-            required>
+          <ion-input [(ngModel)]="nuevoEcopunto.nombre" name="nombre" placeholder="Ej: Ecopunto Norte" required>
           </ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label position="stacked">Dirección *</ion-label>
-          <ion-input
-            [(ngModel)]="nuevoEcopunto.direccion"
-            name="direccion"
-            placeholder="Ej: Calle Norte 456, Recoleta"
+          <ion-input [(ngModel)]="nuevoEcopunto.direccion" name="direccion" placeholder="Ej: Calle Norte 456, Recoleta"
             required>
           </ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label position="stacked">Zona</ion-label>
-          <ion-input
-            [(ngModel)]="nuevoEcopunto.zona"
-            name="zona"
-            placeholder="Ej: Norte, Sur, Centro">
+          <ion-input [(ngModel)]="nuevoEcopunto.zona" name="zona" placeholder="Ej: Norte, Sur, Centro">
           </ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label position="stacked">Descripción</ion-label>
-          <ion-textarea
-            [(ngModel)]="nuevoEcopunto.descripcion"
-            name="descripcion"
-            placeholder="Descripción del ecopunto"
-            rows="3">
+          <ion-textarea [(ngModel)]="nuevoEcopunto.descripcion" name="descripcion"
+            placeholder="Descripción del ecopunto" rows="3">
           </ion-textarea>
         </ion-item>
 
         <ion-item>
           <ion-label position="stacked">Horario de Apertura</ion-label>
-          <ion-input
-            [(ngModel)]="nuevoEcopunto.horarioApertura"
-            name="horarioApertura"
-            type="time">
+          <ion-input [(ngModel)]="nuevoEcopunto.horarioApertura" name="horarioApertura" type="time">
           </ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label position="stacked">Horario de Cierre</ion-label>
-          <ion-input
-            [(ngModel)]="nuevoEcopunto.horarioCierre"
-            name="horarioCierre"
-            type="time">
+          <ion-input [(ngModel)]="nuevoEcopunto.horarioCierre" name="horarioCierre" type="time">
           </ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label position="stacked">Capacidad Máxima (kg)</ion-label>
-          <ion-input
-            [(ngModel)]="nuevoEcopunto.capacidadMaxima"
-            name="capacidadMaxima"
-            type="number"
+          <ion-input [(ngModel)]="nuevoEcopunto.capacidadMaxima" name="capacidadMaxima" type="number"
             placeholder="1000">
           </ion-input>
         </ion-item>
@@ -243,10 +204,7 @@
         <ion-button fill="outline" type="button" (click)="cerrarModalEnrolar()" [disabled]="enrolando">
           Cancelar
         </ion-button>
-        <ion-button
-          type="button"
-          color="success"
-          (click)="enrolarEncargado()"
+        <ion-button type="button" color="success" (click)="enrolarEncargado()"
           [disabled]="!encargadoSeleccionado || enrolando || getEncargadosDisponibles().length === 0">
           <ion-icon name="person-add-outline" slot="start" *ngIf="!enrolando"></ion-icon>
           <ion-spinner name="crescent" *ngIf="enrolando"></ion-spinner>
@@ -280,7 +238,9 @@
           <p><strong>Zona:</strong> {{ ecopuntoDetalle.zona || 'Sin zona' }}</p>
           <p><strong>Activo:</strong> {{ ecopuntoDetalle.activo ? 'Sí' : 'No' }}</p>
           <p><strong>Fecha de creación:</strong> {{ ecopuntoDetalle.fechaCreacion | date:'medium' }}</p>
-          <p><strong>Encargado:</strong> <span *ngIf="ecopuntoDetalle.encargado">{{ ecopuntoDetalle.encargado.nombre }} ({{ ecopuntoDetalle.encargado.email }})</span><span *ngIf="!ecopuntoDetalle.encargado">Sin encargado</span></p>
+          <p><strong>Encargado:</strong> <span *ngIf="ecopuntoDetalle.encargado">{{ ecopuntoDetalle.encargado.nombre }}
+              ({{ ecopuntoDetalle.encargado.email }})</span><span *ngIf="!ecopuntoDetalle.encargado">Sin
+              encargado</span></p>
           <p><strong>Vecinos:</strong> {{ ecopuntoDetalle.vecinos?.length || 0 }}</p>
           <p *ngIf="ecopuntoDetalle.descripcion"><strong>Descripción:</strong> {{ ecopuntoDetalle.descripcion }}</p>
         </ion-card-content>

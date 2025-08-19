@@ -33,7 +33,7 @@ export class AppComponent {
     { title: 'Cupones', url: '/administrador/cupones', icon: 'bi-ticket' },
     { title: 'Marketplace', url: '/administrador/marketplace',  icon: 'bi-shop' },
     { title: 'Tipos de Residuo', url: '/administrador/tiposresiduos', icon: 'bi-recycle' },
-    { title: 'Configuración', url: '/administrador/configuracion',  icon: 'bi-gear' },
+    // { title: 'Configuración', url: '/administrador/configuracion',  icon: 'bi-gear' },
     { title: 'Reciclar', url: '/administrador/reciclar', icon: 'bi-recycle' }
   ];
 
@@ -141,6 +141,8 @@ export class AppComponent {
     // Admin o cualquiera => menú completo
     this.appPages = this.fullAppPages;
   }
+
+  
 
   /**
    * Toggle para expandir/colapsar submenús

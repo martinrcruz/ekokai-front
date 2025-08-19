@@ -21,7 +21,8 @@
                 [routerLink]="[p.url]"
                 routerDirection="root"
                 lines="none"
-                detail="false">
+                detail="false"
+                [routerLinkActive]="['selected']">
                 <i [class]="p.icon" style="margin-right:8px;"></i>
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>

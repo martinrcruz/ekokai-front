@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { UsuariosService } from 'src/app/services/usuarios.service';
 import { CanjeService } from 'src/app/services/canje.service';
 /// <reference types="web-bluetooth" />
-const controller = new window.AbortController()
+
 
 @Component({
   selector: 'app-reciclar',
@@ -21,53 +21,50 @@ export class ReciclarComponent implements OnInit {
   canjeando = false;
   error: string = '';
 
-  private readonly MI_UUID       = 0xFE95;   // Para el filtro
-  private readonly XIAOMI_ID     = 0x0153;   // Manufacturer Data
-  private readonly TIMEOUT_MS    = 30_000;   // corta tras 30 s  private dev?: BluetoothDevice;
+  private readonly MI_UUID = 0xFE95;   // Para el filtro
+  private readonly XIAOMI_ID = 0x0153;   // Manufacturer Data
+  private readonly TIMEOUT_MS = 30_000;   // corta tras 30 s  private dev?: BluetoothDevice;
+  private dev?: BluetoothDevice;
   private dispositivo?: BluetoothDevice;
 
   constructor(
     private usuariosService: UsuariosService,
     private canjeService: CanjeService,
-    private toastCtrl: ToastController,
-    private abortController: AbortController
+    private toastCtrl: ToastController
   ) { }
 
   ngOnInit() {
     this.usuariosService.getUsuarios().subscribe(vecinos => {
       this.vecinos = vecinos.filter(v => v.rol === 'vecino');
     });
+    
   }
-
   async startBleScan() {
-    console.clear();
-    // 1. Picker
-    const dev = await navigator.bluetooth.requestDevice({
-      filters: [{ namePrefix: 'Xiaomi Scale' }]
+    console.log("Entra")
+    this.dispositivo = await navigator.bluetooth.requestDevice({
+      filters: [{ namePrefix: 'Xiaomi Scale' }],
     });
-    console.log('✅ Dispositivo elegido:', dev.name, dev.id);
-
-    // 2. Listener
-    dev.addEventListener('advertisementreceived', ev => {
-      console.log('📡 ADV recibido', ev);
-      const md = ev.manufacturerData.get(0x0153);
-      if (!md) return;                  // paquete que no es de peso
+    
+    /* 2. Listener: escucha todo y filtra dentro  */
+    const onAdv = (ev: BluetoothAdvertisingEvent) => {
+      const md = ev.manufacturerData.get(this.XIAOMI_ID);      // 0x0153
+      if (!md) return;                                         // paquete que no es peso
 
       const flags = md.getUint8(0);
-      if ((flags & 0x80) || md.byteLength < 13) return;   // usuario bajado
+      if ((flags & 0x80) || md.byteLength < 13) return;        // usuario se bajó
 
-      const raw = md.getUint16(11, true);
-      const kg  = +(raw / 200).toFixed(2);
-      console.log('⚖️ Peso', kg, 'kg');
-    }, { passive: true });
+      const raw = md.getUint16(11, true);                   // bytes 11‑12
+      const weight = +(raw / 200).toFixed(2);
+      this.peso = weight;
+      console.log('⚖️', weight, 'kg');
+    };
 
-    // 3. watchAdvertisements con permisos suficientes
-    await dev.watchAdvertisements({
-      acceptAllAdvertisements: true,
+    this.dispositivo.addEventListener('advertisementreceived', onAdv);
+
+    await this.dispositivo.watchAdvertisements({
+      acceptAllAdvertisements: true,     // ← deja pasar manufacturerData
       keepRepeatedDevices: true,
-      // signal: abortController.signal.aborted
     });
-    console.log('⏳ Escuchando anuncios… súbete a la balanza');
   }
 
 
@@ -139,9 +136,6 @@ export class ReciclarComponent implements OnInit {
   }
 
   decodeWeight(dataView: DataView): number {
-    // Decodificación básica para balanza Xiaomi (puede requerir ajuste según protocolo exacto)
-    // Peso en kg, 2 bytes a partir del byte 1 (little endian)
-    // Referencia: Bluetooth SIG Weight Scale
     if (dataView.byteLength < 3) return 0;
     const weightKg = dataView.getUint16(1, true) / 200;
     return Math.round(weightKg * 100) / 100;

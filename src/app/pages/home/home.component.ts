@@ -163,4 +163,5 @@ export class HomeComponent implements OnInit {
     // Aquí puedes implementar la lógica para editar el usuario
     // Por ejemplo, navegar a la página de gestión de usuarios o abrir un modal
   }
+  
 }
