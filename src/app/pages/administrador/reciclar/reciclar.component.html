@@ -17,7 +17,7 @@
         <ion-card-subtitle>Ingresa teléfono y DNI para continuar</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content [formGroup]="formId">
-        <div class="grid-2">
+        <div class="grid">
           <ion-item>
             <ion-label position="stacked">Vecino</ion-label>
             <ion-select [(ngModel)]="vecinoSeleccionado" formControlName="vecino" name="vecino" interface="popover" required>
@@ -29,10 +29,6 @@
         </div>
 
         <div class="inline-actions">
-          <!-- <ion-button shape="round" size="default" (click)="buscarVecino()" [disabled]="formId.invalid || buscando">
-            <ion-icon name="search-outline" slot="start"></ion-icon>
-            {{ buscando ? 'Buscando...' : 'Buscar' }}
-          </ion-button> -->
 
           <ion-chip *ngIf="vecinoSeleccionado" color="success" class="chip-encontrado" outline="true">
             <ion-icon name="person-circle-outline"></ion-icon>
@@ -40,10 +36,6 @@
               vecinoSeleccionado?.telefono }}</ion-label>
           </ion-chip>
 
-          <!-- <ion-chip *ngIf="busquedaFallida" color="danger" outline="true">
-            <ion-icon name="alert-circle-outline"></ion-icon>
-            <ion-label>No se encontró coincidencia</ion-label>
-          </ion-chip> -->
         </div>
       </ion-card-content>
     </ion-card>
@@ -71,30 +63,22 @@
             </ion-select>
           </ion-item>
 
-          <ion-item class="field">
+          <!-- <ion-item class="field">
             <ion-label position="stacked">Volumen aprox. (L)</ion-label>
             <ion-range formControlName="volumenLitros" [disabled]="!vecinoSeleccionado" min="1" max="200" step="1"
               pin="true">
               <ion-label slot="start">1</ion-label>
               <ion-label slot="end">200</ion-label>
             </ion-range>
-          </ion-item>
-        </div>
-
-        <ion-item class="field">
-          <ion-label position="stacked">Descripción / Observación (opcional)</ion-label>
-          <ion-textarea formControlName="descripcion" [disabled]="!vecinoSeleccionado" auto-grow="true"
-            placeholder="Notas relevantes..."></ion-textarea>
-        </ion-item>
-
-        <div class="grid-2">
-          <ion-item class="field">
+          </ion-item> -->
+  
+          <!-- <ion-item class="field">
             <ion-label position="stacked">Código de cupón</ion-label>
             <ion-input formControlName="codigoCupon" [readonly]="true"></ion-input>
             <ion-button fill="clear" slot="end" (click)="generarCupon()" [disabled]="!vecinoSeleccionado">
               <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
             </ion-button>
-          </ion-item>
+          </ion-item> -->
 
           <ion-item class="field weight-field">
             <ion-label position="stacked">Peso (kg)</ion-label>
@@ -110,7 +94,7 @@
           <ion-badge color="medium" *ngIf="!vecinoSeleccionado">Fecha se asignará al guardar</ion-badge>
           <ion-badge color="success" *ngIf="vecinoSeleccionado">Se guardará con fecha: {{ now | date:'short'
             }}</ion-badge>
-          <ion-badge color="tertiary" *ngIf="formReciclaje.value.pesoKg">Tokens estimados: {{ tokensEstimados
+          <ion-badge color="tertiary" *ngIf="formReciclaje.value.pesoKg">Cupones estimados: {{ tokensEstimados
             }}</ion-badge>
         </div>
 

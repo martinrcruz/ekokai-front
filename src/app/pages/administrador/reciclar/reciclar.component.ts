@@ -45,7 +45,7 @@ export class ReciclarComponent implements OnInit {
   // Signals útiles
   tokensEstimados = computed(() => {
     const peso = Number(this.formReciclaje?.value?.pesoKg || 0);
-    return Math.max(0, Math.round(peso * 10));
+    return Math.max(0, Math.round(peso));
   });
 
   constructor(
@@ -69,9 +69,6 @@ export class ReciclarComponent implements OnInit {
     // Form reciclaje
     this.formReciclaje = this.fb.group({
       tipoResiduo:   [{value: '', disabled: false}, [Validators.required]],
-      volumenLitros: [{value: 50, disabled: false}, [Validators.required, Validators.min(1)]],
-      descripcion:   [{value: '', disabled: false}],
-      codigoCupon:   [{value: '', disabled: false}, [Validators.required, Validators.minLength(6)]],
       pesoKg:        [{value: '', disabled: false}, [Validators.required, Validators.min(0.01)]],
     });
 
