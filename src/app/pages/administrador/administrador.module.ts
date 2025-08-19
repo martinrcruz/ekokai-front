@@ -25,7 +25,6 @@ import { HomeAdminModule } from './home-admin/home-admin.module';
     CuponesGestionComponent,
     EcopuntosComponent,
     AdminMarketplaceComponent,
-    AdminReciclarComponent,
     AdminTiposResiduosComponent,
    // UsuariosComponent,
     UsuariosGestionComponent

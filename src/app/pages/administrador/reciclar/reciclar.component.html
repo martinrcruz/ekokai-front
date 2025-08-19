@@ -1,35 +1,128 @@
-<ion-header>
-  <ion-toolbar color="ekokai-dark">
+<ion-header [translucent]="true">
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Reciclar</ion-title>
+    <ion-title>Centro de Reciclaje</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <div class="reciclar-container">
-    <h2>Reciclar</h2>
-  <form (ngSubmit)="generarCanje()" autocomplete="off">
-    <ion-item>
-      <ion-label position="stacked">Vecino</ion-label>
-      <ion-select [(ngModel)]="vecinoSeleccionado" name="vecino" interface="popover" required>
-        <ion-select-option *ngFor="let vecino of vecinos" [value]="vecino">
-          {{ vecino.nombre }} {{ vecino.apellido }} ({{ vecino.telefono }})
-        </ion-select-option>
-      </ion-select>
-    </ion-item>
-    <ion-item>
-      <ion-label position="stacked">Peso (kg)</ion-label>
-      <ion-input [value]="peso ?? ''" readonly></ion-input>
-      <ion-button (click)="startBleScan()"  slot="end">
-        {{ conectando ? 'Conectando...' : 'Obtener peso' }}
-      </ion-button>
-    </ion-item>
-    <ion-button expand="block" type="submit" [disabled]="!vecinoSeleccionado || !peso || canjeando">
-      {{ canjeando ? 'Generando canje...' : 'Generar canje' }}
-    </ion-button>
-    <ion-text color="danger" *ngIf="error">{{ error }}</ion-text>
-  </form>
+<ion-content [fullscreen]="true">
+  <div class="reciclar-page">
+
+    <!-- Card: Identificación -->
+    <ion-card class="card card-id">
+      <ion-card-header>
+        <ion-card-title>Identificar vecino</ion-card-title>
+        <ion-card-subtitle>Ingresa teléfono y DNI para continuar</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content [formGroup]="formId">
+        <div class="grid-2">
+          <ion-item>
+            <ion-label position="stacked">Vecino</ion-label>
+            <ion-select [(ngModel)]="vecinoSeleccionado" formControlName="vecino" name="vecino" interface="popover" required>
+              <ion-select-option *ngFor="let vecino of vecinos" [value]="vecino">
+                {{ vecino.nombre }} {{ vecino.apellido }} ({{ vecino.telefono }})
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </div>
+
+        <div class="inline-actions">
+          <!-- <ion-button shape="round" size="default" (click)="buscarVecino()" [disabled]="formId.invalid || buscando">
+            <ion-icon name="search-outline" slot="start"></ion-icon>
+            {{ buscando ? 'Buscando...' : 'Buscar' }}
+          </ion-button> -->
+
+          <ion-chip *ngIf="vecinoSeleccionado" color="success" class="chip-encontrado" outline="true">
+            <ion-icon name="person-circle-outline"></ion-icon>
+            <ion-label>{{ vecinoSeleccionado?.nombre }} {{ vecinoSeleccionado?.apellido }} · {{
+              vecinoSeleccionado?.telefono }}</ion-label>
+          </ion-chip>
+
+          <!-- <ion-chip *ngIf="busquedaFallida" color="danger" outline="true">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            <ion-label>No se encontró coincidencia</ion-label>
+          </ion-chip> -->
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Card: Detalles del reciclaje -->
+    <ion-card class="card card-form" [class.locked]="!vecinoSeleccionado">
+      <ion-card-header>
+        <ion-card-title>Detalles del reciclaje</ion-card-title>
+        <ion-card-subtitle *ngIf="!vecinoSeleccionado">Bloqueado hasta validar vecino</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content [formGroup]="formReciclaje">
+        <!-- Overlay bloqueo -->
+        <div class="lock-overlay" *ngIf="!vecinoSeleccionado">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+          <span>Valida al vecino para continuar</span>
+        </div>
+
+        <div class="grid-2">
+          <ion-item class="field">
+            <ion-label position="stacked">Tipo de residuo</ion-label>
+            <ion-select formControlName="tipoResiduo" [disabled]="!vecinoSeleccionado" interface="popover"
+              placeholder="Selecciona">
+              <ion-select-option *ngFor="let t of tiposResiduo" [value]="t.value">{{ t.label }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item class="field">
+            <ion-label position="stacked">Volumen aprox. (L)</ion-label>
+            <ion-range formControlName="volumenLitros" [disabled]="!vecinoSeleccionado" min="1" max="200" step="1"
+              pin="true">
+              <ion-label slot="start">1</ion-label>
+              <ion-label slot="end">200</ion-label>
+            </ion-range>
+          </ion-item>
+        </div>
+
+        <ion-item class="field">
+          <ion-label position="stacked">Descripción / Observación (opcional)</ion-label>
+          <ion-textarea formControlName="descripcion" [disabled]="!vecinoSeleccionado" auto-grow="true"
+            placeholder="Notas relevantes..."></ion-textarea>
+        </ion-item>
+
+        <div class="grid-2">
+          <ion-item class="field">
+            <ion-label position="stacked">Código de cupón</ion-label>
+            <ion-input formControlName="codigoCupon" [readonly]="true"></ion-input>
+            <ion-button fill="clear" slot="end" (click)="generarCupon()" [disabled]="!vecinoSeleccionado">
+              <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-item>
+
+          <ion-item class="field weight-field">
+            <ion-label position="stacked">Peso (kg)</ion-label>
+            <ion-input formControlName="pesoKg" readonly></ion-input>
+            <ion-button slot="end" (click)="conectarBalanza()" [disabled]="!vecinoSeleccionado || conectando">
+              <ion-icon [name]="conectando ? 'sync-outline' : 'hardware-chip-outline'" slot="start"></ion-icon>
+              {{ conectando ? 'Conectando...' : 'Obtener peso' }}
+            </ion-button>
+          </ion-item>
+        </div>
+
+        <div class="meta">
+          <ion-badge color="medium" *ngIf="!vecinoSeleccionado">Fecha se asignará al guardar</ion-badge>
+          <ion-badge color="success" *ngIf="vecinoSeleccionado">Se guardará con fecha: {{ now | date:'short'
+            }}</ion-badge>
+          <ion-badge color="tertiary" *ngIf="formReciclaje.value.pesoKg">Tokens estimados: {{ tokensEstimados
+            }}</ion-badge>
+        </div>
+
+        <ion-button expand="block" shape="round" size="large" (click)="generarCanje()"
+          [disabled]="!vecinoSeleccionado || formReciclaje.invalid || canjeando">
+          <ion-icon name="save-outline" slot="start"></ion-icon>
+          {{ canjeando ? 'Guardando...' : 'Guardar reciclaje' }}
+        </ion-button>
+
+        <ion-text color="danger" *ngIf="error" class="err">{{ error }}</ion-text>
+      </ion-card-content>
+    </ion-card>
+
   </div>
 </ion-content>
