@@ -9,52 +9,197 @@
         <ion-icon name="add-outline"></ion-icon>
         Crear cupón
       </ion-button>
+      <ion-button (click)="abrirGenerarMasivosModal()" color="secondary">
+        <ion-icon name="copy-outline"></ion-icon>
+        Generar masivos
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-
 <ion-content [fullscreen]="true">
   <div class="cupones-container">
-    <ion-card class="filters-bar">
-      <div class="filters-flex">
-        <ion-item lines="none" class="filter-item">
-          <ion-icon name="search-outline" slot="start"></ion-icon>
-          <ion-input [(ngModel)]="filtroNombre" placeholder="Buscar por nombre" clearInput></ion-input>
-        </ion-item>
-        <ion-button fill="clear" color="medium" class="clear-filters-btn" (click)="filtroNombre=''">
-          <ion-icon name="close-circle-outline"></ion-icon>
-          Limpiar
-        </ion-button>
-      </div>
-    </ion-card>
+    <!-- Pestanas principales -->
+    <ion-segment [(ngModel)]="pestanaActiva" (ionChange)="cambiarPestana($event.detail.value?.toString())">
+      <ion-segment-button value="cupones">
+        <ion-label>Cupones</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="canjes">
+        <ion-label>Canjes</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="estadisticas">
+        <ion-label>Estadisticas</ion-label>
+      </ion-segment-button>
+    </ion-segment>
 
-    <ion-card *ngFor="let cupon of cuponesFiltrados">
-      <ion-card-header>
-        <ion-card-title>{{ cupon.nombre }}</ion-card-title>
-        <ion-card-subtitle>{{ cupon.descripcion }}</ion-card-subtitle>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-label>
-          <p><strong>Tokens requeridos:</strong> {{ cupon.tokensRequeridos }}</p>
-          <p><strong>Expira:</strong> {{ cupon.fechaExpiracion | date:'shortDate' }}</p>
-          <p><strong>Activo:</strong> {{ cupon.activo ? 'Sí' : 'No' }}</p>
-        </ion-label>
-
-
-        <ion-buttons slot="end">
-
-          <ion-button fill="clear" (click)="abrirEditarModal(cupon)">
-            <ion-icon name="create" size="large"></ion-icon>
+    <!-- Pestana de Cupones -->
+    <div *ngIf="pestanaActiva === 'cupones'">
+      <ion-card class="filters-bar">
+        <div class="filters-flex">
+          <ion-item lines="none" class="filter-item">
+            <ion-icon name="search-outline" slot="start"></ion-icon>
+            <ion-input [(ngModel)]="filtroNombre" placeholder="Buscar por nombre" clearInput></ion-input>
+          </ion-item>
+          <ion-button fill="clear" color="medium" class="clear-filters-btn" (click)="filtroNombre=''">
+            <ion-icon name="close-circle-outline"></ion-icon>
+            Limpiar
           </ion-button>
-          <ion-button fill="clear" color="danger" (click)="eliminarCupon(cupon)">
-            <ion-icon name="trash" size="large"></ion-icon>
+        </div>
+      </ion-card>
+
+      <ion-card *ngFor="let cupon of cuponesFiltrados">
+        <ion-card-header>
+          <ion-card-title>{{ cupon.nombre }}</ion-card-title>
+          <ion-card-subtitle>{{ cupon.descripcion }}</ion-card-subtitle>
+          <div class="cupon-badges">
+            <ion-badge [color]="getTipoColor(cupon.tipo || 'general')">{{ cupon.tipo || 'general' }}</ion-badge>
+            <ion-badge [color]="cupon.activo ? 'success' : 'danger'">{{ cupon.activo ? 'Activo' : 'Inactivo' }}</ion-badge>
+            <ion-badge color="primary" *ngIf="cupon.codigo">Código: {{ cupon.codigo }}</ion-badge>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-label>
+            <p><strong>Tokens requeridos:</strong> {{ cupon.tokensRequeridos }}</p>
+            <p><strong>Expira:</strong> {{ cupon.fechaExpiracion | date:'shortDate' }}</p>
+            <p><strong>Disponible:</strong> {{ (cupon.cantidadDisponible || 1) - (cupon.cantidadUtilizada || 0) }} de {{ cupon.cantidadDisponible || 1 }}</p>
+            <p><strong>Máx. usos por usuario:</strong> {{ cupon.maxUsosPorUsuario || 1 }}</p>
+            <p><strong>Requiere aprobación:</strong> {{ cupon.requiereAprobacion ? 'Sí' : 'No' }}</p>
+            
+            <!-- Usuarios asociados -->
+            <div *ngIf="cupon.usuariosAsociados && cupon.usuariosAsociados.length > 0">
+              <p><strong>Usuarios asociados:</strong></p>
+              <div class="usuarios-asociados">
+                <ion-chip *ngFor="let usuario of cupon.usuariosAsociados" [color]="usuario.utilizado ? 'danger' : 'success'">
+                  <ion-label>{{ usuario.usuario?.nombre }} {{ usuario.usuario?.apellido }}</ion-label>
+                  <ion-icon name="close" (click)="desasociarUsuario(usuario.usuarioId)"></ion-icon>
+                </ion-chip>
+              </div>
+            </div>
+
+            <!-- Comercios asociados -->
+            <div *ngIf="cupon.comerciosAsociados && cupon.comerciosAsociados.length > 0">
+              <p><strong>Comercios asociados:</strong></p>
+              <div class="comercios-asociados">
+                <ion-chip *ngFor="let comercio of cupon.comerciosAsociados" color="primary">
+                  <ion-label>{{ comercio.comercio?.nombre }} {{ comercio.comercio?.apellido }}</ion-label>
+                  <ion-icon name="close" (click)="desasociarComercio(comercio.comercioId)"></ion-icon>
+                </ion-chip>
+              </div>
+            </div>
+          </ion-label>
+
+          <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="abrirAsociarModal(cupon)" color="secondary">
+              <ion-icon name="people" size="large"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" (click)="abrirEditarModal(cupon)">
+              <ion-icon name="create" size="large"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" color="danger" (click)="eliminarCupon(cupon)">
+              <ion-icon name="trash" size="large"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Pestana de Canjes -->
+    <div *ngIf="pestanaActiva === 'canjes'">
+      <ion-card class="filters-bar">
+        <div class="filters-flex">
+          <ion-item lines="none" class="filter-item">
+            <ion-label>Estado:</ion-label>
+            <ion-select [(ngModel)]="filtroEstado" placeholder="Todos los estados">
+              <ion-select-option value="">Todos</ion-select-option>
+              <ion-select-option value="pendiente">Pendiente</ion-select-option>
+              <ion-select-option value="aprobado">Aprobado</ion-select-option>
+              <ion-select-option value="rechazado">Rechazado</ion-select-option>
+              <ion-select-option value="completado">Completado</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-button fill="clear" color="medium" class="clear-filters-btn" (click)="filtroEstado=''">
+            <ion-icon name="close-circle-outline"></ion-icon>
+            Limpiar
           </ion-button>
-        </ion-buttons>
+        </div>
+      </ion-card>
 
+      <ion-card *ngFor="let canje of canjesFiltrados">
+        <ion-card-header>
+          <ion-card-title>{{ canje.cupon?.nombre }}</ion-card-title>
+          <ion-card-subtitle>Código: {{ canje.cupon?.codigo }}</ion-card-subtitle>
+          <ion-badge [color]="getEstadoColor(canje.estado)">{{ canje.estado }}</ion-badge>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-label>
+            <p><strong>Usuario:</strong> {{ canje.usuario?.nombre }} {{ canje.usuario?.apellido }}</p>
+            <p><strong>Comercio:</strong> {{ (canje.comercio?.nombre + ' ' + canje.comercio?.apellido) || 'No especificado' }}</p>
+            <p><strong>Tokens gastados:</strong> {{ canje.tokensGastados }}</p>
+            <p><strong>Fecha:</strong> {{ canje.fechaCanje | date:'short' }}</p>
+            <p *ngIf="canje.observaciones"><strong>Observaciones:</strong> {{ canje.observaciones }}</p>
+          </ion-label>
 
-      </ion-card-content>
-    </ion-card>
+          <ion-buttons slot="end" *ngIf="canje.estado === 'pendiente'">
+            <ion-button fill="clear" color="success" (click)="aprobarCanje(canje)">
+              <ion-icon name="checkmark" size="large"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" color="danger" (click)="rechazarCanje(canje)">
+              <ion-icon name="close" size="large"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Pestana de Estadisticas -->
+    <div *ngIf="pestanaActiva === 'estadisticas'">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Total Cupones</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <h2>{{ estadisticas.totalCupones || 0 }}</h2>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+          <ion-col size="6">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Cupones Activos</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <h2>{{ estadisticas.cuponesActivos || 0 }}</h2>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="6">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Total Canjes</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <h2>{{ estadisticas.totalCanjes || 0 }}</h2>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+          <ion-col size="6">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Canjes Pendientes</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <h2>{{ estadisticas.canjesPendientes || 0 }}</h2>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
 
     <!-- Modal Crear -->
     <ion-modal [isOpen]="showCrearModal" (didDismiss)="cerrarCrearModal()">
@@ -69,17 +214,94 @@
         </ion-header>
         <ion-content>
           <form (ngSubmit)="crearCupon()">
-            <ion-item><ion-label position="stacked">Nombre</ion-label><ion-input [(ngModel)]="cuponForm.nombre"
-                name="nombre" required></ion-input></ion-item>
-            <ion-item><ion-label position="stacked">Descripción</ion-label><ion-input
-                [(ngModel)]="cuponForm.descripcion" name="descripcion"></ion-input></ion-item>
-            <ion-item><ion-label position="stacked">Tokens requeridos</ion-label><ion-input type="number"
-                [(ngModel)]="cuponForm.tokensRequeridos" name="tokensRequeridos" required></ion-input></ion-item>
-            <ion-item><ion-label position="stacked">Fecha expiración</ion-label><ion-datetime
-                [(ngModel)]="cuponForm.fechaExpiracion" name="fechaExpiracion"></ion-datetime></ion-item>
-            <ion-item><ion-label position="stacked">Activo</ion-label><ion-toggle [(ngModel)]="cuponForm.activo"
-                name="activo"></ion-toggle></ion-item>
+            <ion-item>
+              <ion-label position="stacked">Nombre</ion-label>
+              <ion-input [(ngModel)]="cuponForm.nombre" name="nombre" required></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Descripción</ion-label>
+              <ion-input [(ngModel)]="cuponForm.descripcion" name="descripcion"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Tokens requeridos</ion-label>
+              <ion-input type="number" [(ngModel)]="cuponForm.tokensRequeridos" name="tokensRequeridos" required></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Fecha expiración</ion-label>
+              <ion-datetime [(ngModel)]="cuponForm.fechaExpiracion" name="fechaExpiracion"></ion-datetime>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Tipo</ion-label>
+              <ion-select [(ngModel)]="cuponForm.tipo" name="tipo">
+                <ion-select-option value="general">General</ion-select-option>
+                <ion-select-option value="personalizado">Personalizado</ion-select-option>
+                <ion-select-option value="masivo">Masivo</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Cantidad disponible</ion-label>
+              <ion-input type="number" [(ngModel)]="cuponForm.cantidadDisponible" name="cantidadDisponible" min="1"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Máx. usos por usuario</ion-label>
+              <ion-input type="number" [(ngModel)]="cuponForm.maxUsosPorUsuario" name="maxUsosPorUsuario" min="1"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Requiere aprobación</ion-label>
+              <ion-toggle [(ngModel)]="cuponForm.requiereAprobacion" name="requiereAprobacion"></ion-toggle>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Activo</ion-label>
+              <ion-toggle [(ngModel)]="cuponForm.activo" name="activo"></ion-toggle>
+            </ion-item>
             <ion-button expand="block" type="submit" [disabled]="guardando">Crear</ion-button>
+          </form>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+
+    <!-- Modal Generar Masivos -->
+    <ion-modal [isOpen]="showGenerarMasivosModal" (didDismiss)="cerrarGenerarMasivosModal()">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>Generar cupones masivos</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="cerrarGenerarMasivosModal()">Cerrar</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content>
+          <form (ngSubmit)="generarCuponesMasivos()">
+            <ion-item>
+              <ion-label position="stacked">Nombre base</ion-label>
+              <ion-input [(ngModel)]="cuponForm.nombre" name="nombre" placeholder="Ej: Cupón promocional" required></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Descripción</ion-label>
+              <ion-input [(ngModel)]="cuponForm.descripcion" name="descripcion"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Tokens requeridos</ion-label>
+              <ion-input type="number" [(ngModel)]="cuponForm.tokensRequeridos" name="tokensRequeridos" required></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Cantidad a generar</ion-label>
+              <ion-input type="number" [(ngModel)]="cuponForm.cantidadDisponible" name="cantidadDisponible" min="1" max="100" required></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Fecha expiración</ion-label>
+              <ion-datetime [(ngModel)]="cuponForm.fechaExpiracion" name="fechaExpiracion"></ion-datetime>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Máx. usos por usuario</ion-label>
+              <ion-input type="number" [(ngModel)]="cuponForm.maxUsosPorUsuario" name="maxUsosPorUsuario" min="1"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Requiere aprobación</ion-label>
+              <ion-toggle [(ngModel)]="cuponForm.requiereAprobacion" name="requiereAprobacion"></ion-toggle>
+            </ion-item>
+            <ion-button expand="block" type="submit" [disabled]="guardando">Generar cupones</ion-button>
           </form>
         </ion-content>
       </ng-template>
@@ -98,18 +320,89 @@
         </ion-header>
         <ion-content *ngIf="cuponEditando">
           <form (ngSubmit)="guardarEdicion()">
-            <ion-item><ion-label position="stacked">Nombre</ion-label><ion-input [(ngModel)]="cuponEditando.nombre"
-                name="nombre" required></ion-input></ion-item>
-            <ion-item><ion-label position="stacked">Descripción</ion-label><ion-input
-                [(ngModel)]="cuponEditando.descripcion" name="descripcion"></ion-input></ion-item>
-            <ion-item><ion-label position="stacked">Tokens requeridos</ion-label><ion-input type="number"
-                [(ngModel)]="cuponEditando.tokensRequeridos" name="tokensRequeridos" required></ion-input></ion-item>
-            <ion-item><ion-label position="stacked">Fecha expiración</ion-label><ion-datetime
-                [(ngModel)]="cuponEditando.fechaExpiracion" name="fechaExpiracion"></ion-datetime></ion-item>
-            <ion-item><ion-label position="stacked">Activo</ion-label><ion-toggle [(ngModel)]="cuponEditando.activo"
-                name="activo"></ion-toggle></ion-item>
+            <ion-item>
+              <ion-label position="stacked">Nombre</ion-label>
+              <ion-input [(ngModel)]="cuponEditando.nombre" name="nombre" required></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Descripción</ion-label>
+              <ion-input [(ngModel)]="cuponEditando.descripcion" name="descripcion"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Tokens requeridos</ion-label>
+              <ion-input type="number" [(ngModel)]="cuponEditando.tokensRequeridos" name="tokensRequeridos" required></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Fecha expiración</ion-label>
+              <ion-datetime [(ngModel)]="cuponEditando.fechaExpiracion" name="fechaExpiracion"></ion-datetime>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Tipo</ion-label>
+              <ion-select [(ngModel)]="cuponEditando.tipo" name="tipo">
+                <ion-select-option value="general">General</ion-select-option>
+                <ion-select-option value="personalizado">Personalizado</ion-select-option>
+                <ion-select-option value="masivo">Masivo</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Cantidad disponible</ion-label>
+              <ion-input type="number" [(ngModel)]="cuponEditando.cantidadDisponible" name="cantidadDisponible" min="1"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Máx. usos por usuario</ion-label>
+              <ion-input type="number" [(ngModel)]="cuponEditando.maxUsosPorUsuario" name="maxUsosPorUsuario" min="1"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Requiere aprobación</ion-label>
+              <ion-toggle [(ngModel)]="cuponEditando.requiereAprobacion" name="requiereAprobacion"></ion-toggle>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Activo</ion-label>
+              <ion-toggle [(ngModel)]="cuponEditando.activo" name="activo"></ion-toggle>
+            </ion-item>
             <ion-button expand="block" type="submit" [disabled]="guardando">Guardar</ion-button>
           </form>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+
+    <!-- Modal Asociar -->
+    <ion-modal [isOpen]="showAsociarModal" (didDismiss)="cerrarAsociarModal()">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>Asociar cupón: {{ cuponSeleccionado?.nombre }}</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="cerrarAsociarModal()">Cerrar</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content *ngIf="cuponSeleccionado">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Asociar Usuario</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-item>
+                <ion-label position="stacked">ID del Usuario</ion-label>
+                <ion-input #usuarioId placeholder="Ingrese el ID del usuario"></ion-input>
+              </ion-item>
+              <ion-button expand="block" (click)="asociarUsuario(usuarioId.value?.toString() || '')">Asociar Usuario</ion-button>
+            </ion-card-content>
+          </ion-card>
+
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Asociar Comercio</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-item>
+                <ion-label position="stacked">ID del Comercio</ion-label>
+                <ion-input #comercioId placeholder="Ingrese el ID del comercio"></ion-input>
+              </ion-item>
+              <ion-button expand="block" (click)="asociarComercio(comercioId.value?.toString() || '')">Asociar Comercio</ion-button>
+            </ion-card-content>
+          </ion-card>
         </ion-content>
       </ng-template>
     </ion-modal>

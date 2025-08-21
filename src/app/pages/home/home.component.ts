@@ -91,7 +91,6 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.cargarDashboard();
-    this.usuariosRecientesFiltrados = this.usuariosRecientes;
   }
 
   cargarDashboard() {
@@ -122,6 +121,7 @@ export class HomeComponent implements OnInit {
         }));
       console.log('[Ecopard] Usuarios recientes para tabla:', this.usuariosRecientes);
       console.log('[Ecopard] Total usuarios para tarjeta:', this.totalUsuarios);
+      this.aplicarFiltros(); // Aplicar filtros después de cargar usuarios
     });
 
     // Gráfico de kilos por mes
@@ -150,7 +150,28 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  aplicarFiltros() {}
+  aplicarFiltros() {
+    console.log('🔍 Aplicando filtros - Mes:', this.filtroMes, 'Usuario:', this.filtroUsuario);
+    
+    this.usuariosRecientesFiltrados = this.usuariosRecientes.filter(usuario => {
+      // Filtro por usuario (nombre o email)
+      const cumpleUsuario = !this.filtroUsuario || 
+        usuario.nombre?.toLowerCase().includes(this.filtroUsuario.toLowerCase()) ||
+        usuario.email?.toLowerCase().includes(this.filtroUsuario.toLowerCase());
+
+      // Filtro por mes de creación
+      let cumpleMes = true;
+      if (this.filtroMes) {
+        const fechaCreacion = new Date(usuario.fechaCreacion);
+        const mesUsuario = fechaCreacion.getMonth() + 1; // getMonth() retorna 0-11
+        cumpleMes = mesUsuario === this.filtroMes;
+      }
+
+      return cumpleUsuario && cumpleMes;
+    });
+
+    console.log('🔍 Usuarios filtrados:', this.usuariosRecientesFiltrados.length);
+  }
 
   verUsuario(usuario: any) {
     console.log('Ver usuario:', usuario);
@@ -162,6 +183,21 @@ export class HomeComponent implements OnInit {
     console.log('Editar usuario:', usuario);
     // Aquí puedes implementar la lógica para editar el usuario
     // Por ejemplo, navegar a la página de gestión de usuarios o abrir un modal
+  }
+
+  // Métodos para manejar cambios en filtros
+  onFiltroMesChange() {
+    this.aplicarFiltros();
+  }
+
+  onFiltroUsuarioChange() {
+    this.aplicarFiltros();
+  }
+
+  limpiarFiltros() {
+    this.filtroMes = '';
+    this.filtroUsuario = '';
+    this.aplicarFiltros();
   }
   
 }

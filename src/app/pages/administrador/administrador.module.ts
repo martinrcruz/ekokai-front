@@ -16,7 +16,9 @@ import { ReciclarComponent as AdminReciclarComponent } from './reciclar/reciclar
 import { TiposResiduoGestionComponent as AdminTiposResiduosComponent } from './tipos-residuo-gestion/tipos-residuo-gestion.component';
 //import { UsuariosComponent } from './usuarios/usuarios.component';
 import { UsuariosGestionComponent } from './usuarios-gestion/usuarios-gestion.component';
+import { UsuariosModule } from './usuarios/usuarios.module';
 import { HomeAdminModule } from './home-admin/home-admin.module';
+import { AdminGuard } from '../../guards/admin.guard';
 
 @NgModule({
   declarations: [
@@ -36,8 +38,10 @@ import { HomeAdminModule } from './home-admin/home-admin.module';
     ReactiveFormsModule,
     NgChartsModule,
     AdministradorRoutingModule,
+    UsuariosModule,
     HomeAdminModule
   ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  providers: [AdminGuard]
 })
 export class AdministradorModule {}

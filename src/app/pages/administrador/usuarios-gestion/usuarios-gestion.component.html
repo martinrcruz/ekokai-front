@@ -98,51 +98,61 @@
     </div> -->
 
     <!-- Lista de usuarios -->
-    <ion-card *ngFor="let usuario of usuariosPaginados; let i = index" class="usuario-item" [class.zebra]="i % 2 === 1">
+
+    <ion-card>
       <ion-card-header>
         <ion-card-title>Usuarios ({{ usuariosFiltrados.length }})</ion-card-title>
       </ion-card-header>
 
       <ion-card-content>
-
-        <ion-avatar slot="start" [ngClass]="'avatar-' + (usuario.rol || 'default')">
-          <span class="avatar-iniciales">
-            {{ (usuario.nombre ? usuario.nombre[0] : '') + (usuario.apellido ? usuario.apellido[0] : '') }}
-          </span>
-        </ion-avatar>
-
-        <ion-label>
-          <h3 class="truncate">{{ usuario.nombre }} {{ usuario.apellido }}</h3>
-          <p class="usuario-stats">
-            <span class="stat"
-              [ngClass]="{'rol-admin': usuario.rol === 'administrador', 'rol-encargado': usuario.rol === 'encargado', 'rol-vecino': usuario.rol === 'vecino'}">{{
-              usuario.rol || 'Sin rol' }}</span>
-            <span class="stat" [class.active]="usuario.activo" [class.inactive]="!usuario.activo">
-              {{ usuario.activo ? 'Activo' : 'Inactivo' }}
-            </span>
-            <span class="stat">{{ usuario.kilosTotal || 0 }} kg total</span>
-            <span class="stat">{{ usuario.tokens || 0 }} tokens</span>
-          </p>
-        </ion-label>
-
-        <ion-buttons>
-          <ion-button fill="clear" (click)="verHistorial(usuario)" title="Ver historial">
-            <ion-icon name="eye" size="large"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" (click)="editarUsuario(usuario)" title="Editar usuario">
-            <ion-icon name="create" size="large"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" (click)="toggleEstado(usuario)" [title]="usuario.activo ? 'Desactivar' : 'Activar'">
-            <ion-icon [name]="usuario.activo ? 'pause' : 'play'" size="large"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" color="danger" (click)="eliminarUsuario(usuario)" title="Eliminar usuario">
-            <ion-icon name="trash" size="large"></ion-icon>
-          </ion-button>
-        </ion-buttons>
+        <ion-card *ngFor="let usuario of usuariosPaginados; let i = index" class="usuario-item">
 
 
+          <ion-card-content>
+            <ion-label>
+              <h3 class="truncate">{{ usuario.nombre }} {{ usuario.apellido }}</h3>
+              <p class="usuario-stats">
+                <span class="stat"
+                  [ngClass]="{'rol-admin': usuario.rol === 'administrador', 'rol-encargado': usuario.rol === 'encargado', 'rol-vecino': usuario.rol === 'vecino'}">
+                  <strong>Rol: </strong>{{ usuario.rol || 'Sin rol' }}</span>
+                  <br>
+                <span class="stat" [class.active]="usuario.activo" [class.inactive]="!usuario.activo">
+                  <strong>Estado: </strong>{{ usuario.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+                <br>
+                <span class="stat"><strong>Kilos totales: </strong>{{ usuario.kilosTotal || 0 }} kg</span>
+                <br>
+                <span class="stat"><strong>Cupones: </strong>{{ usuario.tokens || 0 }} tokens</span>
+              </p>
+            </ion-label>
+
+            <ion-buttons>
+              <ion-button fill="clear" color="primary" (click)="verHistorial(usuario)" title="Ver historial completo">
+                <ion-icon name="time" size="large"></ion-icon>
+                <span class="button-text">Historial</span>
+              </ion-button>
+              <ion-button fill="clear" color="secondary" (click)="editarUsuario(usuario)" title="Editar usuario">
+                <ion-icon name="create" size="large"></ion-icon>
+                <span class="button-text">Editar</span>
+              </ion-button>
+              <!-- <ion-button fill="clear" [color]="usuario.activo ? 'warning' : 'success'" (click)="toggleEstado(usuario)"
+                [title]="usuario.activo ? 'Desactivar' : 'Activar'">
+                <ion-icon [name]="usuario.activo ? 'pause' : 'play'" size="large"></ion-icon>
+                <span class="button-text">{{ usuario.activo ? 'Desactivar' : 'Activar' }}</span>
+              </ion-button> -->
+              <ion-button fill="clear" color="danger" (click)="eliminarUsuario(usuario)" title="Eliminar usuario">
+                <ion-icon name="trash" size="large"></ion-icon>
+                <span class="button-text">Eliminar</span>
+              </ion-button>
+            </ion-buttons>
+
+
+          </ion-card-content>
+        </ion-card>
       </ion-card-content>
     </ion-card>
+
+
 
     <!-- Paginador -->
     <div class="paginador">

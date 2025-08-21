@@ -4,8 +4,8 @@ import { IonicModule, ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UsuariosService } from 'src/app/services/usuarios.service';
 import { CanjeService } from 'src/app/services/canje.service';
+import { TiposResiduoService } from 'src/app/services/tipos-residuo.service';
 /// <reference types="web-bluetooth" />
-
 
 @Component({
   selector: 'app-reciclar',
@@ -21,10 +21,12 @@ export class ReciclarComponent implements OnInit {
   conectando = false;
   canjeando = false;
   error = '';
+  busquedaFallida = false;
 
   // Datos
   vecinos: any[] = [];
   vecinoSeleccionado: any = null;
+  tiposResiduo: any[] = [];
 
   // Formularios
   formId!: FormGroup;
@@ -32,47 +34,58 @@ export class ReciclarComponent implements OnInit {
 
   now = new Date();
 
-  tiposResiduo = [
-    { value: 'papel_carton', label: 'Papel / Cartón' },
-    { value: 'plastico',     label: 'Plástico' },
-    { value: 'vidrio',       label: 'Vidrio' },
-    { value: 'metal',        label: 'Metal' },
-    { value: 'organico',     label: 'Orgánico' },
-    { value: 'raee',         label: 'RAEE (electrónicos)' },
-    { value: 'otros',        label: 'Otros' },
-  ];
-
   // Signals útiles
   tokensEstimados = computed(() => {
     const peso = Number(this.formReciclaje?.value?.pesoKg || 0);
-    return Math.max(0, Math.round(peso));
+    return Math.max(0, Math.ceil(peso * 2)); // Multiplicador de 2 para mantener la lógica especificada
   });
 
   constructor(
     private fb: FormBuilder,
     private usuariosService: UsuariosService,
     private canjeService: CanjeService,
+    private tiposResiduoService: TiposResiduoService,
     private toastCtrl: ToastController,
   ) {}
 
   ngOnInit(): void {
-    // Cargar vecinos (fallback para filtro local si no hay endpoint de búsqueda)
-    this.usuariosService.getUsuarios().subscribe(vecinos => {
-      this.vecinos = (vecinos || []).filter((v: any) => v.rol === 'vecino');
-    });
+    this.cargarTiposResiduo();
+    this.inicializarFormularios();
+  }
 
+  private async cargarTiposResiduo() {
+    try {
+      this.tiposResiduoService.getTiposResiduo().subscribe({
+        next: (tipos: any[]) => {
+          this.tiposResiduo = tipos.filter((t: any) => t.activo);
+          console.log('Tipos de residuo cargados:', this.tiposResiduo);
+        },
+        error: (err: any) => {
+          console.error('Error cargando tipos de residuo:', err);
+          this.toast('Error cargando tipos de residuo', 'danger');
+        }
+      });
+    } catch (error) {
+      console.error('Error en cargarTiposResiduo:', error);
+    }
+  }
+
+  private inicializarFormularios() {
     // Form identificación
     this.formId = this.fb.group({
-      vecino: ['', [Validators.required]],
+      dni: ['', [Validators.required, Validators.minLength(7)]],
+      telefono: ['', [Validators.required, Validators.minLength(10)]],
+      nombre: ['', [Validators.minLength(2)]]
     });
 
     // Form reciclaje
     this.formReciclaje = this.fb.group({
-      tipoResiduo:   [{value: '', disabled: false}, [Validators.required]],
-      pesoKg:        [{value: '', disabled: false}, [Validators.required, Validators.min(0.01)]],
+      tipoResiduo: ['', [Validators.required]],
+      pesoKg: ['', [Validators.required, Validators.min(0.01)]],
+      descripcion: ['']
     });
 
-    // Bloquear campos hasta validar vecino (sin deshabilitar para mantener estilo; validación se hace al guardar)
+    // Bloquear campos hasta validar vecino
     this.bloquearDetalle(true);
   }
 
@@ -83,32 +96,75 @@ export class ReciclarComponent implements OnInit {
     this.busquedaFallida = false;
     this.buscando = true;
     this.vecinoSeleccionado = null;
-    try {
-      const { telefono, dni } = this.formId.value;
-      const vecino = this.vecinos.find(v =>
-        (v.telefono?.toString().includes(telefono?.toString())) &&
-        (v.dni?.toString().replace(/\D/g, '') === dni?.toString().replace(/\D/g, ''))
-      );
 
-      if (vecino) {
-        this.vecinoSeleccionado = vecino;
+    try {
+      const { dni, telefono, nombre } = this.formId.value;
+      
+      // Validar que al menos DNI o teléfono estén presentes
+      if (!dni && !telefono) {
+        this.error = 'Debe ingresar al menos DNI o teléfono';
+        this.busquedaFallida = true;
+        return;
+      }
+
+      // Buscar vecino en el backend
+      const vecinos = await this.usuariosService.buscarVecinos({ dni, telefono, nombre }).toPromise();
+      
+      if (vecinos && vecinos.length > 0) {
+        this.vecinoSeleccionado = vecinos[0]; // Tomar el primero si hay múltiples
         this.bloquearDetalle(false);
-        if (!this.formReciclaje.value.codigoCupon) {
-          this.generarCupon(); // sugerir cupon al validar
-        }
-        this.toast('Vecino validado');
+        this.toast(`Vecino encontrado: ${this.vecinoSeleccionado.nombre} ${this.vecinoSeleccionado.apellido}`, 'success');
       } else {
         this.busquedaFallida = true;
         this.bloquearDetalle(true);
+        this.toast('No se encontró ningún vecino con esos datos', 'warning');
       }
     } catch (e: any) {
-      this.error = 'Error buscando vecino';
+      console.error('Error buscando vecino:', e);
+      this.error = 'Error en la búsqueda: ' + (e.error?.message || e.message || 'Error desconocido');
       this.busquedaFallida = true;
     } finally {
       this.buscando = false;
     }
   }
-  busquedaFallida = false;
+
+  async registrarVecinoExpress(): Promise<void> {
+    this.error = '';
+    
+    try {
+      const { dni, telefono, nombre } = this.formId.value;
+      
+      if (!dni || !telefono || !nombre) {
+        this.toast('Complete todos los campos para el registro express', 'warning');
+        return;
+      }
+
+      // Separar nombre y apellido
+      const nombres = nombre.trim().split(' ');
+      const primerNombre = nombres[0];
+      const apellido = nombres.slice(1).join(' ') || primerNombre;
+
+      const datosVecino = {
+        nombre: primerNombre,
+        apellido: apellido,
+        dni: dni.toString(),
+        telefono: telefono.toString(),
+        email: `${dni}@express.ekokai.com`, // Email temporal
+        ecopuntoId: null // Se asignará desde el backend según el rol del usuario
+      };
+
+      const nuevoVecino = await this.usuariosService.registrarVecino(datosVecino).toPromise();
+      
+      this.vecinoSeleccionado = nuevoVecino;
+      this.bloquearDetalle(false);
+      this.toast(`Vecino registrado exitosamente: ${nuevoVecino.nombre} ${nuevoVecino.apellido}`, 'success');
+      
+    } catch (e: any) {
+      console.error('Error registrando vecino:', e);
+      this.error = 'Error en el registro: ' + (e.error?.message || e.message || 'Error desconocido');
+      this.toast('Error al registrar vecino', 'danger');
+    }
+  }
 
   bloquearDetalle(bloq: boolean) {
     if (bloq) {
@@ -116,19 +172,6 @@ export class ReciclarComponent implements OnInit {
     } else {
       this.formReciclaje.enable({ emitEvent: false });
     }
-  }
-
-  generarCupon() {
-    const code = this.generarCodigoCupon();
-    this.formReciclaje.patchValue({ codigoCupon: code });
-  }
-
-  private generarCodigoCupon(): string {
-    // Código legible: 4+4+4 base36 timestamp + aleatorio
-    const t = Date.now().toString(36).toUpperCase();
-    const r = Math.random().toString(36).substring(2, 10).toUpperCase();
-    // Ej: CPN-<T4>-<R4>-<R4>
-    return `CPN-${t.slice(-4)}-${r.slice(0,4)}-${r.slice(4,8)}`;
   }
 
   async conectarBalanza() {
@@ -179,11 +222,12 @@ export class ReciclarComponent implements OnInit {
     }
   }
 
-  generarCanje() {
+  async generarCanje() {
     if (!this.vecinoSeleccionado) {
       this.toast('Primero valida al vecino', 'warning');
       return;
     }
+    
     if (this.formReciclaje.invalid) {
       this.formReciclaje.markAllAsTouched();
       this.toast('Completa los campos requeridos', 'warning');
@@ -191,37 +235,37 @@ export class ReciclarComponent implements OnInit {
     }
 
     this.canjeando = true;
-    const fecha = new Date().toISOString(); // Fecha auto
-    const { tipoResiduo, volumenLitros, descripcion, codigoCupon, pesoKg } = this.formReciclaje.value;
-    const tokens = Math.round(Number(pesoKg) * 10);
+    const { tipoResiduo, pesoKg, descripcion } = this.formReciclaje.value;
+    
+    // Obtener el ecopunto del usuario autenticado (asumiendo que es el ecopunto actual)
+    const ecopuntoId = this.vecinoSeleccionado.ecopuntoId || 'default-ecopunto-id';
 
     const payload = {
-      usuario: this.vecinoSeleccionado._id,
-      tipoResiduo,
-      volumenLitros,
-      descripcion: (descripcion || '').trim(),
-      codigoCupon,
+      usuarioId: this.vecinoSeleccionado._id,
+      ecopuntoId: ecopuntoId,
+      tipoResiduoId: tipoResiduo,
       pesoKg: Number(pesoKg),
-      tokens,
-      fecha // se puede calcular en backend también
+      descripcion: (descripcion || '').trim()
     };
 
-    this.canjeService.registrarCanje(payload).subscribe({
-      next: () => {
-        this.toast('Reciclaje registrado correctamente');
-        // Reset "limpio" pero manteniendo foco de UX
-        this.formReciclaje.reset({ tipoResiduo: '', volumenLitros: 50, descripcion: '', codigoCupon: '', pesoKg: '' });
-        this.formId.reset();
-        this.vecinoSeleccionado = null;
-        this.bloquearDetalle(true);
-        this.canjeando = false;
-        this.now = new Date();
-      },
-      error: (e) => {
-        this.toast('Error al registrar el reciclaje', 'danger');
-        this.canjeando = false;
-      }
-    });
+    try {
+      const resultado = await this.canjeService.registrarCanje(payload).toPromise();
+      
+      this.toast(`Reciclaje registrado: ${resultado.cuponesGenerados} cupones generados`, 'success');
+      
+      // Reset del formulario
+      this.formReciclaje.reset();
+      this.formId.reset();
+      this.vecinoSeleccionado = null;
+      this.bloquearDetalle(true);
+      this.now = new Date();
+      
+    } catch (e: any) {
+      console.error('Error al registrar reciclaje:', e);
+      this.toast('Error al registrar el reciclaje: ' + (e.error?.message || 'Error desconocido'), 'danger');
+    } finally {
+      this.canjeando = false;
+    }
   }
 
   // ---- Utilidades ----
@@ -230,4 +274,11 @@ export class ReciclarComponent implements OnInit {
     await t.present();
   }
 
+  limpiarBusqueda() {
+    this.formId.reset();
+    this.vecinoSeleccionado = null;
+    this.busquedaFallida = false;
+    this.error = '';
+    this.bloquearDetalle(true);
+  }
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, tap, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
-import { Cupon } from '../models/cupon.model';
+import { Cupon, Canje } from '../models/cupon.model';
 import { BaseService } from './base.service';
 
 @Injectable({ providedIn: 'root' })
@@ -110,6 +110,128 @@ export class CuponService extends BaseService {
       tap(cupones => console.log('[CuponService] Cupones encontrados:', cupones?.length || 0)),
       catchError(error => {
         console.error('[CuponService] Error al buscar cupones:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  // Nuevas funcionalidades
+  generarCuponesMasivos(cuponData: Partial<Cupon>, cantidad: number): Observable<{cupones: Cupon[], cantidad: number}> {
+    console.log('[CuponService] Generando cupones masivos:', cantidad);
+    return this.post<{cupones: Cupon[], cantidad: number}>(`${this.endpoint}/generar-masivos`, { ...cuponData, cantidad }).pipe(
+      tap(resultado => console.log('[CuponService] Cupones masivos generados:', resultado.cantidad)),
+      catchError(error => {
+        console.error('[CuponService] Error al generar cupones masivos:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  asociarUsuario(cuponId: string, usuarioId: string): Observable<Cupon> {
+    console.log('[CuponService] Asociando usuario al cupón:', usuarioId);
+    return this.post<Cupon>(`${this.endpoint}/${cuponId}/asociar-usuario`, { usuarioId }).pipe(
+      tap(cupon => console.log('[CuponService] Usuario asociado al cupón')),
+      catchError(error => {
+        console.error('[CuponService] Error al asociar usuario:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  desasociarUsuario(cuponId: string, usuarioId: string): Observable<Cupon> {
+    console.log('[CuponService] Desasociando usuario del cupón:', usuarioId);
+    return this.delete<Cupon>(`${this.endpoint}/${cuponId}/asociar-usuario/${usuarioId}`).pipe(
+      tap(cupon => console.log('[CuponService] Usuario desasociado del cupón')),
+      catchError(error => {
+        console.error('[CuponService] Error al desasociar usuario:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  asociarComercio(cuponId: string, comercioId: string): Observable<Cupon> {
+    console.log('[CuponService] Asociando comercio al cupón:', comercioId);
+    return this.post<Cupon>(`${this.endpoint}/${cuponId}/asociar-comercio`, { comercioId }).pipe(
+      tap(cupon => console.log('[CuponService] Comercio asociado al cupón')),
+      catchError(error => {
+        console.error('[CuponService] Error al asociar comercio:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  desasociarComercio(cuponId: string, comercioId: string): Observable<Cupon> {
+    console.log('[CuponService] Desasociando comercio del cupón:', comercioId);
+    return this.delete<Cupon>(`${this.endpoint}/${cuponId}/asociar-comercio/${comercioId}`).pipe(
+      tap(cupon => console.log('[CuponService] Comercio desasociado del cupón')),
+      catchError(error => {
+        console.error('[CuponService] Error al desasociar comercio:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  canjearCupon(cuponId: string, usuarioId: string, comercioId?: string, tokensGastados?: number): Observable<{cupon: Cupon, canje: Canje}> {
+    console.log('[CuponService] Canjeando cupón:', cuponId);
+    return this.post<{cupon: Cupon, canje: Canje}>(`${this.endpoint}/${cuponId}/canjear`, { 
+      usuarioId, 
+      comercioId, 
+      tokensGastados 
+    }).pipe(
+      tap(resultado => console.log('[CuponService] Cupón canjeado exitosamente')),
+      catchError(error => {
+        console.error('[CuponService] Error al canjear cupón:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  listarCanjes(filtros?: any): Observable<Canje[]> {
+    console.log('[CuponService] Listando canjes con filtros:', filtros);
+    const params = new URLSearchParams();
+    if (filtros) {
+      Object.keys(filtros).forEach(key => {
+        if (filtros[key]) params.append(key, filtros[key]);
+      });
+    }
+    
+    return this.get<Canje[]>(`${this.endpoint}/canjes?${params.toString()}`).pipe(
+      tap(canjes => console.log('[CuponService] Canjes obtenidos:', canjes?.length || 0)),
+      catchError(error => {
+        console.error('[CuponService] Error al listar canjes:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  aprobarCanje(canjeId: string, observaciones?: string): Observable<Canje> {
+    console.log('[CuponService] Aprobando canje:', canjeId);
+    return this.put<Canje>(`${this.endpoint}/canjes/${canjeId}/aprobar`, { observaciones }).pipe(
+      tap(canje => console.log('[CuponService] Canje aprobado')),
+      catchError(error => {
+        console.error('[CuponService] Error al aprobar canje:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  rechazarCanje(canjeId: string, observaciones?: string): Observable<Canje> {
+    console.log('[CuponService] Rechazando canje:', canjeId);
+    return this.put<Canje>(`${this.endpoint}/canjes/${canjeId}/rechazar`, { observaciones }).pipe(
+      tap(canje => console.log('[CuponService] Canje rechazado')),
+      catchError(error => {
+        console.error('[CuponService] Error al rechazar canje:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  obtenerEstadisticas(): Observable<any> {
+    console.log('[CuponService] Obteniendo estadísticas de cupones');
+    return this.get<any>(`${this.endpoint}/estadisticas`).pipe(
+      tap(estadisticas => console.log('[CuponService] Estadísticas obtenidas')),
+      catchError(error => {
+        console.error('[CuponService] Error al obtener estadísticas:', error);
         return throwError(() => error);
       })
     );

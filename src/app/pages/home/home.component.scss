@@ -296,3 +296,42 @@ ion-buttons {
     max-width: 100%;
   }
 }
+
+/* Estilos para filtros */
+.filtros-section {
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--ion-color-light);
+  border-radius: 8px;
+  
+  ion-item {
+    --background: transparent;
+    --border-color: var(--ion-color-medium);
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+  
+  ion-button {
+    --color: var(--ion-color-primary);
+    margin-top: 16px;
+  }
+}
+
+/* Estado sin datos */
+.no-data {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--ion-color-medium);
+  
+  ion-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+  
+  p {
+    margin: 0;
+    font-size: 16px;
+    opacity: 0.7;
+  }
+}

@@ -1,58 +1,168 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
+      <ion-button (click)="volverAUsuarios()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
     </ion-buttons>
-    <ion-title>Historial de Interacciones</ion-title>
+    <ion-title>Historial de Usuario</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <div class="historial-container" *ngIf="!loading; else loadingTpl">
+    
+    <!-- Información del usuario -->
+    <ion-card *ngIf="usuario.nombre">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="person" color="primary"></ion-icon>
+          {{ usuario.nombre }} {{ usuario.apellido }}
+        </ion-card-title>
+        <ion-card-subtitle>
+          <ion-badge [color]="usuario.activo ? 'success' : 'danger'">
+            {{ usuario.activo ? 'Activo' : 'Inactivo' }}
+          </ion-badge>
+          <span class="rol-badge">{{ usuario.rol }}</span>
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6">
+              <p><ion-icon name="mail"></ion-icon> {{ usuario.email }}</p>
+              <p><ion-icon name="call"></ion-icon> {{ usuario.telefono || 'No especificado' }}</p>
+            </ion-col>
+            <ion-col size="6">
+              <p><ion-icon name="location"></ion-icon> {{ usuario.zona || 'No especificada' }}</p>
+              <p><ion-icon name="calendar"></ion-icon> {{ usuario.fechaCreacion | date:'short' }}</p>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Estadísticas generales -->
     <ion-card>
       <ion-card-header>
-        <ion-card-title>Entregas de Reciclaje</ion-card-title>
+        <ion-card-title>
+          <ion-icon name="stats-chart" color="primary"></ion-icon>
+          Estadísticas Generales
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6">
+              <div class="stat-item">
+                <div class="stat-value">{{ estadisticas.totalEntregas }}</div>
+                <div class="stat-label">Entregas</div>
+              </div>
+            </ion-col>
+            <ion-col size="6">
+              <div class="stat-item">
+                <div class="stat-value">{{ estadisticas.totalKilos }} kg</div>
+                <div class="stat-label">Total Reciclado</div>
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="6">
+              <div class="stat-item">
+                <div class="stat-value">{{ estadisticas.totalTokens }}</div>
+                <div class="stat-label">Tokens Ganados</div>
+              </div>
+            </ion-col>
+            <ion-col size="6">
+              <div class="stat-item">
+                <div class="stat-value">{{ estadisticas.totalCanjes }}</div>
+                <div class="stat-label">Canjes Realizados</div>
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Historial de Entregas de Reciclaje -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="leaf" color="success"></ion-icon>
+          Entregas de Reciclaje ({{ entregas.length }})
+        </ion-card-title>
       </ion-card-header>
       <ion-card-content *ngIf="entregas.length > 0; else noEntregasTpl">
         <ion-list>
-          <ion-item *ngFor="let entrega of entregas">
+          <ion-item *ngFor="let entrega of entregas" class="entrega-item">
+            <ion-thumbnail slot="start">
+              <ion-icon name="leaf" size="large" color="success"></ion-icon>
+            </ion-thumbnail>
             <ion-label>
               <h3>{{ entrega.tipoResiduo?.nombre || 'Tipo desconocido' }}</h3>
-              <p>Fecha: {{ entrega.fecha | date:'short' }}</p>
-              <p>Peso: {{ entrega.pesoKg }} kg</p>
-              <p>Tokens otorgados: {{ entrega.tokensOtorgados }}</p>
-              <p>Ecopunto: {{ entrega.ecopunto?.nombre || '-' }}</p>
+              <p><ion-icon name="time"></ion-icon> {{ formatearFecha(entrega.fecha) }}</p>
+              <p><ion-icon name="scale"></ion-icon> <strong>{{ entrega.pesoKg }} kg</strong></p>
+              <p><ion-icon name="star"></ion-icon> <strong>{{ entrega.tokensOtorgados }} tokens</strong></p>
+              <p><ion-icon name="location"></ion-icon> {{ entrega.ecopunto?.nombre || 'Ecopunto no especificado' }}</p>
             </ion-label>
           </ion-item>
         </ion-list>
       </ion-card-content>
     </ion-card>
+
+    <!-- Historial de Canjes de Premios -->
     <ion-card>
       <ion-card-header>
-        <ion-card-title>Canjes de Premios</ion-card-title>
+        <ion-card-title>
+          <ion-icon name="gift" color="warning"></ion-icon>
+          Canjes de Premios ({{ canjes.length }})
+        </ion-card-title>
       </ion-card-header>
       <ion-card-content *ngIf="canjes.length > 0; else noCanjesTpl">
         <ion-list>
-          <ion-item *ngFor="let canje of canjes">
+          <ion-item *ngFor="let canje of canjes" class="canje-item">
+            <ion-thumbnail slot="start">
+              <ion-icon name="gift" size="large" color="warning"></ion-icon>
+            </ion-thumbnail>
             <ion-label>
               <h3>{{ canje.premio?.nombre || 'Premio desconocido' }}</h3>
-              <p>Fecha: {{ canje.fecha | date:'short' }}</p>
-              <p>Tokens usados: {{ canje.tokens }}</p>
-              <p>Estado: <span [ngClass]="{'entregado': canje.estado === 'Entregado', 'pendiente': canje.estado === 'Pendiente'}">{{ canje.estado }}</span></p>
+              <p><ion-icon name="time"></ion-icon> {{ formatearFecha(canje.fecha) }}</p>
+              <p><ion-icon name="star"></ion-icon> <strong>{{ canje.tokens }} tokens</strong></p>
+              <p>
+                <ion-badge [color]="obtenerEstadoColor(canje.estado)">
+                  {{ canje.estado }}
+                </ion-badge>
+              </p>
             </ion-label>
           </ion-item>
         </ion-list>
       </ion-card-content>
     </ion-card>
+
   </div>
+
+  <!-- Loading template -->
   <ng-template #loadingTpl>
-    <ion-spinner name="crescent"></ion-spinner>
-    <p>Cargando historial...</p>
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando historial del usuario...</p>
+    </div>
   </ng-template>
+
+  <!-- No entregas template -->
   <ng-template #noEntregasTpl>
-    <p>No hay entregas registradas.</p>
+    <div class="empty-state">
+      <ion-icon name="leaf-outline" size="large" color="medium"></ion-icon>
+      <p>No hay entregas de reciclaje registradas</p>
+    </div>
   </ng-template>
+
+  <!-- No canjes template -->
   <ng-template #noCanjesTpl>
-    <p>No hay canjes registrados.</p>
+    <div class="empty-state">
+      <ion-icon name="gift-outline" size="large" color="medium"></ion-icon>
+      <p>No hay canjes de premios registrados</p>
+    </div>
   </ng-template>
+
 </ion-content> 

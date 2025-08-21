@@ -31,6 +31,8 @@ export class UsuariosService {
 
   // ✅ Obtener un usuario por ID
   obtenerUsuario(id: string): Observable<any> {
+    console.log('[UsuariosService] Obteniendo usuario por ID:', id);
+    console.log('[UsuariosService] URL:', `${this.apiUrl}/${id}`);
     return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 
@@ -42,5 +44,44 @@ export class UsuariosService {
   // ✅ Eliminar un usuario por ID
   eliminarUsuario(id: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  }
+
+  // ✅ Cambiar estado de usuario (activar/desactivar)
+  cambiarEstadoUsuario(id: string, activo: boolean): Observable<any> {
+    const url = `${this.apiUrl}/${id}/estado`;
+    const data = { activo };
+    console.log('[UsuariosService] Cambiando estado de usuario:', { id, activo, url, data });
+    return this.http.patch<any>(url, data);
+  }
+
+  // ✅ Obtener historial completo de un usuario (entregas + canjes)
+  obtenerHistorialUsuario(usuarioId: string): Observable<any> {
+    console.log('[UsuariosService] Obteniendo historial para usuario:', usuarioId);
+    console.log('[UsuariosService] URL:', `${this.apiUrl}/${usuarioId}/historial`);
+    return this.http.get<any>(`${this.apiUrl}/${usuarioId}/historial`);
+  }
+
+  // ✅ Obtener solo historial de entregas de reciclaje
+  obtenerHistorialEntregas(usuarioId: string): Observable<any[]> {
+    return this.http.get<any>(`${this.apiUrl}/${usuarioId}/historial`).pipe(
+      map(response => response.entregas || [])
+    );
+  }
+
+  // ✅ Obtener solo historial de canjes de premios
+  obtenerHistorialCanjes(usuarioId: string): Observable<any[]> {
+    return this.http.get<any>(`${this.apiUrl}/${usuarioId}/historial`).pipe(
+      map(response => response.canjes || [])
+    );
+  }
+
+  // ✅ Buscar vecinos por criterios
+  buscarVecinos(criterios: { dni?: string, telefono?: string, nombre?: string }): Observable<any[]> {
+    const params = new URLSearchParams();
+    if (criterios.dni) params.append('dni', criterios.dni);
+    if (criterios.telefono) params.append('telefono', criterios.telefono);
+    if (criterios.nombre) params.append('nombre', criterios.nombre);
+    
+    return this.http.get<any[]>(`${this.apiUrl}/buscar-vecinos?${params.toString()}`);
   }
 }

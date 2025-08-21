@@ -702,3 +702,124 @@
     }
   }
 } 
+
+.cupon-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.usuarios-asociados,
+.comercios-asociados {
+  margin-top: 8px;
+  
+  ion-chip {
+    margin: 2px;
+  }
+}
+
+ion-segment {
+  margin-bottom: 16px;
+}
+
+.estadisticas-grid {
+  ion-card {
+    text-align: center;
+    
+    h2 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0;
+      color: var(--ion-color-primary);
+    }
+  }
+}
+
+.canjes-filters {
+  margin-bottom: 16px;
+}
+
+.cupon-card {
+  margin-bottom: 16px;
+  
+  ion-card-header {
+    ion-card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    
+    ion-card-subtitle {
+      margin-top: 8px;
+    }
+  }
+  
+  ion-card-content {
+    ion-label {
+      p {
+        margin: 8px 0;
+        line-height: 1.4;
+      }
+    }
+  }
+}
+
+.modal-content {
+  padding: 16px;
+  
+  form {
+    ion-item {
+      margin-bottom: 16px;
+    }
+    
+    ion-button {
+      margin-top: 24px;
+    }
+  }
+}
+
+.filters-bar {
+  margin-bottom: 16px;
+  
+  .filters-flex {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    
+    .filter-item {
+      flex: 1;
+    }
+    
+    .clear-filters-btn {
+      white-space: nowrap;
+    }
+  }
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--ion-color-medium);
+  
+  ion-icon {
+    font-size: 4rem;
+    margin-bottom: 16px;
+  }
+  
+  h3 {
+    margin: 0 0 8px 0;
+    font-weight: 500;
+  }
+  
+  p {
+    margin: 0;
+    opacity: 0.7;
+  }
+} 

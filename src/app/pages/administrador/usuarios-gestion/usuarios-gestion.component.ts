@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { UsuariosService } from 'src/app/services/usuarios.service';
 import { ChartOptions, ChartType, ChartData } from 'chart.js';
 import { Router } from '@angular/router';
+import { AlertController, ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-usuarios-gestion',
@@ -116,7 +117,14 @@ export class UsuariosGestionComponent implements OnInit {
     ]
   };
 
-  constructor(private usuariosService: UsuariosService, private router: Router) {}
+  constructor(
+    private usuariosService: UsuariosService, 
+    private router: Router,
+    private alertController: AlertController,
+    private toastController: ToastController
+  ) {
+    this.cargarUsuarios();
+  }
 
   ngOnInit() {
     this.cargarUsuarios();
@@ -252,28 +260,111 @@ export class UsuariosGestionComponent implements OnInit {
   }
 
   // ✅ Eliminar usuario
-  eliminarUsuario(usuario: any) {
-    console.log('Eliminar usuario:', usuario);
-    if (confirm(`¿Estás seguro de eliminar a ${usuario.nombre} ${usuario.apellido}?`)) {
+  async eliminarUsuario(usuario: any) {
+    console.log('🗑️ Eliminando usuario:', usuario);
+    const confirmacion = await this.presentAlert(usuario);
+    
+    if (confirmacion) {
       this.usuariosService.eliminarUsuario(usuario._id).subscribe({
-        next: () => {
-          console.log('Usuario eliminado correctamente');
+        next: async () => {
+          console.log('✅ Usuario eliminado correctamente');
+          
+          // Mostrar mensaje de éxito
+          const toast = await this.toastController.create({
+            message: `Usuario ${usuario.nombre} ${usuario.apellido} eliminado exitosamente`,
+            duration: 3000,
+            position: 'top',
+            color: 'success',
+            icon: 'checkmark-circle'
+          });
+          await toast.present();
+          
+          // Recargar lista de usuarios
           this.cargarUsuarios();
         },
-        error: (err: any) => {
-          console.error('Error al eliminar usuario', err);
+        error: async (err: any) => {
+          console.error('❌ Error al eliminar usuario', err);
+          
+          // Mostrar mensaje de error
+          const toast = await this.toastController.create({
+            message: 'Error al eliminar el usuario',
+            duration: 3000,
+            position: 'top',
+            color: 'danger',
+            icon: 'alert-circle'
+          });
+          await toast.present();
         }
       });
     }
   }
 
   verHistorial(usuario: any) {
-    this.router.navigate(['/usuarios/historial', usuario._id]);
+    this.router.navigate(['/administrador/usuarios/historial', usuario._id]);
   }
 
-  toggleEstado(usuario: any) {
-    console.log('Cambiar estado de usuario:', usuario);
-    // Aquí puedes implementar el cambio de estado si tu backend lo soporta
+  async toggleEstado(usuario: any) {
+    console.log('🔄 Cambiando estado de usuario:', usuario);
+    
+    const nuevoEstado = !usuario.activo;
+    const mensaje = `¿Estás seguro de ${nuevoEstado ? 'activar' : 'desactivar'} a ${usuario.nombre} ${usuario.apellido}?`;
+    
+    const alert = await this.alertController.create({
+      header: 'Confirmar cambio de estado',
+      message: mensaje,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary',
+        },
+        {
+          text: nuevoEstado ? 'Activar' : 'Desactivar',
+          role: 'confirm',
+          handler: () => {
+            this.ejecutarCambioEstado(usuario, nuevoEstado);
+          },
+        },
+      ],
+    });
+    
+    await alert.present();
+  }
+
+  private ejecutarCambioEstado(usuario: any, nuevoEstado: boolean) {
+    this.usuariosService.cambiarEstadoUsuario(usuario._id, nuevoEstado).subscribe({
+      next: async (response) => {
+        console.log('✅ Estado cambiado exitosamente:', response);
+        
+        // Actualizar el usuario en la lista local
+        const index = this.usuarios.findIndex(u => u._id === usuario._id);
+        if (index !== -1) {
+          this.usuarios[index].activo = nuevoEstado;
+        }
+        
+        // Mostrar mensaje de éxito
+        const toast = await this.toastController.create({
+          message: `Usuario ${nuevoEstado ? 'activado' : 'desactivado'} exitosamente`,
+          duration: 3000,
+          position: 'top',
+          color: 'success',
+          icon: nuevoEstado ? 'checkmark-circle' : 'pause-circle'
+        });
+        await toast.present();
+      },
+      error: async (error) => {
+        console.error('❌ Error al cambiar estado:', error);
+        
+        const toast = await this.toastController.create({
+          message: 'Error al cambiar el estado del usuario',
+          duration: 3000,
+          position: 'top',
+          color: 'danger',
+          icon: 'alert-circle'
+        });
+        await toast.present();
+      }
+    });
   }
 
   limpiarFiltros() {
@@ -337,5 +428,30 @@ paginaAnterior() {
     this.currentPage--;
   }
 }
+
+  async presentAlert(usuario: any) {
+    const alert = await this.alertController.create({
+      header: 'Confirmar eliminación',
+      message: `¿Estás seguro de que deseas eliminar permanentemente a ${usuario.nombre} ${usuario.apellido}?\n\nEsta acción no se puede deshacer y se perderán todos los datos del usuario.`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary',
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          cssClass: 'danger',
+          handler: () => {
+            return true;
+          },
+        },
+      ],
+    });
+    await alert.present();
+    const { role } = await alert.onDidDismiss();
+    return role === 'destructive';
+  }
 
 }

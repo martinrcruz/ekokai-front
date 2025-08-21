@@ -1,6 +1,7 @@
 // src/app/pages/administrador/administrador-routing.module.ts
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AdminGuard } from '../../guards/admin.guard';
 
 // IMPORTS de componentes del área Administrador
 import { ConfiguracionComponent } from './configuracion/configuracion.component';
@@ -14,17 +15,59 @@ import { UsuariosGestionComponent } from './usuarios-gestion/usuarios-gestion.co
 import { HomeComponent } from '../home/home.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { 
+    path: '', 
+    redirectTo: 'home', 
+    pathMatch: 'full'
+    // Removido canActivate: [AdminGuard] - ya se aplica en el routing principal
+  },
 
-  { path: 'home', component: HomeComponent },
-  { path: 'configuracion', component: ConfiguracionComponent },
-  { path: 'cupones', component: CuponesComponent },
-  { path: 'ecopuntos', component: EcopuntosComponent },
-  { path: 'marketplace', component: AdminMarketplaceComponent },
-  { path: 'reciclar', component: AdminReciclarComponent },
-  { path: 'tiposresiduos', component: AdminTiposResiduosComponent },
+  { 
+    path: 'home', 
+    component: HomeComponent,
+    canActivate: [AdminGuard]
+  },
+  { 
+    path: 'configuracion', 
+    component: ConfiguracionComponent,
+    canActivate: [AdminGuard]
+  },
+  { 
+    path: 'cupones', 
+    component: CuponesComponent,
+    canActivate: [AdminGuard]
+  },
+  { 
+    path: 'ecopuntos', 
+    component: EcopuntosComponent,
+    canActivate: [AdminGuard]
+  },
+  { 
+    path: 'marketplace', 
+    component: AdminMarketplaceComponent,
+    canActivate: [AdminGuard]
+  },
+  { 
+    path: 'reciclar', 
+    component: AdminReciclarComponent,
+    canActivate: [AdminGuard]
+  },
+  { 
+    path: 'tiposresiduos', 
+    component: AdminTiposResiduosComponent,
+    canActivate: [AdminGuard]
+  },
   //{ path: 'usuarios', component: UsuariosComponent },
-  { path: 'usuarios-gestion', component: UsuariosGestionComponent }
+  { 
+    path: 'usuarios-gestion', 
+    component: UsuariosGestionComponent,
+    canActivate: [AdminGuard]
+  },
+  { 
+    path: 'usuarios', 
+    loadChildren: () => import('./usuarios/usuarios.module').then(m => m.UsuariosModule),
+    canActivate: [AdminGuard]
+  }
 ];
 
 @NgModule({

@@ -53,7 +53,7 @@
     </div>
   </div>
 
-  <!-- <div class="dashboard-section dashboard-table-card">
+  <div class="dashboard-section dashboard-table-card">
     <div class="table-tabs">
       <span class="tab active">Usuarios recientes</span>
       <span class="tab">Ecopuntos</span>
@@ -61,11 +61,44 @@
     </div>
     <ion-card>
       <ion-card-header>
-        <ion-card-title>Usuarios recientes ({{ usuariosRecientes.length }})</ion-card-title>
+        <ion-card-title>Usuarios recientes ({{ usuariosRecientesFiltrados.length }})</ion-card-title>
+        <div class="filtros-section">
+          <ion-row>
+            <ion-col size="12" size-md="4">
+              <ion-item>
+                <ion-input 
+                  label="Buscar usuario" 
+                  labelPlacement="floating"
+                  [(ngModel)]="filtroUsuario"
+                  (ionInput)="onFiltroUsuarioChange()"
+                  placeholder="Nombre o email">
+                </ion-input>
+              </ion-item>
+            </ion-col>
+            <ion-col size="12" size-md="4">
+              <ion-item>
+                <ion-select 
+                  label="Filtrar por mes" 
+                  labelPlacement="floating"
+                  [(ngModel)]="filtroMes"
+                  (ionChange)="onFiltroMesChange()">
+                  <ion-select-option value="">Todos los meses</ion-select-option>
+                  <ion-select-option *ngFor="let mes of meses" [value]="mes.value">{{ mes.label }}</ion-select-option>
+                </ion-select>
+              </ion-item>
+            </ion-col>
+            <ion-col size="12" size-md="4">
+              <ion-button fill="clear" (click)="limpiarFiltros()">
+                <ion-icon name="refresh-outline" slot="start"></ion-icon>
+                Limpiar filtros
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </div>
       </ion-card-header>
       <ion-card-content>
         <ion-list>
-          <ion-item *ngFor="let user of usuariosRecientes; let i = index" class="usuario-item" [class.zebra]="i % 2 === 1">
+          <ion-item *ngFor="let user of usuariosRecientesFiltrados; let i = index" class="usuario-item" [class.zebra]="i % 2 === 1">
             <ion-avatar slot="start" [ngClass]="'avatar-' + (user.rol ? user.rol.toLowerCase() : 'default')">
               <span class="avatar-iniciales">
                 {{ (user.nombre ? user.nombre[0] : '') + (user.apellido ? user.apellido[0] : '') }}
@@ -88,7 +121,11 @@
             </ion-buttons>
           </ion-item>
         </ion-list>
+        <div *ngIf="usuariosRecientesFiltrados.length === 0" class="no-data">
+          <ion-icon name="people-outline"></ion-icon>
+          <p>No hay usuarios que coincidan con los filtros aplicados</p>
+        </div>
       </ion-card-content>
     </ion-card>
-  </div> -->
+  </div>
 </ion-content>
