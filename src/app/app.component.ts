@@ -1,9 +1,10 @@
 // app.component.ts (extracto)
 import { registerLocaleData } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthService } from './services/auth.service';
+import { ThemeService } from './services/theme.service';
 import localeEs from '@angular/common/locales/es';
 
 interface AppPage {
@@ -20,7 +21,7 @@ interface AppPage {
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy {
 
   public showMenu = false;  // Controla si se muestra o no el menú
   public userRole: string = '';  // almacenar el rol
@@ -30,8 +31,9 @@ export class AppComponent {
     { title: 'Dashboard', url: '/administrador/home',  icon: 'bi-speedometer2' },
     { title: 'Ecopuntos', url: '/administrador/ecopuntos',  icon: 'bi-geo-alt' },
     { title: 'Usuarios', url: '/administrador/usuarios-gestion',  icon: 'bi-people' },
-    { title: 'Cupones', url: '/administrador/cupones', icon: 'bi-ticket' },
-    { title: 'Marketplace', url: '/administrador/marketplace',  icon: 'bi-shop' },
+    { title: 'Premios', url: '/administrador/premios', icon: 'bi-gift' },
+    { title: 'Historial de Reciclaje', url: '/administrador/historial-reciclaje', icon: 'bi-clock-history' },
+    // { title: 'Marketplace', url: '/administrador/marketplace',  icon: 'bi-shop' },
     { title: 'Tipos de Residuo', url: '/administrador/tiposresiduos', icon: 'bi-recycle' },
     // { title: 'Configuración', url: '/administrador/configuracion',  icon: 'bi-gear' },
     { title: 'Reciclar', url: '/administrador/reciclar', icon: 'bi-recycle' }
@@ -45,7 +47,7 @@ export class AppComponent {
   // Menú para encargado (sin gestión de ecopuntos ni gestión de usuarios, mantiene crear vecino)
   private encargadoAppPages: AppPage[] = [
     { title: 'Dashboard', url: '/encargado/home', icon: 'bi-speedometer2' },
-    { title: 'Marketplace', url: '/encargado/marketplace', icon: 'bi-shop' },
+    // { title: 'Marketplace', url: '/encargado/marketplace', icon: 'bi-shop' },
     { title: 'Tipos de Residuo', url: '/encargado/tiposresiduos', icon: 'bi-recycle' },
     { title: 'Crear Vecino', url: '/encargado/vecinos', icon: 'bi-person-plus' },
     { title: 'Reciclar', url: '/encargado/reciclar', icon: 'bi-recycle' }
@@ -56,14 +58,17 @@ export class AppComponent {
 
   constructor(
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private themeService: ThemeService
   ) {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {
-        // Ocultar menú si la ruta es /login (o /auth/login)
+        // Ocultar menú si la ruta es /login (o /auth/login) o /catalogo
         if (event.url === '/login' || event.urlAfterRedirects === '/login' ||
-            event.url === '/auth/login' || event.urlAfterRedirects === '/auth/login') {
+            event.url === '/auth/login' || event.urlAfterRedirects === '/auth/login' ||
+            event.url === '/catalogo' || event.urlAfterRedirects === '/catalogo' ||
+            event.url.startsWith('/catalogo/') || event.urlAfterRedirects.startsWith('/catalogo/')) {
           this.showMenu = false;
         } else {
           this.showMenu = true;
@@ -159,5 +164,14 @@ export class AppComponent {
   async logout() {
     await this.authService.logout();
     this.router.navigate(['/auth/login']);
+  }
+
+  ngOnInit(): void {
+    // Inicializar el servicio de tema
+    this.themeService.listenToSystemThemeChanges();
+  }
+
+  ngOnDestroy(): void {
+    // Cleanup si es necesario
   }
 }

@@ -28,15 +28,38 @@
       <div class="top-card-label">Mejor Ecopunto</div>
       <div class="top-card-sub">{{ mejorEcopunto.nombre }}</div>
     </div>
-    <div class="top-card">
+    <!-- <div class="top-card">
       <div class="top-card-icon"><ion-icon name="star-outline"></ion-icon></div>
       <div class="top-card-value">{{ mejorEcopunto.kilosMes }}</div>
       <div class="top-card-label">Peor Ecopunto</div>
       <div class="top-card-sub">{{ mejorEcopunto.nombre }}</div>
-    </div>
+    </div> -->
   </div>
 
-  <div class="dashboard-section dashboard-graphs-row">
+  <!-- Sección del Catálogo de Premios -->
+  <!-- <div class="dashboard-section">
+    <ion-card class="catalogo-card">
+      <ion-card-header>
+        <ion-card-title>
+          <i class="bi bi-gift"></i> Catálogo de Premios
+        </ion-card-title>
+        <ion-card-subtitle>Canjea tus puntos por increíbles premios</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Descubre todos los premios disponibles para canjear con los puntos que obtienes al reciclar.</p>
+        <ion-button 
+          expand="block" 
+          color="primary" 
+          routerLink="/catalogo"
+          class="catalogo-button">
+          <i class="bi bi-gift"></i>
+          Ver Catálogo Completo
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div> -->
+
+  <!-- <div class="dashboard-section dashboard-graphs-row">
     <div class="graph-card">
       <div class="graph-title">Distribución mensual</div>
       <canvas baseChart [data]="barChartData" [options]="barChartOptions" [type]="barChartType" [legend]="barChartLegend"></canvas>
@@ -51,7 +74,7 @@
         {{ metaPorcentaje }}%
       </div>
     </div>
-  </div>
+  </div> -->
 
   <div class="dashboard-section dashboard-table-card">
     <div class="table-tabs">

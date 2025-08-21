@@ -48,6 +48,29 @@
   --border-radius-xl: 20px;
 }
 
+// Configuración para tema oscuro
+@media (prefers-color-scheme: dark) {
+  :root {
+    // Colores de texto para tema oscuro
+    --color-text: #ffffff;
+    --color-text-light: #cccccc;
+    --color-text-muted: #999999;
+    
+    // Colores de fondo para tema oscuro
+    --color-background: #1a1a1a;
+    --color-white: #2a2a2a;
+    --color-gray: #333333;
+    --color-gray-light: #404040;
+    --color-border: #404040;
+    --color-border-light: #4d4d4d;
+    
+    // Sombras para tema oscuro
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-heavy: 0 8px 24px rgba(0, 0, 0, 0.5);
+  }
+}
+
 // Estilos globales
 ion-content {
   --background: var(--color-background);

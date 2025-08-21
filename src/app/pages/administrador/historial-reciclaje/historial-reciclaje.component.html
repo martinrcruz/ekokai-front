@@ -1,0 +1,253 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Historial de Reciclaje</ion-title>
+    <ion-buttons slot="end">
+      <!-- <ion-button (click)="showFiltros = !showFiltros" fill="clear">
+        <ion-icon name="filter-outline"></ion-icon>
+        Filtros
+      </ion-button> -->
+      <!-- <ion-button (click)="exportarHistorial()" fill="clear" color="secondary">
+        <ion-icon name="download-outline"></ion-icon>
+        Exportar
+      </ion-button> -->
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="historial-container">
+    <!-- Pestanas principales -->
+    <ion-segment [(ngModel)]="pestanaActiva" (ionChange)="cambiarPestana($event.detail.value?.toString())">
+      <ion-segment-button value="historial">
+        <ion-label>Historial</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="estadisticas">
+        <ion-label>Estadísticas</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- Pestana de Historial -->
+    <div *ngIf="pestanaActiva === 'historial'">
+      <!-- Filtros -->
+      <ion-card *ngIf="showFiltros" class="filters-bar">
+        <ion-card-header>
+          <ion-card-title>Filtros de Búsqueda</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="12" size-md="6">
+                <ion-item>
+                  <ion-label position="stacked">Usuario</ion-label>
+                  <ion-input [(ngModel)]="filtroUsuario" placeholder="ID o nombre del usuario"></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size="12" size-md="6">
+                <ion-item>
+                  <ion-label position="stacked">Ecopunto</ion-label>
+                  <ion-input [(ngModel)]="filtroEcopunto" placeholder="ID o nombre del ecopunto"></ion-input>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="12" size-md="6">
+                <ion-item>
+                  <ion-label position="stacked">Tipo de Residuo</ion-label>
+                  <ion-input [(ngModel)]="filtroTipoResiduo" placeholder="ID o nombre del tipo"></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size="12" size-md="6">
+                <ion-item>
+                  <ion-label position="stacked">Estado</ion-label>
+                  <ion-select [(ngModel)]="filtroEstado">
+                    <ion-select-option value="">Todos</ion-select-option>
+                    <ion-select-option value="completado">Completado</ion-select-option>
+                    <ion-select-option value="pendiente">Pendiente</ion-select-option>
+                    <ion-select-option value="rechazado">Rechazado</ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="12" size-md="6">
+                <ion-item>
+                  <ion-label position="stacked">Fecha Desde</ion-label>
+                  <ion-input type="date" [(ngModel)]="filtroFechaDesde"></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size="12" size-md="6">
+                <ion-item>
+                  <ion-label position="stacked">Fecha Hasta</ion-label>
+                  <ion-input type="date" [(ngModel)]="filtroFechaHasta"></ion-input>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="12">
+                <ion-button expand="block" (click)="cargarHistorial()" color="primary">
+                  <ion-icon name="search-outline"></ion-icon>
+                  Aplicar Filtros
+                </ion-button>
+                <ion-button expand="block" (click)="limpiarFiltros()" fill="clear" color="medium">
+                  <ion-icon name="close-circle-outline"></ion-icon>
+                  Limpiar Filtros
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Lista de Entregas -->
+      <div *ngIf="loading" class="loading-container">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Cargando historial...</p>
+      </div>
+
+      <div *ngIf="!loading && historialPaginado.length === 0" class="empty-state">
+        <ion-icon name="document-outline" size="large"></ion-icon>
+        <h3>No hay registros</h3>
+        <p>No se encontraron entregas con los filtros aplicados.</p>
+      </div>
+
+      <ion-card *ngFor="let entrega of historialPaginado" class="entrega-card">
+        <ion-card-header>
+          <ion-card-title>{{ entrega.usuario?.nombre }} {{ entrega.usuario?.apellido }}</ion-card-title>
+          <ion-card-subtitle>{{ entrega.ecopunto?.nombre }}</ion-card-subtitle>
+          <div class="entrega-badges">
+            <ion-badge [color]="getEstadoColor(entrega.estado)">
+              {{ getEstadoTexto(entrega.estado) }}
+            </ion-badge>
+            <ion-badge color="primary">{{ formatearPeso(entrega.pesoKg) }}</ion-badge>
+            <ion-badge color="success">{{ entrega.cuponesGenerados }} cupones</ion-badge>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="12" size-md="6">
+                <div class="info-section">
+                  <h4>Usuario</h4>
+                  <p><strong>Nombre:</strong> {{ entrega.usuario?.nombre }} {{ entrega.usuario?.apellido }}</p>
+                  <p><strong>Email:</strong> {{ entrega.usuario?.email }}</p>
+                </div>
+                
+                <div class="info-section">
+                  <h4>Ecopunto</h4>
+                  <p><strong>Nombre:</strong> {{ entrega.ecopunto?.nombre }}</p>
+                  <p><strong>Dirección:</strong> {{ entrega.ecopunto?.direccion }}</p>
+                </div>
+              </ion-col>
+              <ion-col size="12" size-md="6">
+                <div class="info-section">
+                  <h4>Reciclaje</h4>
+                  <p><strong>Tipo:</strong> {{ entrega.tipoResiduo?.nombre }}</p>
+                  <p><strong>Peso:</strong> {{ formatearPeso(entrega.pesoKg) }}</p>
+                  <p><strong>Cupones:</strong> {{ entrega.cuponesGenerados }}</p>
+                </div>
+                
+                <div class="info-section">
+                  <h4>Procesamiento</h4>
+                  <p><strong>Encargado:</strong> {{ entrega.encargado?.nombre }} {{ entrega.encargado?.apellido }}</p>
+                  <p><strong>Fecha:</strong> {{ formatearFecha(entrega.fecha) }}</p>
+                </div>
+              </ion-col>
+            </ion-row>
+            
+            <ion-row *ngIf="entrega.descripcion || entrega.observaciones">
+              <ion-col size="12">
+                <div class="info-section">
+                  <h4>Detalles Adicionales</h4>
+                  <p *ngIf="entrega.descripcion"><strong>Descripción:</strong> {{ entrega.descripcion }}</p>
+                  <p *ngIf="entrega.observaciones"><strong>Observaciones:</strong> {{ entrega.observaciones }}</p>
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Paginación -->
+      <div *ngIf="totalPaginas > 1" class="pagination-container">
+        <ion-button 
+          [disabled]="paginaActual === 1" 
+          (click)="cambiarPagina(paginaActual - 1)" 
+          fill="clear">
+          <ion-icon name="chevron-back-outline"></ion-icon>
+          Anterior
+        </ion-button>
+        
+        <span class="page-info">
+          Página {{ paginaActual }} de {{ totalPaginas }}
+        </span>
+        
+        <ion-button 
+          [disabled]="paginaActual === totalPaginas" 
+          (click)="cambiarPagina(paginaActual + 1)" 
+          fill="clear">
+          Siguiente
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Pestana de Estadísticas -->
+    <div *ngIf="pestanaActiva === 'estadisticas'">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12" size-md="4">
+            <ion-card class="stat-card">
+              <ion-card-header>
+                <ion-card-title>Total Entregas</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <div class="stat-content">
+                  <ion-icon name="document-outline" class="stat-icon"></ion-icon>
+                  <div class="stat-info">
+                    <h2>{{ estadisticas.totalEntregas || 0 }}</h2>
+                    <p>Registros totales</p>
+                  </div>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+          <ion-col size="12" size-md="4">
+            <ion-card class="stat-card">
+              <ion-card-header>
+                <ion-card-title>Total Peso</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <div class="stat-content">
+                  <ion-icon name="scale-outline" class="stat-icon"></ion-icon>
+                  <div class="stat-info">
+                    <h2>{{ (estadisticas.totalPeso || 0).toFixed(2) }} kg</h2>
+                    <p>Peso total reciclado</p>
+                  </div>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+          <ion-col size="12" size-md="4">
+            <ion-card class="stat-card">
+              <ion-card-header>
+                <ion-card-title>Total Cupones</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <div class="stat-content">
+                  <ion-icon name="card-outline" class="stat-icon"></ion-icon>
+                  <div class="stat-info">
+                    <h2>{{ estadisticas.totalCupones || 0 }}</h2>
+                    <p>Cupones generados</p>
+                  </div>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+  </div>
+</ion-content>

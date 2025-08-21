@@ -1,0 +1,252 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Gestión de Premios</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="abrirCrearModal()">
+        <ion-icon name="add-outline"></ion-icon>
+        Crear premio
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="premios-container">
+    <!-- Pestanas principales -->
+    <ion-segment [(ngModel)]="pestanaActiva" (ionChange)="cambiarPestana($event.detail.value?.toString())">
+      <ion-segment-button value="premios">
+        <ion-label>Premios</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="estadisticas">
+        <ion-label>Estadísticas</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- Pestana de Premios -->
+    <div *ngIf="pestanaActiva === 'premios'">
+      <ion-card class="filters-bar">
+        <div class="filters-flex">
+          <ion-item lines="none" class="filter-item">
+            <ion-icon name="search-outline" slot="start"></ion-icon>
+            <ion-input [(ngModel)]="filtroNombre" placeholder="Buscar por nombre" clearInput></ion-input>
+          </ion-item>
+          <ion-item lines="none" class="filter-item">
+            <ion-select [(ngModel)]="filtroCategoria" placeholder="Filtrar por categoría">
+              <ion-select-option value="">Todas las categorías</ion-select-option>
+              <ion-select-option *ngFor="let categoria of estadisticas.categorias" [value]="categoria">
+                {{ categoria }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-button fill="clear" color="medium" class="clear-filters-btn" (click)="limpiarFiltros()">
+            <ion-icon name="close-circle-outline"></ion-icon>
+            Limpiar
+          </ion-button>
+        </div>
+      </ion-card>
+
+      <ion-card *ngFor="let premio of premiosFiltrados">
+        <ion-card-header>
+          <ion-card-title>{{ premio.nombre }}</ion-card-title>
+          <ion-card-subtitle>{{ premio.descripcion }}</ion-card-subtitle>
+          <div class="premio-badges">
+            <ion-badge [color]="getCategoriaColor(premio.categoria)">{{ premio.categoria }}</ion-badge>
+            <ion-badge [color]="getActivoColor(premio.activo)">{{ premio.activo ? 'Activo' : 'Inactivo' }}</ion-badge>
+            <ion-badge [color]="getDestacadoColor(premio.destacado)">{{ premio.destacado ? 'Destacado' : 'Normal' }}</ion-badge>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-label>
+            <p><strong>Cupones requeridos:</strong> {{ premio.cuponesRequeridos }}</p>
+            <p><strong>Stock disponible:</strong> {{ premio.stock }}</p>
+            <p><strong>Orden de visualización:</strong> {{ premio.orden }}</p>
+            <p><strong>Fecha de creación:</strong> {{ premio.createdDate | date:'shortDate' }}</p>
+          </ion-label>
+
+          <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="abrirEditarModal(premio)">
+              <ion-icon name="create" size="large"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" color="danger" (click)="eliminarPremio(premio)">
+              <ion-icon name="trash" size="large"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+
+
+    <!-- Pestana de Estadisticas -->
+    <div *ngIf="pestanaActiva === 'estadisticas'">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Total Premios</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <h2>{{ estadisticas.totalPremios || 0 }}</h2>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+          <ion-col size="6">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Premios Activos</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <h2>{{ estadisticas.premiosActivos || 0 }}</h2>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="6">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Premios Destacados</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <h2>{{ estadisticas.premiosDestacados || 0 }}</h2>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+          <ion-col size="6">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Categorías</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <h2>{{ estadisticas.categorias?.length || 0 }}</h2>
+                <p *ngFor="let categoria of estadisticas.categorias">{{ categoria }}</p>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+
+    <!-- Modal Crear -->
+    <ion-modal [isOpen]="showCrearModal" (didDismiss)="cerrarCrearModal()">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>Crear cupón</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="cerrarCrearModal()">Cerrar</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content>
+          <form (ngSubmit)="crearPremio()">
+            <ion-item>
+              <ion-label position="stacked">Nombre</ion-label>
+              <ion-input [(ngModel)]="premioForm.nombre" name="nombre" required></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Descripción</ion-label>
+              <ion-input [(ngModel)]="premioForm.descripcion" name="descripcion"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Cupones requeridos</ion-label>
+              <ion-input type="number" [(ngModel)]="premioForm.cuponesRequeridos" name="cuponesRequeridos" required min="0"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Stock disponible</ion-label>
+              <ion-input type="number" [(ngModel)]="premioForm.stock" name="stock" required min="0"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Categoría</ion-label>
+              <ion-select [(ngModel)]="premioForm.categoria" name="categoria" required>
+                <ion-select-option value="Electrónicos">Electrónicos</ion-select-option>
+                <ion-select-option value="Hogar">Hogar</ion-select-option>
+                <ion-select-option value="Deportes">Deportes</ion-select-option>
+                <ion-select-option value="Libros">Libros</ion-select-option>
+                <ion-select-option value="Moda">Moda</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Orden de visualización</ion-label>
+              <ion-input type="number" [(ngModel)]="premioForm.orden" name="orden" min="0"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Destacado</ion-label>
+              <ion-toggle [(ngModel)]="premioForm.destacado" name="destacado"></ion-toggle>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Activo</ion-label>
+              <ion-toggle [(ngModel)]="premioForm.activo" name="activo"></ion-toggle>
+            </ion-item>
+            <ion-button expand="block" type="submit" [disabled]="guardando">Crear Premio</ion-button>
+          </form>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+
+
+
+    <!-- Modal Editar -->
+    <ion-modal [isOpen]="showEditarModal" (didDismiss)="cerrarEditarModal()">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>Editar premio</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="cerrarEditarModal()">Cerrar</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content *ngIf="premioEditando">
+          <form (ngSubmit)="guardarEdicion()">
+            <ion-item>
+              <ion-label position="stacked">Nombre</ion-label>
+              <ion-input [(ngModel)]="premioEditando.nombre" name="nombre" required></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Descripción</ion-label>
+              <ion-input [(ngModel)]="premioEditando.descripcion" name="descripcion"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Cupones requeridos</ion-label>
+              <ion-input type="number" [(ngModel)]="premioEditando.cuponesRequeridos" name="cuponesRequeridos" required min="0"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Stock disponible</ion-label>
+              <ion-input type="number" [(ngModel)]="premioEditando.stock" name="stock" required min="0"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Categoría</ion-label>
+              <ion-select [(ngModel)]="premioEditando.categoria" name="categoria" required>
+                <ion-select-option value="Electrónicos">Electrónicos</ion-select-option>
+                <ion-select-option value="Hogar">Hogar</ion-select-option>
+                <ion-select-option value="Deportes">Deportes</ion-select-option>
+                <ion-select-option value="Libros">Libros</ion-select-option>
+                <ion-select-option value="Moda">Moda</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Orden de visualización</ion-label>
+              <ion-input type="number" [(ngModel)]="premioEditando.orden" name="orden" min="0"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Destacado</ion-label>
+              <ion-toggle [(ngModel)]="premioEditando.destacado" name="destacado"></ion-toggle>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Activo</ion-label>
+              <ion-toggle [(ngModel)]="premioEditando.activo" name="activo"></ion-toggle>
+            </ion-item>
+            <ion-button expand="block" type="submit" [disabled]="guardando">Guardar Cambios</ion-button>
+          </form>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+
+
+  </div>
+</ion-content>

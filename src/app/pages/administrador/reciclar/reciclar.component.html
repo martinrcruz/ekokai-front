@@ -10,6 +10,30 @@
 <ion-content [fullscreen]="true">
   <div class="reciclar-page">
 
+    <!-- Card: Saludo y estadísticas del usuario -->
+    <ion-card class="card card-saludo">
+      <ion-card-content>
+        <div class="saludo-container">
+          <div class="saludo-texto">
+            <h2>¡Hola, {{ getNombreUsuarioLogueado() }}!</h2>
+            <p class="estadistica-dia">
+              Hoy has ayudado a reciclar <strong>{{ estadisticasUsuario.kilosHoy | number:'1.0-1' }} kg</strong>.
+            </p>
+            <p class="meta-info">
+              Estás a <strong>{{ estadisticasUsuario.kilosRestantes | number:'1.0-1' }} kg</strong> de cumplir tu meta diaria de <strong>{{ estadisticasUsuario.metaDiaria }} kg</strong>!
+            </p>
+          </div>
+          <div class="meta-progress">
+            <ion-progress-bar 
+              [value]="estadisticasUsuario.porcentajeMeta / 100"
+              [color]="estadisticasUsuario.porcentajeMeta >= 100 ? 'success' : 'primary'">
+            </ion-progress-bar>
+            <span class="progress-text">{{ estadisticasUsuario.porcentajeMeta | number:'1.0-0' }}%</span>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
     <!-- Card: Identificación -->
     <ion-card class="card card-id">
       <ion-card-header>

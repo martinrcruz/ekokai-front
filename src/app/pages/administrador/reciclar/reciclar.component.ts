@@ -5,6 +5,8 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { UsuariosService } from 'src/app/services/usuarios.service';
 import { CanjeService } from 'src/app/services/canje.service';
 import { TiposResiduoService } from 'src/app/services/tipos-residuo.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { EstadisticasUsuarioService, EstadisticasUsuario } from 'src/app/services/estadisticas-usuario.service';
 /// <reference types="web-bluetooth" />
 
 @Component({
@@ -28,6 +30,15 @@ export class ReciclarComponent implements OnInit {
   vecinoSeleccionado: any = null;
   tiposResiduo: any[] = [];
 
+  // Usuario logueado y estadísticas
+  usuarioLogueado: any = null;
+  estadisticasUsuario: EstadisticasUsuario = {
+    kilosHoy: 0,
+    metaDiaria: 0,
+    porcentajeMeta: 0,
+    kilosRestantes: 0
+  };
+
   // Formularios
   formId!: FormGroup;
   formReciclaje!: FormGroup;
@@ -45,12 +56,50 @@ export class ReciclarComponent implements OnInit {
     private usuariosService: UsuariosService,
     private canjeService: CanjeService,
     private tiposResiduoService: TiposResiduoService,
+    private authService: AuthService,
+    private estadisticasUsuarioService: EstadisticasUsuarioService,
     private toastCtrl: ToastController,
   ) {}
 
   ngOnInit(): void {
+    this.cargarUsuarioLogueado();
     this.cargarTiposResiduo();
     this.inicializarFormularios();
+  }
+
+  private async cargarUsuarioLogueado() {
+    try {
+      await this.authService.ensureUserFromToken();
+      this.usuarioLogueado = this.authService.getUser();
+      if (this.usuarioLogueado) {
+        this.cargarEstadisticasUsuario();
+      }
+    } catch (error) {
+      console.error('Error cargando usuario logueado:', error);
+    }
+  }
+
+  private async cargarEstadisticasUsuario() {
+    try {
+      this.estadisticasUsuarioService.getEstadisticasUsuarioHoy().subscribe({
+        next: (estadisticas: EstadisticasUsuario) => {
+          this.estadisticasUsuario = estadisticas;
+          console.log('Estadísticas del usuario cargadas:', estadisticas);
+        },
+        error: (err: any) => {
+          console.error('Error cargando estadísticas del usuario:', err);
+          // Usar valores por defecto en caso de error
+          this.estadisticasUsuario = {
+            kilosHoy: 0,
+            metaDiaria: 100, // Meta por defecto
+            porcentajeMeta: 0,
+            kilosRestantes: 100
+          };
+        }
+      });
+    } catch (error) {
+      console.error('Error en cargarEstadisticasUsuario:', error);
+    }
   }
 
   private async cargarTiposResiduo() {
@@ -260,6 +309,9 @@ export class ReciclarComponent implements OnInit {
       this.bloquearDetalle(true);
       this.now = new Date();
       
+      // Recargar estadísticas del usuario después de registrar reciclaje
+      this.cargarEstadisticasUsuario();
+      
     } catch (e: any) {
       console.error('Error al registrar reciclaje:', e);
       this.toast('Error al registrar el reciclaje: ' + (e.error?.message || 'Error desconocido'), 'danger');
@@ -280,5 +332,13 @@ export class ReciclarComponent implements OnInit {
     this.busquedaFallida = false;
     this.error = '';
     this.bloquearDetalle(true);
+  }
+
+  // Obtener nombre completo del usuario logueado
+  getNombreUsuarioLogueado(): string {
+    if (!this.usuarioLogueado) return 'Usuario';
+    const nombre = this.usuarioLogueado.nombre || '';
+    const apellido = this.usuarioLogueado.apellido || '';
+    return `${nombre} ${apellido}`.trim() || this.usuarioLogueado.email || 'Usuario';
   }
 }

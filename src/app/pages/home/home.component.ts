@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { EcopuntosService } from 'src/app/services/ecopuntos.service';
 import { UsuariosService } from 'src/app/services/usuarios.service';
 import { ResiduosService } from 'src/app/services/residuos.service';
@@ -11,7 +11,7 @@ import { ChartOptions, ChartType, ChartData } from 'chart.js';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   // Tarjetas superiores
   totalKilos = 0;
   totalUsuarios = 0;
@@ -91,6 +91,14 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.cargarDashboard();
+  }
+
+  ionViewWillEnter() {
+    this.cargarDashboard();
+  }
+
+  ngOnDestroy() {
+    // Cleanup if needed
   }
 
   cargarDashboard() {

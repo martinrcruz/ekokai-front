@@ -1,0 +1,353 @@
+/**
+ * Estilos específicos para el tema oscuro
+ * Este archivo se importa automáticamente cuando el sistema está en modo oscuro
+ */
+
+// Variables específicas para tema oscuro
+@media (prefers-color-scheme: dark) {
+  // Estilos para el body y elementos raíz
+  body {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  // Estilos para elementos HTML básicos
+  html {
+    background-color: #1a1a1a;
+  }
+
+  // Estilos para ion-app
+  ion-app {
+    background-color: #1a1a1a;
+  }
+
+  // Estilos para ion-content
+  ion-content {
+    --background: #1a1a1a !important;
+    --color: #ffffff !important;
+    background-color: #1a1a1a !important;
+  }
+
+  // Estilos para ion-card
+  ion-card {
+    --background: #2a2a2a !important;
+    --color: #ffffff !important;
+    background-color: #2a2a2a !important;
+    border: 1px solid #404040 !important;
+  }
+
+  // Estilos para ion-item
+  ion-item {
+    --background: #2a2a2a !important;
+    --color: #ffffff !important;
+    --border-color: #404040 !important;
+    background-color: #2a2a2a !important;
+    border-color: #404040 !important;
+  }
+
+  // Estilos para ion-label
+  ion-label {
+    --color: #ffffff !important;
+    color: #ffffff !important;
+    
+    h1, h2, h3, h4, h5, h6 {
+      color: #ffffff !important;
+    }
+    
+    p {
+      color: #cccccc !important;
+    }
+  }
+
+  // Estilos para ion-input
+  ion-input {
+    --background: #2a2a2a !important;
+    --color: #ffffff !important;
+    --placeholder-color: #999999 !important;
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+    
+    &::placeholder {
+      color: #999999 !important;
+    }
+  }
+
+  // Estilos para ion-textarea
+  ion-textarea {
+    --background: #2a2a2a !important;
+    --color: #ffffff !important;
+    --placeholder-color: #999999 !important;
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+    
+    &::placeholder {
+      color: #999999 !important;
+    }
+  }
+
+  // Estilos para ion-select
+  ion-select {
+    --background: #2a2a2a !important;
+    --color: #ffffff !important;
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+  }
+
+  // Estilos para ion-datetime
+  ion-datetime {
+    --background: #2a2a2a !important;
+    --color: #ffffff !important;
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+  }
+
+  // Estilos para ion-picker
+  ion-picker {
+    --background: #2a2a2a !important;
+    --color: #ffffff !important;
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+  }
+
+  // Estilos para ion-modal
+  ion-modal {
+    --background: #1a1a1a !important;
+    background-color: #1a1a1a !important;
+  }
+
+  // Estilos para ion-popover
+  ion-popover {
+    --background: #2a2a2a !important;
+    --color: #ffffff !important;
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+  }
+
+  // Estilos para ion-toast
+  ion-toast {
+    --background: #2a2a2a !important;
+    --color: #ffffff !important;
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+  }
+
+  // Estilos para ion-alert
+  ion-alert {
+    --background: #2a2a2a !important;
+    --color: #ffffff !important;
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+  }
+
+  // Estilos para ion-action-sheet
+  ion-action-sheet {
+    --background: #2a2a2a !important;
+    --color: #ffffff !important;
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+  }
+
+  // Estilos para ion-list
+  ion-list {
+    background-color: transparent !important;
+  }
+
+  // Estilos para ion-header
+  ion-header {
+    background-color: var(--ekokai-primary-dark) !important;
+  }
+
+  // Estilos para ion-footer
+  ion-footer {
+    background-color: var(--ekokai-primary-dark) !important;
+  }
+
+  // Estilos para elementos de formulario
+  .form-container {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+  }
+
+  .form-section {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+  }
+
+  // Estilos para tablas
+  table {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+    
+    th, td {
+      background-color: #2a2a2a !important;
+      color: #ffffff !important;
+      border-color: #404040 !important;
+    }
+  }
+
+  // Estilos para elementos de navegación
+  .nav-item {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+    
+    &:hover {
+      background-color: #404040 !important;
+    }
+  }
+
+  // Estilos para botones secundarios
+  .btn-secondary {
+    background-color: #404040 !important;
+    color: #ffffff !important;
+    border-color: #555555 !important;
+    
+    &:hover {
+      background-color: #555555 !important;
+    }
+  }
+
+  // Estilos para enlaces
+  a {
+    color: #4CAF50 !important;
+    
+    &:hover {
+      color: #81C784 !important;
+    }
+  }
+
+  // Estilos para elementos de código
+  code, pre {
+    background-color: #333333 !important;
+    color: #ffffff !important;
+    border: 1px solid #404040 !important;
+  }
+
+  // Estilos para elementos de lista
+  ul, ol {
+    color: #ffffff !important;
+  }
+
+  li {
+    color: #ffffff !important;
+  }
+
+  // Estilos para elementos de texto
+  strong, b {
+    color: #ffffff !important;
+  }
+
+  em, i {
+    color: #cccccc !important;
+  }
+
+  // Estilos para elementos de navegación por páginas
+  .pagination {
+    background-color: #2a2a2a !important;
+    
+    .page-item {
+      background-color: #2a2a2a !important;
+      
+      .page-link {
+        background-color: #2a2a2a !important;
+        color: #ffffff !important;
+        border-color: #404040 !important;
+        
+        &:hover {
+          background-color: #404040 !important;
+        }
+      }
+      
+      &.active .page-link {
+        background-color: var(--ekokai-primary) !important;
+        color: #ffffff !important;
+      }
+    }
+  }
+
+  // Estilos para elementos de búsqueda
+  .search-input {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+    border-color: #404040 !important;
+    
+    &::placeholder {
+      color: #999999 !important;
+    }
+  }
+
+  // Estilos para elementos de filtro
+  .filter-item {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+    border-color: #404040 !important;
+  }
+
+  // Estilos para elementos de estadísticas
+  .stats-card {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+    border-color: #404040 !important;
+  }
+
+  // Estilos para elementos de gráficos
+  .chart-container {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+  }
+
+  // Estilos para elementos de notificación
+  .notification {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+    border-color: #404040 !important;
+  }
+
+  // Estilos para elementos de estado
+  .status-badge {
+    background-color: #404040 !important;
+    color: #ffffff !important;
+  }
+
+  // Estilos para elementos de progreso
+  .progress-bar {
+    background-color: #404040 !important;
+    
+    .progress-fill {
+      background-color: var(--ekokai-primary) !important;
+    }
+  }
+
+  // Estilos para elementos de carga
+  .loading-spinner {
+    color: var(--ekokai-primary) !important;
+  }
+
+  // Estilos para elementos de error
+  .error-message {
+    background-color: #4a2a2a !important;
+    color: #ffcccc !important;
+    border-color: #8b0000 !important;
+  }
+
+  // Estilos para elementos de éxito
+  .success-message {
+    background-color: #2a4a2a !important;
+    color: #ccffcc !important;
+    border-color: #006400 !important;
+  }
+
+  // Estilos para elementos de advertencia
+  .warning-message {
+    background-color: #4a4a2a !important;
+    color: #ffffcc !important;
+    border-color: #8b8b00 !important;
+  }
+
+  // Estilos para elementos de información
+  .info-message {
+    background-color: #2a2a4a !important;
+    color: #ccccff !important;
+    border-color: #00008b !important;
+  }
+}

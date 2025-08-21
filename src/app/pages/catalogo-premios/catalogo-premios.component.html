@@ -1,0 +1,190 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      <i class="bi bi-gift"></i> Catálogo de Premios Ekokai
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="irAInicio()" fill="clear">
+        <i class="bi bi-person-circle"></i> Acceso de personal
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Premios Destacados -->
+  <div class="premios-destacados" *ngIf="premiosDestacados.length > 0">
+    <ion-card class="destacados-card">
+      <ion-card-header>
+        <ion-card-title>
+          <i class="bi bi-star-fill"></i> Premios Destacados
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col 
+              size="12" 
+              size-md="6" 
+              *ngFor="let premio of premiosDestacados">
+              <ion-card class="premio-destacado">
+                <img [src]="getImagenPremio(premio)" [alt]="premio.nombre">
+                <ion-card-header>
+                  <ion-card-title>{{ premio.nombre }}</ion-card-title>
+                  <ion-card-subtitle>{{ premio.cuponesRequeridos }} cupones</ion-card-subtitle>
+                </ion-card-header>
+                <ion-card-content>
+                  <p>{{ premio.descripcion }}</p>
+                  <ion-button 
+                    expand="block" 
+                    color="primary" 
+                    (click)="canjearPremio(premio)"
+                    [disabled]="premio.stock <= 0">
+                    <i class="bi bi-whatsapp"></i>
+                    {{ premio.stock > 0 ? 'Canjear por WhatsApp' : 'Sin stock' }}
+                  </ion-button>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Barra de búsqueda y filtros -->
+  <div class="filtros-container">
+    <ion-searchbar
+      [(ngModel)]="terminoBusqueda"
+      placeholder="Buscar premios por nombre, descripción o categoría..."
+      (ionInput)="buscarPremios()"
+      [debounce]="500"
+      show-clear-button="focus"
+      class="search-bar">
+    </ion-searchbar>
+
+    <div class="categorias-container">
+      <ion-chip 
+        [color]="categoriaSeleccionada === '' ? 'primary' : 'medium'"
+        (click)="filtrarPorCategoria('')"
+        class="categoria-chip">
+        Todos
+      </ion-chip>
+      <ion-chip 
+        *ngFor="let categoria of categorias"
+        [color]="categoriaSeleccionada === categoria ? 'primary' : 'medium'"
+        (click)="filtrarPorCategoria(categoria)"
+        class="categoria-chip">
+        {{ categoria }}
+      </ion-chip>
+      
+      <ion-button 
+        fill="clear" 
+        size="small" 
+        (click)="limpiarFiltros()"
+        *ngIf="categoriaSeleccionada || terminoBusqueda"
+        class="limpiar-btn">
+        <i class="bi bi-x-circle"></i> Limpiar
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Lista de premios -->
+  <div class="premios-container">
+    <ion-spinner *ngIf="cargando" name="crescent"></ion-spinner>
+    
+    <div *ngIf="!cargando && premiosFiltrados.length === 0" class="no-resultados">
+      <ion-icon name="search-outline" size="large"></ion-icon>
+      <h3>No se encontraron premios</h3>
+      <p>Intenta con otros filtros o términos de búsqueda</p>
+    </div>
+
+    <ion-grid *ngIf="!cargando && premiosFiltrados.length > 0">
+      <ion-row>
+        <ion-col 
+          size="12" 
+          size-md="6" 
+          size-lg="4" 
+          *ngFor="let premio of premiosFiltrados">
+          <ion-card class="premio-card">
+            <img [src]="getImagenPremio(premio)" [alt]="premio.nombre">
+            
+            <ion-card-header>
+              <ion-card-title>{{ premio.nombre }}</ion-card-title>
+              <ion-card-subtitle>
+                <ion-badge [color]="getColorCategoria(premio.categoria)">
+                  {{ premio.categoria }}
+                </ion-badge>
+              </ion-card-subtitle>
+            </ion-card-header>
+            
+            <ion-card-content>
+              <p class="descripcion">{{ premio.descripcion }}</p>
+              
+              <div class="premio-info">
+                <div class="puntos">
+                  <i class="bi bi-star-fill"></i>
+                  <strong>{{ premio.cuponesRequeridos }} cupones</strong>
+                </div>
+                
+                <div class="stock" [class.sin-stock]="premio.stock <= 0">
+                  <i class="bi bi-box"></i>
+                  <span>{{ premio.stock > 0 ? premio.stock + ' disponibles' : 'Sin stock' }}</span>
+                </div>
+              </div>
+              
+              <ion-button 
+                expand="block" 
+                color="primary"
+                (click)="canjearPremio(premio)"
+                [disabled]="premio.stock <= 0">
+                <i class="bi bi-whatsapp"></i>
+                {{ premio.stock > 0 ? 'Canjear por WhatsApp' : 'Sin stock' }}
+              </ion-button>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <!-- Botón flotante para ir arriba -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="scrollToTop()">
+      <ion-icon name="arrow-up"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
+
+<!-- Footer del catálogo -->
+<ion-footer class="catalogo-footer">
+  <ion-toolbar>
+    <ion-row class="footer-content">
+      <ion-col size="12" size-md="4">
+        <div class="footer-section">
+          <h4 style="color: #ffffff;">Ekokai</h4>
+          <p>Recicla, gana puntos y canjea premios</p>
+        </div>
+      </ion-col>
+      <ion-col size="12" size-md="4">
+        <div class="footer-section">
+          <h4 style="color: #ffffff;">Contacto</h4>
+          <p>¿Tienes dudas? Escríbenos por WhatsApp</p>
+        </div>
+      </ion-col>
+      <ion-col size="12" size-md="4">
+        <div class="footer-section">
+          <h4 style="color: #ffffff;">Acceso</h4>
+          <ion-button (click)="irAInicio()" fill="clear" size="small">
+            <i class="bi bi-person-circle"></i> Ir al Acceso de personal
+          </ion-button>
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row class="footer-bottom">
+      <ion-col size="12">
+        <p>&copy; 2025 Ekokai. Todos los derechos reservados.</p>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

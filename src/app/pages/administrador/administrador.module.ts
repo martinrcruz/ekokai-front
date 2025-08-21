@@ -9,7 +9,8 @@ import { AdministradorRoutingModule } from './administrador-routing.module';
 
 // Declaraciones (componentes del área Administrador)
 import { ConfiguracionComponent } from './configuracion/configuracion.component';
-import { CuponesGestionComponent } from './cupones-gestion/cupones-gestion.component';
+import { PremiosGestionComponent } from './premios-gestion/premios-gestion.component';
+import { HistorialReciclajeComponent } from './historial-reciclaje/historial-reciclaje.component';
 import { EcopuntosComponent } from './ecopuntos/ecopuntos.component';
 import { MarketplaceComponent as AdminMarketplaceComponent } from './marketplace/marketplace.component';
 import { ReciclarComponent as AdminReciclarComponent } from './reciclar/reciclar.component';
@@ -24,7 +25,8 @@ import { AdminGuard } from '../../guards/admin.guard';
   declarations: [
 
     ConfiguracionComponent,
-    CuponesGestionComponent,
+    PremiosGestionComponent,
+    HistorialReciclajeComponent,
     EcopuntosComponent,
     AdminMarketplaceComponent,
     AdminTiposResiduosComponent,

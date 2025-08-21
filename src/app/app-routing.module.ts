@@ -12,6 +12,14 @@ const routes: Routes = [
       import('./pages/auth/auth.module').then(m => m.AuthModule)
   },
 
+  // Catálogo de Premios (sitio independiente, sin autenticación)
+  {
+    path: 'catalogo',
+    loadChildren: () =>
+      import('./pages/catalogo-premios/catalogo-premios.module').then(m => m.CatalogoPremiosModule),
+    data: { standalone: true }
+  },
+
   // Área Encargado (lazy)
   {
     path: 'encargado',

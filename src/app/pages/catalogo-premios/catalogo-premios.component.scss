@@ -1,0 +1,407 @@
+// Estilos para el catálogo de premios
+.premios-destacados {
+  margin: 16px;
+  
+  .destacados-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 16px;
+    
+    ion-card-header {
+      padding-bottom: 8px;
+      
+      ion-card-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: white;
+        
+        i {
+          color: #ffd700;
+          margin-right: 8px;
+        }
+      }
+    }
+    
+    .premio-destacado {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      margin: 8px;
+      
+      img {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 8px 8px 0 0;
+      }
+      
+      ion-card-header {
+        padding: 12px;
+        
+        ion-card-title {
+          font-size: 1rem;
+          color: white;
+        }
+        
+        ion-card-subtitle {
+          color: #ffd700;
+          font-weight: 600;
+        }
+      }
+      
+      ion-card-content {
+        padding: 12px;
+        
+        p {
+          color: rgba(255, 255, 255, 0.9);
+          font-size: 0.9rem;
+          margin-bottom: 12px;
+        }
+        
+        ion-button {
+          --background: #ffd700;
+          --color: #333;
+          font-weight: 600;
+          height: 36px;
+        }
+      }
+    }
+  }
+}
+
+.filtros-container {
+  margin: 16px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 16px;
+  
+  .search-bar {
+    --background: white;
+    --border-radius: 12px;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 16px;
+    
+    ion-searchbar {
+      --placeholder-color: var(--ion-color-medium);
+      --icon-color: var(--ion-color-primary);
+    }
+  }
+  
+  .categorias-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    
+    .categoria-chip {
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+    }
+    
+    .limpiar-btn {
+      margin-left: auto;
+      --color: var(--ion-color-medium);
+      font-size: 0.9rem;
+      
+      i {
+        margin-right: 4px;
+      }
+    }
+  }
+}
+
+.premios-container {
+  padding: 0 16px 16px;
+  
+  .no-resultados {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ion-color-medium);
+    
+    ion-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+    
+    h3 {
+      margin: 0 0 8px 0;
+      font-weight: 600;
+    }
+    
+    p {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+  }
+  
+  .premio-card {
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    margin-bottom: 16px;
+    overflow: hidden;
+    
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+    
+    img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    
+    ion-card-header {
+      padding: 16px 16px 8px;
+      
+      ion-card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--ion-color-dark);
+      }
+      
+      ion-card-subtitle {
+        ion-badge {
+          font-size: 0.8rem;
+          padding: 4px 8px;
+          border-radius: 12px;
+        }
+      }
+    }
+    
+    ion-card-content {
+      padding: 8px 16px 16px;
+      
+      .descripcion {
+        color: var(--ion-color-medium);
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin-bottom: 16px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      
+      .premio-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding: 12px;
+        background: var(--ion-color-light);
+        border-radius: 8px;
+        
+        .puntos {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          color: var(--ion-color-primary);
+          font-size: 0.9rem;
+          
+          i {
+            color: #ffd700;
+          }
+        }
+        
+        .stock {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.8rem;
+          color: var(--ion-color-success);
+          
+          &.sin-stock {
+            color: var(--ion-color-danger);
+          }
+          
+          i {
+            font-size: 1rem;
+          }
+        }
+      }
+      
+      ion-button {
+        width: 100%;
+        height: 44px;
+        font-weight: 600;
+        border-radius: 8px;
+        
+        i {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .premios-destacados {
+    margin: 12px;
+    
+    .destacados-card {
+      .premio-destacado {
+        margin: 4px;
+        
+        img {
+          height: 100px;
+        }
+        
+        ion-card-header {
+          padding: 8px;
+          
+          ion-card-title {
+            font-size: 0.9rem;
+          }
+        }
+        
+        ion-card-content {
+          padding: 8px;
+          
+          p {
+            font-size: 0.8rem;
+          }
+          
+          ion-button {
+            height: 32px;
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+  }
+  
+  .filtros-container {
+    margin: 12px;
+    padding: 12px;
+    
+    .categorias-container {
+      .categoria-chip {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+      }
+    }
+  }
+  
+  .premios-container {
+    padding: 0 12px 12px;
+    
+    .premio-card {
+      ion-card-header {
+        padding: 12px 12px 6px;
+        
+        ion-card-title {
+          font-size: 1rem;
+        }
+      }
+      
+      ion-card-content {
+        padding: 6px 12px 12px;
+        
+        .premio-info {
+          flex-direction: column;
+          gap: 8px;
+          align-items: flex-start;
+          
+          .puntos, .stock {
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Animaciones
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.premio-card {
+  animation: fadeIn 0.5s ease-out;
+}
+
+// Estados de carga
+ion-spinner {
+  display: block;
+  margin: 40px auto;
+}
+
+// Botón flotante
+ion-fab-button {
+  --background: var(--ion-color-primary);
+  --color: white;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  
+  &:hover {
+    --box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  }
+}
+
+// Footer del catálogo
+.catalogo-footer {
+  background: var(--ion-color-dark);
+  color: white;
+  
+  .footer-content {
+    padding: 20px 16px;
+    
+    .footer-section {
+      text-align: center;
+      margin-bottom: 16px;
+      
+      h4 {
+        color: var(--ion-color-primary);
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 1.1rem;
+      }
+      
+      p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin: 0;
+      }
+      
+      ion-button {
+        --color: var(--ion-color-primary);
+        font-weight: 500;
+        
+        i {
+          margin-right: 6px;
+        }
+      }
+    }
+  }
+  
+  .footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 16px;
+    text-align: center;
+    
+    p {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.8rem;
+      margin: 0;
+    }
+  }
+}
+

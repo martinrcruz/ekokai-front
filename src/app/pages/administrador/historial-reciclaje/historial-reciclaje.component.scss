@@ -1,0 +1,272 @@
+.historial-container {
+  padding: 16px;
+  background: var(--color-background);
+  min-height: 100vh;
+
+  .filters-bar {
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-light);
+    border-radius: var(--border-radius-md);
+    background: var(--color-white);
+
+    ion-card-header {
+      padding: 16px 20px 8px;
+      
+      ion-card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--color-text);
+      }
+    }
+
+    ion-card-content {
+      padding: 0 20px 20px;
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+
+    ion-spinner {
+      margin-bottom: 16px;
+    }
+
+    p {
+      color: var(--color-text-light);
+      margin: 0;
+    }
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    text-align: center;
+
+    ion-icon {
+      color: var(--color-text-light);
+      margin-bottom: 16px;
+    }
+
+    h3 {
+      color: var(--color-text);
+      margin: 0 0 8px 0;
+      font-weight: 600;
+    }
+
+    p {
+      color: var(--color-text-light);
+      margin: 0;
+    }
+  }
+
+  .entrega-card {
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-light);
+    border-radius: var(--border-radius-md);
+    background: var(--color-white);
+
+    ion-card-header {
+      padding: 16px 20px 12px;
+
+      ion-card-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--color-text);
+        margin-bottom: 4px;
+      }
+
+      ion-card-subtitle {
+        color: var(--color-text-light);
+        font-size: 0.95rem;
+        margin-bottom: 12px;
+      }
+    }
+
+    .entrega-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+
+      ion-badge {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+      }
+    }
+
+    ion-card-content {
+      padding: 0 20px 20px;
+
+      .info-section {
+        margin-bottom: 20px;
+
+        h4 {
+          color: var(--color-primary);
+          font-size: 1rem;
+          font-weight: 600;
+          margin: 0 0 8px 0;
+          border-bottom: 2px solid var(--color-primary);
+          padding-bottom: 4px;
+        }
+
+        p {
+          margin: 4px 0;
+          color: var(--color-text);
+          font-size: 0.9rem;
+
+          strong {
+            color: var(--color-text-dark);
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+
+  .pagination-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: 32px 0;
+    padding: 20px;
+
+    .page-info {
+      color: var(--color-text);
+      font-weight: 500;
+      min-width: 120px;
+      text-align: center;
+    }
+
+    ion-button {
+      --padding-start: 16px;
+      --padding-end: 16px;
+    }
+  }
+
+  .stat-card {
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-medium);
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: var(--color-white);
+
+    &:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: var(--shadow-large);
+    }
+
+    ion-card-header {
+      padding: 20px 20px 12px;
+
+      ion-card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--color-text);
+        margin: 0;
+      }
+    }
+
+    ion-card-content {
+      padding: 0 20px 20px;
+
+      .stat-content {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+
+        .stat-icon {
+          width: 56px;
+          height: 56px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          background: var(--ekokai-primary);
+          color: var(--color-white);
+          font-size: 2rem;
+        }
+
+        .stat-info {
+          flex: 1;
+
+          h2 {
+            font-size: 2.1rem;
+            font-weight: 800;
+            color: var(--color-text);
+            margin: 0 0 2px 0;
+            letter-spacing: -1px;
+          }
+
+          p {
+            font-size: 1.05rem;
+            color: var(--color-text-light);
+            margin: 0;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .historial-container {
+    padding: 12px;
+
+    .entrega-card {
+      ion-card-content {
+        .info-section {
+          margin-bottom: 16px;
+
+          h4 {
+            font-size: 0.95rem;
+          }
+
+          p {
+            font-size: 0.85rem;
+          }
+        }
+      }
+    }
+
+    .stat-card {
+      ion-card-content {
+        .stat-content {
+          flex-direction: column;
+          text-align: center;
+          gap: 16px;
+
+          .stat-info {
+            h2 {
+              font-size: 1.8rem;
+            }
+
+            p {
+              font-size: 0.95rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .historial-container {
+    .entrega-card,
+    .stat-card {
+      background: var(--color-surface);
+    }
+  }
+}

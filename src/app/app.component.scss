@@ -395,21 +395,7 @@ ion-content.sidebar-content-flex ion-list {
 }
 
 
-:root {
-  color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  body {
-    background: #000;
-    color: #fff;
-  }
-}
-
-:root {
-  --ion-background-color: #ffffff;
-  --ion-text-color: #000000;
-}
+/* Configuración de tema oscuro manejada en global.scss */
 
 ion-menu ion-item.selected {
   --background: #369a36;
