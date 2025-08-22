@@ -4,10 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { CatalogoPremiosComponent } from './catalogo-premios.component';
 import { CatalogoPremiosRoutingModule } from './catalogo-premios-routing.module';
+import { PremioDetalleModalComponent } from './premio-detalle-modal/premio-detalle-modal.component';
 
 @NgModule({
   declarations: [
-    CatalogoPremiosComponent
+    CatalogoPremiosComponent,
+    PremioDetalleModalComponent
   ],
   imports: [
     CommonModule,
@@ -17,4 +19,5 @@ import { CatalogoPremiosRoutingModule } from './catalogo-premios-routing.module'
   ]
 })
 export class CatalogoPremiosModule {}
+
 

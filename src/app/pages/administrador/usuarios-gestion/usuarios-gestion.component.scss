@@ -3,231 +3,679 @@
   background: var(--color-background);
   min-height: 100vh;
 
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-    margin-bottom: 32px;
-
-    .stat-card {
-      border-radius: var(--border-radius-lg);
-      box-shadow: var(--shadow-medium);
-      border: none;
-      transition: transform 0.2s, box-shadow 0.2s;
-      background: var(--color-white);
-
-      &:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: var(--shadow-large);
-      }
-
-      ion-card-content {
+  // Header de la página
+  .page-header {
+    background: linear-gradient(135deg, var(--ekokai-primary), var(--ekokai-primary-dark));
+    border-radius: var(--border-radius-lg);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-medium);
+    
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      
+      .header-icon {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
         display: flex;
         align-items: center;
+        justify-content: center;
+        
+        ion-icon {
+          font-size: 32px;
+          color: white;
+        }
+      }
+      
+      .header-text {
+        flex: 1;
+        color: white;
+        
+        h1 {
+          margin: 0 0 8px 0;
+          font-size: 28px;
+          font-weight: 700;
+        }
+        
+        p {
+          margin: 0;
+          font-size: 16px;
+          opacity: 0.9;
+        }
+      }
+      
+      .header-stats {
+        display: flex;
         gap: 20px;
-        padding: 28px 24px;
+        
+        .stat-item {
+          text-align: center;
+          background: rgba(255, 255, 255, 0.15);
+          border-radius: var(--border-radius-md);
+          padding: 16px;
+          min-width: 80px;
+          
+          .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 4px;
+          }
+          
+          .stat-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+        }
+      }
+    }
+  }
+
+  // Card de filtros
+  .filters-card {
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--color-border-light);
+    margin-bottom: 20px;
+    overflow: hidden;
+
+    .card-header-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      background: linear-gradient(135deg, var(--color-info), #2980b9);
+      color: white;
+
+      .header-icon {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        ion-icon {
+          font-size: 24px;
+          color: white;
+        }
+      }
+
+      .header-text {
+        ion-card-title {
+          margin: 0 0 4px 0;
+          font-size: 1.3rem;
+          font-weight: 600;
+          color: white;
+        }
+
+        ion-card-subtitle {
+          margin: 0;
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.95rem;
+        }
+      }
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
+
+      .filter-item {
+        --padding-start: 0;
+        --padding-end: 0;
+        --inner-padding-end: 0;
+        border-radius: var(--border-radius-md);
+        border: 2px solid var(--color-border-light);
+        background: var(--color-white);
+        transition: all 0.2s ease;
+        overflow: hidden;
+
+        &:hover {
+          border-color: var(--ekokai-primary);
+          box-shadow: var(--shadow-light);
+        }
+
+        &:focus-within {
+          border-color: var(--ekokai-primary);
+          box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        ion-label {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-weight: 600;
+          color: var(--ekokai-primary);
+          padding: 16px 16px 8px 16px;
+          margin: 0;
+
+          ion-icon {
+            font-size: 18px;
+          }
+        }
+
+        .search-input,
+        .role-select,
+        .status-select {
+          --padding-start: 16px;
+          --padding-end: 16px;
+          --padding-top: 8px;
+          --padding-bottom: 16px;
+          border-radius: 0;
+          background: transparent;
+          border: none;
+          font-size: 16px;
+          color: var(--color-text);
+
+          &:focus {
+            background: var(--color-gray-light);
+          }
+        }
+      }
+
+      .clear-filter {
+        display: flex;
+        align-items: flex-end;
+
+        .clear-filters-btn {
+          --color: var(--color-text-muted);
+          --background: var(--color-gray-light);
+          --border-radius: var(--border-radius-md);
+          height: 48px;
+          font-weight: 600;
+          transition: all 0.2s ease;
+
+          &:hover {
+            --background: var(--color-gray);
+            --color: var(--color-text);
+          }
+
+          ion-icon {
+            margin-right: 8px;
+          }
+        }
+      }
+    }
+  }
+
+  // Card de estadísticas
+  .stats-card {
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--color-border-light);
+    margin-bottom: 20px;
+    overflow: hidden;
+
+    .card-header-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      background: linear-gradient(135deg, var(--color-success), var(--color-success-dark));
+      color: white;
+
+      .header-icon {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        ion-icon {
+          font-size: 24px;
+          color: white;
+        }
+      }
+
+      .header-text {
+        ion-card-title {
+          margin: 0 0 4px 0;
+          font-size: 1.3rem;
+          font-weight: 600;
+          color: white;
+        }
+
+        ion-card-subtitle {
+          margin: 0;
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.95rem;
+        }
+      }
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 20px;
+
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+        background: var(--color-gray-light);
+        border-radius: var(--border-radius-md);
+        border: 1px solid var(--color-border-light);
+        transition: all 0.2s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-medium);
+        }
 
         .stat-icon {
-          width: 56px;
-          height: 56px;
+          background: var(--ekokai-primary);
           border-radius: 50%;
+          width: 50px;
+          height: 50px;
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
-          background: var(--ekokai-primary);
-
-          &.bg-success { background: var(--color-success); }
-          &.bg-warning { background: var(--color-warning); }
-          &.bg-info { background: var(--color-info); }
 
           ion-icon {
-            font-size: 2rem;
-            color: var(--color-white);
+            color: white;
+            font-size: 24px;
           }
         }
 
-        .stat-info {
-          flex: 1;
-
-          h3 {
-            font-size: 2.1rem;
-            font-weight: 800;
+        .stat-content {
+          .stat-number {
+            font-size: 24px;
+            font-weight: 700;
             color: var(--color-text);
-            margin: 0 0 2px 0;
-            letter-spacing: -1px;
+            margin-bottom: 4px;
           }
 
-          p {
-            font-size: 1.05rem;
+          .stat-label {
+            font-size: 12px;
             color: var(--color-text-light);
-            margin: 0;
-            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
           }
+        }
+
+        &.total-users .stat-icon {
+          background: var(--ekokai-primary);
+        }
+
+        &.active-users .stat-icon {
+          background: var(--color-success);
+        }
+
+        &.total-kilos .stat-icon {
+          background: var(--color-warning);
+        }
+
+        &.total-tokens .stat-icon {
+          background: var(--color-info);
         }
       }
     }
   }
 
-  .filters-bar {
-    margin-bottom: 24px;
+  // Card de lista de usuarios
+  .usuarios-list-card {
+    border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-light);
-    border-radius: var(--border-radius-md);
-    padding: 12px 20px;
-    background: var(--color-white);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    border: 1px solid var(--color-border-light);
+    overflow: hidden;
 
-    .filters-flex {
+    .card-header-content {
       display: flex;
-      flex-wrap: wrap;
+      align-items: center;
       gap: 16px;
-      width: 100%;
-      align-items: center;
-      justify-content: flex-start;
-    }
+      padding: 20px;
+      background: linear-gradient(135deg, var(--ekokai-secondary), #1b5e20);
+      color: white;
 
-    .filter-item {
-      // flex: 1 1 180px;
-      min-width: 180px;
-      max-width: 260px;
-      background: var(--color-gray-light);
-      border-radius: 8px;
-      margin: 0;
-      --background: var(--color-gray-light);
-      --padding-start: 8px;
-      --padding-end: 8px;
-      --inner-padding-end: 0;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      ion-icon {
-        font-size: 1.2rem;
-        color: var(--ekokai-primary);
-        margin-right: 8px;
-      }
-      ion-input, ion-select {
-        font-size: 1rem;
-        background: transparent;
-        border: none;
-        box-shadow: none;
-        width: 100%;
-        min-width: 0;
-      }
-    }
-
-    .clear-filters-btn {
-      margin-left: 8px;
-      color: var(--color-danger);
-      font-weight: 500;
-      --background: transparent;
-      --color: var(--color-danger);
-      ion-icon {
-        margin-right: 4px;
-      }
-    }
-  }
-
-  .charts-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-    gap: 32px;
-    margin-bottom: 32px;
-
-    .chart-card {
-      border-radius: var(--border-radius-lg);
-      box-shadow: var(--shadow-light);
-      border: none;
-      background: var(--color-white);
-      padding-bottom: 8px;
-
-      canvas {
-        max-height: 320px;
-      }
-    }
-  }
-
-  ion-list {
-    .usuario-item {
-      --padding-start: 16px;
-      --padding-end: 16px;
-      --inner-padding-end: 0;
-      margin-bottom: 10px;
-      border-radius: var(--border-radius-md);
-      border: 1px solid var(--color-border-light);
-      transition: all 0.2s;
-      align-items: flex-start;
-      background: var(--color-white);
-
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-medium);
-      }
-
-      ion-avatar {
-        width: 44px;
-        height: 44px;
-        background: var(--ekokai-primary);
+      .header-icon {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
 
         ion-icon {
           font-size: 24px;
-          color: var(--color-white);
+          color: white;
         }
       }
 
-      ion-label {
+      .header-text {
+        ion-card-title {
+          margin: 0 0 4px 0;
+          font-size: 1.3rem;
+          font-weight: 600;
+          color: white;
+        }
+
+        ion-card-subtitle {
+          margin: 0;
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.95rem;
+        }
+      }
+    }
+
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      text-align: center;
+
+      ion-spinner {
+        margin-bottom: 16px;
+        --color: var(--ekokai-primary);
+      }
+
+      p {
+        margin: 0;
+        color: var(--color-text-light);
+        font-size: 16px;
+      }
+    }
+
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+
+      .empty-content {
+        .empty-icon {
+          background: var(--color-gray-light);
+          border-radius: 50%;
+          width: 80px;
+          height: 80px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 24px auto;
+
+          ion-icon {
+            font-size: 40px;
+            color: var(--color-text-light);
+          }
+        }
+
         h3 {
-          font-size: 1.15rem;
-          font-weight: 700;
+          margin: 0 0 12px 0;
+          font-size: 20px;
+          font-weight: 600;
           color: var(--color-text);
-          margin-bottom: 2px;
         }
 
         p {
-          font-size: 1rem;
+          margin: 0 0 24px 0;
           color: var(--color-text-light);
-          margin-bottom: 8px;
+          font-size: 16px;
+          line-height: 1.4;
+        }
+
+        .create-first-btn {
+          --background: var(--ekokai-primary);
+          --color: white;
+          --border-radius: var(--border-radius-md);
+          height: 48px;
+          font-weight: 600;
+          transition: all 0.2s ease;
+
+          &:hover {
+            --background: var(--ekokai-primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+          }
+
+          ion-icon {
+            margin-right: 8px;
+            font-size: 18px;
+          }
+        }
+      }
+    }
+
+    .usuarios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      padding: 20px;
+
+      .usuario-card {
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-light);
+        border: 1px solid var(--color-border-light);
+        transition: all 0.3s ease;
+        overflow: hidden;
+
+        &:hover {
+          box-shadow: var(--shadow-medium);
+          transform: translateY(-2px);
+        }
+
+        .usuario-header {
+          display: flex;
+          align-items: flex-start;
+          gap: 16px;
+          padding: 20px;
+          border-bottom: 1px solid var(--color-border-light);
+
+          .usuario-avatar {
+            flex-shrink: 0;
+
+            .avatar-initials {
+              width: 60px;
+              height: 60px;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: 700;
+              font-size: 20px;
+              color: white;
+              text-transform: uppercase;
+
+              &.avatar-administrador {
+                background: var(--color-success);
+              }
+
+              &.avatar-encargado {
+                background: var(--color-warning);
+              }
+
+              &.avatar-vecino {
+                background: var(--color-info);
+              }
+
+              &.avatar-default {
+                background: var(--ekokai-primary);
+              }
+            }
+          }
+
+          .usuario-info {
+            flex: 1;
+            min-width: 0;
+
+            .usuario-nombre {
+              margin: 0 0 8px 0;
+              font-size: 18px;
+              font-weight: 600;
+              color: var(--color-text);
+              line-height: 1.3;
+            }
+
+            .usuario-email {
+              margin: 0 0 16px 0;
+              font-size: 14px;
+              color: var(--color-text-light);
+              line-height: 1.4;
+            }
+
+            .usuario-badges {
+              display: flex;
+              gap: 8px;
+              flex-wrap: wrap;
+
+              .rol-badge,
+              .status-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 12px;
+                font-weight: 600;
+                padding: 6px 12px;
+                border-radius: var(--border-radius-sm);
+
+                ion-icon {
+                  font-size: 14px;
+                }
+
+                &.rol-admin {
+                  background: rgba(56, 142, 60, 0.1);
+                  color: var(--color-success);
+                }
+
+                &.rol-encargado {
+                  background: rgba(255, 152, 0, 0.1);
+                  color: var(--color-warning);
+                }
+
+                &.rol-vecino {
+                  background: rgba(25, 118, 210, 0.1);
+                  color: var(--color-info);
+                }
+
+                &.rol-default {
+                  background: rgba(158, 158, 158, 0.1);
+                  color: var(--color-text-muted);
+                }
+
+                &.status-active {
+                  background: rgba(76, 175, 80, 0.1);
+                  color: var(--color-success);
+                }
+
+                &.status-inactive {
+                  background: rgba(244, 67, 54, 0.1);
+                  color: var(--color-danger);
+                }
+              }
+            }
+          }
+
+          .usuario-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+
+            .action-btn {
+              --border-radius: var(--border-radius-sm);
+              // height: 36px;
+              // width: 36px;
+              transition: all 0.2s ease;
+
+              ion-icon {
+                font-size: 18px;
+              }
+
+              &.history-btn {
+                --color: var(--ekokai-primary);
+                
+                &:hover {
+                  --background: var(--ekokai-primary);
+                  --color: white;
+                }
+              }
+
+              &.edit-btn {
+                --color: var(--ekokai-secondary);
+                
+                &:hover {
+                  --background: var(--ekokai-secondary);
+                  --color: white;
+                }
+              }
+
+              &.delete-btn {
+                --color: var(--color-danger);
+                
+                &:hover {
+                  --background: var(--color-danger);
+                  --color: white;
+                }
+              }
+            }
+          }
         }
 
         .usuario-stats {
-          display: flex;
-          gap: 10px;
-          flex-wrap: wrap;
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 16px;
+          padding: 16px 20px;
 
-          .stat {
-            font-size: 0.85rem;
-            color: var(--color-text-muted);
-            background: var(--color-gray);
-            padding: 4px 10px;
-            border-radius: 14px;
-            font-weight: 600;
+          .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--color-gray-light);
+            border-radius: var(--border-radius-sm);
+            border: 1px solid var(--color-border-light);
 
-            &.active {
-              background: var(--color-success);
-              color: var(--color-white);
+            ion-icon {
+              font-size: 16px;
+              color: var(--ekokai-primary);
             }
 
-            &.inactive {
-              background: var(--color-danger);
-              color: var(--color-white);
+            .stat-value {
+              font-size: 14px;
+              font-weight: 600;
+              color: var(--color-text);
             }
 
-            // Rol chip
-            &.rol-admin {
-              background: #388e3c;
-              color: #fff;
+            .stat-label {
+              font-size: 12px;
+              color: var(--color-text-light);
             }
-            &.rol-encargado {
-              background: #ff9800;
-              color: #fff;
+
+            &.kilos-stat {
+              background: rgba(76, 175, 80, 0.1);
+              border-color: var(--color-success);
             }
-            &.rol-vecino {
-              background: #1976d2;
-              color: #fff;
+
+            &.tokens-stat {
+              background: rgba(33, 150, 243, 0.1);
+              border-color: var(--color-info);
+            }
+
+            &.dni-stat {
+              background: rgba(255, 152, 0, 0.1);
+              border-color: var(--color-warning);
+            }
+
+            &.phone-stat {
+              background: rgba(156, 39, 176, 0.1);
+              border-color: var(--color-secondary);
             }
           }
         }
@@ -235,35 +683,193 @@
     }
   }
 
-  .truncate {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 180px;
-    display: inline-block;
-    vertical-align: bottom;
-  }
-
-  .modal-actions {
+  // Paginador
+  .paginador {
     display: flex;
-    gap: 12px;
-    justify-content: flex-end;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
     margin-top: 24px;
-    padding-top: 16px;
-    border-top: 1px solid var(--color-border-light);
+    padding: 20px;
+    background: var(--color-white);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--color-border-light);
+
+    .page-btn {
+      --border-radius: var(--border-radius-md);
+      height: 40px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-light);
+      }
+
+      &:disabled {
+        --background: var(--color-gray);
+        --color: var(--color-text-muted);
+        transform: none;
+        box-shadow: none;
+      }
+
+      ion-icon {
+        margin: 0 4px;
+      }
+
+      &.prev-btn {
+        --background: var(--ekokai-primary);
+        --color: white;
+      }
+
+      &.next-btn {
+        --background: var(--ekokai-secondary);
+        --color: white;
+      }
+    }
+
+    .pagina-info {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text);
+      min-width: 120px;
+      text-align: center;
+    }
+  }
+}
+
+// Botón de crear en el toolbar
+.create-button {
+  --background: var(--ekokai-primary);
+  --color: white;
+  --border-radius: var(--border-radius-sm);
+  --padding-start: 16px;
+  --padding-end: 16px;
+  font-weight: 600;
+  
+  ion-icon {
+    margin-right: 6px;
+  }
+}
+
+// Popover de crear usuario
+.popover-list {
+  .popover-item {
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      --background: var(--color-gray-light);
+    }
+
+    ion-icon {
+      margin-right: 12px;
+      font-size: 18px;
+    }
+  }
+}
+
+// Estilos de los modales
+ion-modal {
+  .modal-content {
+    padding: 20px;
+
+    .modal-header {
+      text-align: center;
+      margin-bottom: 32px;
+
+      .modal-icon {
+        background: linear-gradient(135deg, var(--ekokai-primary), var(--ekokai-primary-dark));
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px auto;
+
+        ion-icon {
+          color: white;
+          font-size: 28px;
+        }
+      }
+
+      h2 {
+        margin: 0 0 8px 0;
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--color-text);
+      }
+
+      p {
+        margin: 0;
+        color: var(--color-text-light);
+        font-size: 16px;
+        line-height: 1.4;
+      }
+    }
+
+    .form-item {
+      margin-bottom: 24px;
+
+      ion-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        color: var(--ekokai-primary);
+        margin-bottom: 8px;
+
+        ion-icon {
+          font-size: 18px;
+        }
+      }
+
+      .form-input {
+        --padding-start: 16px;
+        --padding-end: 16px;
+        --padding-top: 12px;
+        --padding-bottom: 12px;
+        border-radius: var(--border-radius-md);
+        background: var(--color-gray-light);
+        border: 1px solid var(--color-border);
+        font-size: 16px;
+        transition: all 0.2s ease;
+
+        &:focus {
+          background: white;
+          border-color: var(--ekokai-primary);
+          box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+        }
+      }
+    }
+  }
+}
+
+// Botones de los modales
+.close-btn {
+  --color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.save-btn {
+  --background: var(--ekokai-primary);
+  --color: white;
+  --border-radius: var(--border-radius-md);
+  height: 44px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+
+  &:hover {
+    --background: var(--ekokai-primary-dark);
   }
 
-  @media (max-width: 900px) {
-    .stats-grid, .charts-section {
-      grid-template-columns: 1fr;
-    }
-    .charts-section .chart-card {
-      padding-bottom: 0;
-    }
-    ion-list .usuario-item ion-label .usuario-stats {
-      // flex-direction: column;
-      // gap: 4px;
-    }
+  ion-icon {
+    margin-right: 6px;
   }
 }
 
@@ -272,469 +878,1058 @@
   .usuarios-container {
     padding: 8px;
 
-    .stats-grid {
-      grid-template-columns: 1fr;
+    .page-header {
+      padding: 20px;
+      margin-bottom: 20px;
+      
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+        
+        .header-icon {
+          width: 50px;
+          height: 50px;
+          
+          ion-icon {
+            font-size: 28px;
+          }
+        }
+        
+        .header-text {
+          h1 {
+            font-size: 24px;
+          }
+          
+          p {
+            font-size: 14px;
+          }
+        }
+        
+        .header-stats {
+          justify-content: center;
+          flex-wrap: wrap;
+          gap: 12px;
+          
+          .stat-item {
+            min-width: 70px;
+            padding: 12px;
+            
+            .stat-number {
+              font-size: 20px;
+            }
+            
+            .stat-label {
+              font-size: 11px;
+            }
+          }
+        }
+      }
     }
 
-    .filters-bar .filters-flex {
+    .filters-card {
+      .filters-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 16px;
+        
+        .filter-item {
+          .search-input,
+          .role-select,
+          .status-select {
+            font-size: 16px; // Previene zoom en iOS
+          }
+        }
+        
+        .clear-filter {
+          .clear-filters-btn {
+            width: 100%;
+            height: 44px;
+            font-size: 14px;
+          }
+        }
+      }
+    }
+
+    .stats-card {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        padding: 16px;
+      }
+    }
+
+    .usuarios-list-card {
+      .usuarios-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 16px;
+        
+        .usuario-card {
+          .usuario-header {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 12px;
+            
+            .usuario-avatar {
+              .avatar-initials {
+                width: 70px;
+                height: 70px;
+                font-size: 24px;
+              }
+            }
+            
+            .usuario-info {
+              text-align: center;
+              
+              .usuario-badges {
+                justify-content: center;
+                gap: 6px;
+                
+                .rol-badge,
+                .status-badge {
+                  font-size: 11px;
+                  padding: 4px 8px;
+                  
+                  ion-icon {
+                    font-size: 12px;
+                  }
+                }
+              }
+            }
+            
+            .usuario-actions {
+              justify-content: center;
+              gap: 12px;
+              
+              .action-btn {
+                height: 44px;
+                width: 44px;
+                
+                ion-icon {
+                  font-size: 20px;
+                }
+              }
+            }
+          }
+          
+          .usuario-stats {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 12px 16px;
+            
+            .stat-item {
+              flex-direction: column;
+              text-align: center;
+              gap: 6px;
+              padding: 12px 8px;
+              
+              ion-icon {
+                font-size: 18px;
+              }
+              
+              .stat-value {
+                font-size: 16px;
+                font-weight: 700;
+              }
+              
+              .stat-label {
+                font-size: 11px;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .paginador {
       flex-direction: column;
-      gap: 10px;
-      align-items: stretch;
-    }
-
-    .filters-bar .filter-item {
-      min-width: 120px;
-      max-width: 100%;
-    }
-
-    .truncate {
-      max-width: 100px;
-    }
-
-    .charts-section {
-      grid-template-columns: 1fr;
-    }
-  }
-}
-
-.usuario-item.zebra {
-  background: #f7f9fa;
-}
-.usuario-item ion-avatar {
-  background: var(--color-gray-light);
-  color: var(--color-text);
-  font-weight: 700;
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.avatar-iniciales {
-  color: var(--color-white);
-  font-weight: 700;
-  font-size: 1.1rem;
-  letter-spacing: 1px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-.avatar-administrador {
-  background: #388e3c !important;
-}
-.avatar-encargado {
-  background: #ff9800 !important;
-}
-.avatar-vecino {
-  background: #1976d2 !important;
-}
-.avatar-default {
-  background: var(--ekokai-primary) !important;
-}
-.usuario-item ion-buttons ion-button {
-  transition: background 0.15s;
-  border-radius: 8px;
-}
-.usuario-item ion-buttons ion-button:hover {
-  background: var(--color-gray-light);
-}
-/* ===== Estilos para el formulario de editar usuario ===== */
-.edit-user-modal {
-  h2.section-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-top: 20px;
-    margin-bottom: 10px;
-    color: var(--color-text);
-  }
-
-  .form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    margin-bottom: 20px;
-
-    ion-item {
-      --inner-padding-end: 0;
-      border-radius: 8px;
-      background: var(--color-gray-light);
-      --background: var(--color-gray-light);
-    }
-  }
-.edit-user-modal {
-  h2.section-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-top: 20px;
-    margin-bottom: 10px;
-    color: var(--color-text);
-  }
-
-  .form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    margin-bottom: 20px;
-
-    ion-item {
-      --inner-padding-end: 0;
-      border-radius: 8px;
-      background: var(--color-gray-light);
-      --background: var(--color-gray-light);
-    }
-  }
-
-  .form-actions {
-    display: flex;
-    gap: 16px;
-    margin-top: 32px;
-
-    &.centered {
-      justify-content: center; /* 👈 centramos horizontalmente */
-    }
-
-    ion-button {
-      min-width: 140px;
-      height: 48px;
-      font-weight: 600;
-      border-radius: var(--border-radius-sm);
-      box-shadow: var(--shadow-light);
-      transition: all 0.2s ease;
-
-      &.save-btn {
-        --background: var(--ekokai-primary);
-        --color: var(--color-white);
-
-        &:hover {
-          --background: var(--ekokai-primary-dark);
-          box-shadow: var(--shadow-medium);
-        }
+      gap: 12px;
+      padding: 16px;
+      
+      .page-btn {
+        width: 100%;
+        height: 44px;
+        font-size: 14px;
       }
-
-      &.cancel-btn {
-        --background: var(--color-gray);
-        --color: var(--color-text);
-
-        &:hover {
-          --background: var(--color-border);
-          box-shadow: var(--shadow-medium);
-        }
+      
+      .pagina-info {
+        min-width: auto;
+        font-size: 13px;
       }
     }
   }
-
-  // @media (max-width: 768px) {
-  //   .form-actions {
-  //     flex-direction: column;
-  //     gap: 12px;
-
-  //     ion-button {
-  //       min-width: 100%;
-  //     }
-  //   }
-  // }
 }
 
-  .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 24px;
-    padding-top: 16px;
-    border-top: 1px solid var(--color-border-light);
-  }
-}
-/* ===== Estilos del modal Editar Usuario con diseño eco-form ===== */
-/* ===== Estilos del modal Editar Usuario con diseño eco-form ultracompacto ===== */
-.eco-form-content {
-  height: 100%;
-  min-height: 0;
-  background: var(--color-background);
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  padding: 0;
-}
-
-.eco-form-wrapper {
-  background: var(--color-white);
-  border-radius: 0;
-  box-shadow: none;
-  padding: 12px 16px; /* 👈 más reducido */
-  margin: 0;
-  width: 100%;
-  max-width: 100vw;
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.eco-form-title {
-  font-size: 1.4rem; /* 👈 más pequeño */
-  font-weight: 700;
-  margin-bottom: 4px;
-  color: var(--color-text);
-  text-align: left;
-}
-
-.eco-form-subtitle {
-  color: var(--ekokai-primary);
-  font-size: 0.9rem; /* 👈 más pequeño */
-  margin-bottom: 10px;
-  text-align: left;
-}
-
-.eco-form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 8px; /* 👈 más pequeño */
-}
-
-.eco-form-item {
-  --background: var(--color-gray);
-  --border-radius: var(--border-radius-sm);
-  --padding-start: 8px;  /* 👈 más pequeño */
-  --padding-end: 8px;
-  box-shadow: var(--shadow-light);
-  min-height: 38px; /* 👈 más pequeño */
-  border: 1px solid var(--color-border-light);
-  transition: all 0.2s ease;
-
-  &:focus-within {
-    border-color: var(--ekokai-primary);
-    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
-  }
-
-  ion-label {
-    font-weight: 500;
-    font-size: 0.8rem; /* 👈 más pequeño */
-    color: var(--ekokai-primary);
-  }
-
-  ion-input {
-    font-size: 0.9rem; /* 👈 más pequeño */
-    color: var(--color-text);
-  }
-}
-
-.eco-form-actions {
-  margin-top: 12px; /* 👈 más pequeño */
-  display: flex;
-  flex-direction: row;
-  gap: 8px; /* 👈 más pequeño */
-  justify-content: center;
-  align-items: center;
-
-  ion-button {
-    font-size: 0.85rem; /* 👈 más pequeño */
-    height: 32px; /* 👈 más pequeño */
-    min-height: 32px;
-    --border-radius: var(--border-radius-sm);
-    --padding-start: 0;
-    --padding-end: 0;
-    --box-shadow: var(--shadow-light);
-    min-width: 100px; /* 👈 más pequeño */
-    max-width: 140px;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    transition: all 0.2s ease;
-  }
-
-  .eco-save-btn {
-    --background: var(--ekokai-primary);
-    --color: var(--color-white);
-
-    &:hover {
-      --background: var(--ekokai-primary-dark);
-      --box-shadow: var(--shadow-medium);
+@media (max-width: 480px) {
+  .usuarios-container {
+    padding: 4px;
+    
+    .page-header {
+      padding: 16px;
+      margin-bottom: 16px;
+      
+      .header-content {
+        gap: 12px;
+        
+        .header-icon {
+          width: 45px;
+          height: 45px;
+          
+          ion-icon {
+            font-size: 24px;
+          }
+        }
+        
+        .header-text {
+          h1 {
+            font-size: 20px;
+            margin-bottom: 6px;
+          }
+          
+          p {
+            font-size: 13px;
+          }
+        }
+        
+        .header-stats {
+          gap: 8px;
+          
+          .stat-item {
+            min-width: 60px;
+            padding: 10px 8px;
+            
+            .stat-number {
+              font-size: 18px;
+            }
+            
+            .stat-label {
+              font-size: 10px;
+            }
+          }
+        }
+      }
     }
-  }
 
-  .eco-cancel-btn {
-    --background: var(--color-gray);
-    --color: var(--color-text);
-
-    &:hover {
-      --background: var(--color-border);
-      --box-shadow: var(--shadow-medium);
+    .filters-card {
+      margin-bottom: 16px;
+      
+      .card-header-content {
+        padding: 16px;
+        
+        .header-icon {
+          width: 40px;
+          height: 40px;
+          
+          ion-icon {
+            font-size: 20px;
+          }
+        }
+        
+        .header-text {
+          ion-card-title {
+            font-size: 1.1rem;
+          }
+          
+          ion-card-subtitle {
+            font-size: 0.85rem;
+          }
+        }
+      }
+      
+      .filters-grid {
+        padding: 12px;
+        gap: 12px;
+        
+        .filter-item {
+          ion-label {
+            padding: 12px 12px 6px 12px;
+            font-size: 14px;
+            
+            ion-icon {
+              font-size: 16px;
+            }
+          }
+          
+          .search-input,
+          .role-select,
+          .status-select {
+            --padding-start: 12px;
+            --padding-end: 12px;
+            --padding-top: 6px;
+            --padding-bottom: 12px;
+            font-size: 16px;
+          }
+        }
+      }
     }
-  }
-}
 
-// @media (max-width: 900px) {
-//   .eco-form-wrapper {
-//     padding: 10px 6px;
-//     min-height: 100%;
-//   }
-
-//   .eco-form-actions {
-//     flex-direction: column;
-//     gap: 6px;
-
-//     ion-button {
-//       min-width: 100%;
-//       max-width: none;
-//     }
-//   }
-// }
-.close-btn {
-  --color: var(--color-white); /* color del icono sobre toolbar oscura */
-  font-size: 1.2rem;
-
-  ion-icon {
-    font-size: 1.8rem; /* tamaño de la X */
-  }
-}
-
-
-// @media (max-width: 900px) {
-//   .eco-form-wrapper {
-//     padding: 16px 8px 8px 8px;
-//     min-height: 100%;
-//   }
-
-//   .eco-form-actions {
-//     flex-direction: column;
-//     gap: 8px;
-
-//     ion-button {
-//       min-width: 100%;
-//       max-width: none;
-//     }
-//   }
-// }
-
-
-.eco-form-actions {
-  margin-top: 24px;
-  display: flex;
-  flex-direction: row;
-  gap: 16px;
-  justify-content: center;
-  align-items: center;
-
-  ion-button {
-    font-size: 0.98rem;
-    height: 44px;
-    // min-height: 44px;
-    --border-radius: var(--border-radius-sm);
-    --padding-start: 0;
-    --padding-end: 0;
-    --box-shadow: var(--shadow-light);
-    min-width: 120px;
-    max-width: 180px;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    transition: all 0.2s ease;
-  }
-
-  .eco-save-btn {
-    --background: var(--ekokai-primary);
-    --color: var(--color-white);
-
-    &:hover {
-      --background: var(--ekokai-primary-dark);
-      --box-shadow: var(--shadow-medium);
+    .usuarios-list-card {
+      .card-header-content {
+        padding: 16px;
+        
+        .header-icon {
+          width: 40px;
+          height: 40px;
+          
+          ion-icon {
+            font-size: 20px;
+          }
+        }
+        
+        .header-text {
+          ion-card-title {
+            font-size: 1.1rem;
+          }
+          
+          ion-card-subtitle {
+            font-size: 0.85rem;
+          }
+        }
+      }
+      
+      .usuarios-grid {
+        padding: 12px;
+        gap: 12px;
+        
+        .usuario-card {
+          .usuario-header {
+            padding: 16px;
+            
+            .usuario-info {
+              .usuario-nombre {
+                font-size: 16px;
+                margin-bottom: 6px;
+              }
+              
+              .usuario-email {
+                font-size: 13px;
+                margin-bottom: 12px;
+              }
+            }
+          }
+          
+          .usuario-stats {
+            padding: 12px 16px;
+            
+            .stat-item {
+              padding: 10px 6px;
+              
+              .stat-value {
+                font-size: 15px;
+              }
+              
+              .stat-label {
+                font-size: 10px;
+              }
+            }
+          }
+        }
+      }
     }
-  }
-
-  .eco-cancel-btn {
-    --background: var(--color-gray);
-    --color: var(--color-text);
-
-    &:hover {
-      --background: var(--color-border);
-      --box-shadow: var(--shadow-medium);
+    
+    .paginador {
+      margin-top: 16px;
+      padding: 12px;
+      
+      .page-btn {
+        height: 40px;
+        font-size: 13px;
+      }
     }
   }
 }
-.paginador {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  margin-top: 16px;
 
-  .pagina-info {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--color-text);
+// Mejoras específicas para dispositivos con pantallas muy pequeñas
+@media (max-width: 360px) {
+  .usuarios-container {
+    // Reducir aún más el padding para maximizar el espacio
+    padding: 2px;
+    
+    .page-header {
+      padding: 12px;
+      margin-bottom: 12px;
+      
+      .header-content {
+        gap: 8px;
+        
+        .header-icon {
+          ion-icon {
+            font-size: 28px !important; // Icono más grande para pantallas muy pequeñas
+          }
+        }
+        
+        .header-text {
+          h1 {
+            font-size: 18px;
+            line-height: 1.2;
+          }
+          
+          p {
+            font-size: 12px;
+            line-height: 1.3;
+          }
+        }
+        
+        .header-stats {
+          gap: 6px;
+          
+          .stat-item {
+            min-width: 50px;
+            padding: 6px 4px;
+            
+            .stat-number {
+              font-size: 14px;
+            }
+            
+            .stat-label {
+              font-size: 8px;
+            }
+          }
+        }
+      }
+    }
+    
+    // Optimizar las tarjetas de usuario para pantallas muy pequeñas
+    .usuarios-list-card {
+      .card-header-content {
+        .header-icon {
+          ion-icon {
+            font-size: 24px !important; // Icono más grande para pantallas muy pequeñas
+          }
+        }
+      }
+      
+      .usuarios-grid {
+        padding: 8px;
+        gap: 8px;
+        
+        .usuario-card {
+          .usuario-header {
+            padding: 12px;
+            
+            .usuario-info {
+              .usuario-nombre {
+                font-size: 15px;
+              }
+              
+              .usuario-email {
+                font-size: 12px;
+              }
+              
+              .usuario-badges {
+                gap: 4px;
+                
+                .rol-badge,
+                .status-badge {
+                  font-size: 10px;
+                  padding: 3px 6px;
+                  
+                  ion-icon {
+                    font-size: 14px !important; // Iconos más grandes en badges
+                  }
+                }
+              }
+            }
+            
+            .usuario-actions {
+              gap: 8px;
+              
+              .action-btn {
+                // height: 36px;
+                // width: 36px;
+                
+                ion-icon {
+                  font-size: 20px !important; // Iconos más grandes en botones de acción
+                }
+              }
+            }
+          }
+          
+          .usuario-stats {
+            padding: 8px 12px;
+            
+            .stat-item {
+              padding: 6px 8px;
+              
+              ion-icon {
+                font-size: 18px !important; // Iconos más grandes en estadísticas
+              }
+              
+              .stat-value {
+                font-size: 13px;
+              }
+              
+              .stat-label {
+                font-size: 9px;
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    // Optimizar el paginador para pantallas muy pequeñas
+    .paginador {
+      padding: 8px;
+      margin-top: 12px;
+      
+      .page-btn {
+        height: 36px;
+        font-size: 12px;
+        
+        ion-icon {
+          font-size: 18px !important; // Iconos más grandes en paginador
+        }
+      }
+      
+      .pagina-info {
+        font-size: 11px;
+      }
+    }
   }
+}
 
-  ion-button {
+// Mejoras para dispositivos con orientación landscape en mobile
+@media (max-width: 768px) and (orientation: landscape) {
+  .usuarios-container {
+    .page-header {
+      .header-content {
+        flex-direction: row;
+        text-align: left;
+        
+        .header-stats {
+          justify-content: flex-end;
+        }
+      }
+    }
+    
+    .filters-card {
+      .filters-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    .usuarios-list-card {
+      .usuarios-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      }
+    }
+  }
+}
+
+// Mejoras para dispositivos con notch o pantallas irregulares
+@supports (padding: max(0px)) {
+  .usuarios-container {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    
+    @media (max-width: 768px) {
+      padding-left: max(8px, env(safe-area-inset-left));
+      padding-right: max(8px, env(safe-area-inset-right));
+    }
+    
+    @media (max-width: 480px) {
+      padding-left: max(4px, env(safe-area-inset-left));
+      padding-right: max(4px, env(safe-area-inset-right));
+    }
+  }
+}
+
+// Mejoras adicionales para la experiencia móvil
+@media (max-width: 768px) {
+  // Optimizar el scroll horizontal en las tarjetas de usuario
+  .usuarios-grid {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    
+    // Asegurar que las tarjetas no se corten
+    .usuario-card {
+      min-width: 280px;
+      flex-shrink: 0;
+    }
+  }
+  
+  // Mejorar la experiencia de los filtros en pantallas pequeñas
+  .filters-grid {
+    .filter-item {
+      // Asegurar que los inputs tengan el tamaño correcto para evitar zoom
+      .search-input,
+      .role-select,
+      .status-select {
+        min-height: 44px;
+        line-height: 1.2;
+      }
+      
+      // Mejorar la legibilidad de las etiquetas
+      ion-label {
+        line-height: 1.3;
+        
+        ion-icon {
+          flex-shrink: 0;
+        }
+      }
+    }
+  }
+  
+  // Optimizar el header para pantallas pequeñas
+  .page-header {
+    .header-content {
+      .header-text {
+        h1 {
+          line-height: 1.2;
+          word-wrap: break-word;
+        }
+        
+        p {
+          line-height: 1.4;
+          word-wrap: break-word;
+        }
+      }
+    }
+  }
+  
+  // Mejorar la experiencia de las tarjetas de usuario
+  .usuario-card {
+    // Asegurar que el contenido no se desborde
+    .usuario-header {
+      .usuario-info {
+        .usuario-nombre {
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+        }
+        
+        .usuario-email {
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+        }
+      }
+    }
+    
+    .usuario-stats {
+      .stat-item {
+        // Asegurar que las estadísticas sean legibles
+        .stat-value {
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+        }
+        
+        .stat-label {
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+        }
+      }
+    }
+  }
+}
+
+// Mejoras para dispositivos con pantallas de alta densidad
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .usuarios-container {
+    .usuario-card {
+      .usuario-header {
+        .usuario-avatar {
+          .avatar-initials {
+            // Mejorar la nitidez en pantallas de alta densidad
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Mejoras para dispositivos con modo oscuro
+@media (prefers-color-scheme: dark) {
+  .usuarios-container {
+    .usuario-card {
+      .usuario-stats {
+        .stat-item {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+    }
+  }
+}
+
+// Mejoras para dispositivos con preferencias de movimiento reducido
+@media (prefers-reduced-motion: reduce) {
+  .usuarios-container {
+    .usuario-card,
+    .action-btn,
+    .page-btn,
+    .stat-item {
+      transition: none;
+      transform: none;
+      
+      &:hover,
+      &:active {
+        transform: none;
+      }
+    }
+  }
+} 
+
+// Mejoras para el botón de crear en mobile
+@media (max-width: 768px) {
+  .create-button {
+    --padding-start: 12px;
+    --padding-end: 12px;
+    font-size: 13px;
+    height: 36px;
+    
+    ion-icon {
+      margin-right: 4px;
+      font-size: 16px;
+    }
+    
+    .button-text {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .create-button {
     --padding-start: 8px;
     --padding-end: 8px;
-    --border-radius: 6px;
-  }
-}
-
-
-// @media (max-width: 900px) {
-//   .eco-form-wrapper {
-//     padding: 18px 8px 12px 8px;
-//     min-height: 100vh;
-//   }
-
-//   .eco-form-actions {
-//     flex-direction: column;
-//     gap: 10px;
-
-//     ion-button {
-//       min-width: 100%;
-//       max-width: none;
-//     }
-//   }
-// }
-
-
-// Estilos para los botones de acción
-ion-buttons {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-ion-button {
-  --border-radius: 8px;
-  --padding-start: 12px;
-  --padding-end: 12px;
-  transition: all 0.2s ease;
-  
-  &:hover {
-    transform: translateY(-2px);
-    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-}
-
-.button-text {
-  margin-left: 4px;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-
-// Responsive para botones
-@media (max-width: 700px) {
-  .usuario-item {
-    flex-direction: column;
-    align-items: flex-start;
+    min-width: auto;
     
-    ion-buttons {
-      margin-top: 12px;
-      width: 100%;
-      display: flex;
-      justify-content: flex-start;
-      gap: 6px;
+    ion-icon {
+      margin-right: 0;
+      font-size: 18px;
+    }
+  }
+}
+
+// Estilos para los textos de los botones y filtros
+.button-text {
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.button-text-mobile {
+  display: none;
+  
+  @media (max-width: 768px) {
+    display: inline;
+  }
+  
+  @media (max-width: 480px) {
+    display: none;
+  }
+}
+
+.filter-label-text {
+  @media (max-width: 480px) {
+    font-size: 13px;
+  }
+}
+
+// Mejoras para los modales en mobile
+@media (max-width: 768px) {
+  ion-modal {
+    .modal-content {
+      padding: 16px;
+      
+      .modal-header {
+        margin-bottom: 24px;
+        
+        .modal-icon {
+          width: 50px;
+          height: 50px;
+          
+          ion-icon {
+            font-size: 24px;
+          }
+        }
+        
+        h2 {
+          font-size: 20px;
+        }
+        
+        p {
+          font-size: 14px;
+        }
+      }
+      
+      .form-item {
+        margin-bottom: 20px;
+        
+        ion-label {
+          font-size: 14px;
+          margin-bottom: 6px;
+          
+          ion-icon {
+            font-size: 16px;
+          }
+        }
+        
+        .form-input {
+          --padding-start: 12px;
+          --padding-end: 12px;
+          --padding-top: 10px;
+          --padding-bottom: 10px;
+          font-size: 16px;
+        }
+      }
+    }
+  }
+  
+  .save-btn {
+    height: 40px;
+    font-size: 14px;
+  }
+} 
+
+// Mejoras para tablets
+@media (min-width: 769px) and (max-width: 1024px) {
+  .usuarios-container {
+    padding: 12px;
+    
+    .page-header {
+      padding: 22px;
+      
+      .header-content {
+        gap: 20px;
+        
+        .header-stats {
+          gap: 16px;
+          
+          .stat-item {
+            min-width: 75px;
+            padding: 14px;
+          }
+        }
+      }
     }
     
-    ion-button {
-      --padding-start: 8px;
-      --padding-end: 8px;
+    .filters-card {
+      .filters-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+        padding: 18px;
+      }
+    }
+    
+    .usuarios-list-card {
+      .usuarios-grid {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 18px;
+        padding: 18px;
+      }
+    }
+  }
+}
+
+// Mejoras para pantallas grandes
+@media (min-width: 1025px) {
+  .usuarios-container {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+    
+    .page-header {
+      padding: 28px;
       
-      .button-text {
-        display: none; // Ocultar texto en móvil para ahorrar espacio
+      .header-content {
+        gap: 28px;
+        
+        .header-stats {
+          gap: 24px;
+          
+          .stat-item {
+            min-width: 90px;
+            padding: 18px;
+            
+            .stat-number {
+              font-size: 28px;
+            }
+            
+            .stat-label {
+              font-size: 13px;
+            }
+          }
+        }
+      }
+    }
+    
+    .filters-card {
+      .filters-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        padding: 24px;
+      }
+    }
+    
+    .usuarios-list-card {
+      .usuarios-grid {
+        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        gap: 24px;
+        padding: 24px;
+      }
+    }
+  }
+}
+
+// Mejoras para la experiencia móvil
+@media (max-width: 768px) {
+  // Mejorar el scroll y la navegación táctil
+  .usuarios-container {
+    -webkit-overflow-scrolling: touch;
+    
+    // Optimizar el espaciado para dispositivos táctiles
+    .page-header,
+    .filters-card,
+    .usuarios-list-card {
+      margin-bottom: 16px;
+    }
+    
+    // Mejorar la accesibilidad táctil
+    .usuario-card {
+      cursor: pointer;
+      
+      &:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease;
+      }
+    }
+    
+    // Optimizar los inputs para evitar zoom en iOS
+    .search-input,
+    .role-select,
+    .status-select {
+      font-size: 16px !important;
+      -webkit-appearance: none;
+      border-radius: 8px;
+    }
+    
+    // Mejorar la experiencia de los botones táctiles
+    .action-btn {
+      min-height: 44px;
+      min-width: 44px;
+      
+      &:active {
+        transform: scale(0.95);
+        transition: transform 0.1s ease;
+      }
+    }
+  }
+  
+  // Optimizar el header para pantallas pequeñas
+  .page-header {
+    .header-content {
+      .header-icon {
+        ion-icon {
+          font-size: 32px !important; // Aumentar icono del header
+        }
+      }
+      
+      .header-stats {
+        .stat-item {
+          cursor: pointer;
+          
+          &:active {
+            transform: scale(0.95);
+            transition: transform 0.1s ease;
+          }
+        }
+      }
+    }
+  }
+  
+  // Mejorar la experiencia de los filtros en mobile
+  .filters-card {
+    .card-header-content {
+      .header-icon {
+        ion-icon {
+          font-size: 28px !important; // Aumentar icono de filtros
+        }
+      }
+    }
+    
+    .filters-grid {
+      .filter-item {
+        ion-label {
+          ion-icon {
+            font-size: 22px !important; // Aumentar iconos de etiquetas de filtros
+          }
+        }
+        
+        .clear-filters-btn {
+          min-height: 44px;
+          
+          ion-icon {
+            font-size: 20px !important; // Aumentar icono del botón limpiar
+          }
+          
+          &:active {
+            transform: scale(0.95);
+            transition: transform 0.1s ease;
+          }
+        }
+      }
+    }
+  }
+  
+  // Optimizar el paginador para mobile
+  .paginador {
+    .page-btn {
+      min-height: 44px;
+      
+      ion-icon {
+        font-size: 20px !important; // Aumentar iconos del paginador
+      }
+      
+      &:active {
+        transform: scale(0.95);
+        transition: transform 0.1s ease;
+      }
+    }
+  }
+  
+  // Aumentar iconos en las tarjetas de usuario
+  .usuarios-list-card {
+    .card-header-content {
+      .header-icon {
+        ion-icon {
+          font-size: 28px !important; // Aumentar icono del header de la lista
+        }
+      }
+    }
+    
+    .usuarios-grid {
+      .usuario-card {
+        .usuario-header {
+          .usuario-badges {
+            .rol-badge,
+            .status-badge {
+              ion-icon {
+                font-size: 16px !important; // Aumentar iconos de badges
+              }
+            }
+          }
+          
+          .usuario-actions {
+            .action-btn {
+              ion-icon {
+                font-size: 22px !important; // Aumentar iconos de botones de acción
+              }
+            }
+          }
+        }
+        
+        .usuario-stats {
+          .stat-item {
+            ion-icon {
+              font-size: 20px !important; // Aumentar iconos de estadísticas
+            }
+          }
+        }
       }
     }
   }

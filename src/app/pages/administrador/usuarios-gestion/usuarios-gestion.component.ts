@@ -454,4 +454,49 @@ paginaAnterior() {
     return role === 'destructive';
   }
 
+  // Métodos para estadísticas y utilidades
+  getUsuariosActivos(): number {
+    return this.usuarios.filter(u => u.activo).length;
+  }
+
+  getTotalKilos(): number {
+    return this.usuarios.reduce((total, usuario) => total + (usuario.kilosTotal || 0), 0);
+  }
+
+  getTotalTokens(): number {
+    return this.usuarios.reduce((total, usuario) => total + (usuario.tokens || 0), 0);
+  }
+
+  getAvatarClass(rol: string): string {
+    switch (rol) {
+      case 'administrador':
+        return 'avatar-administrador';
+      case 'encargado':
+        return 'avatar-encargado';
+      case 'vecino':
+        return 'avatar-vecino';
+      default:
+        return 'avatar-default';
+    }
+  }
+
+  getIniciales(nombre: string, apellido: string): string {
+    const inicialNombre = nombre ? nombre.charAt(0).toUpperCase() : '';
+    const inicialApellido = apellido ? apellido.charAt(0).toUpperCase() : '';
+    return inicialNombre + inicialApellido;
+  }
+
+  getRolBadgeClass(rol: string): string {
+    switch (rol) {
+      case 'administrador':
+        return 'rol-admin';
+      case 'encargado':
+        return 'rol-encargado';
+      case 'vecino':
+        return 'rol-vecino';
+      default:
+        return 'rol-default';
+    }
+  }
+
 }

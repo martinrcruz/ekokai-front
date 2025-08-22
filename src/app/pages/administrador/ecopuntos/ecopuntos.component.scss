@@ -3,65 +3,730 @@
   background: var(--color-background);
   min-height: 100vh;
 
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-    margin-bottom: 32px;
+  // Header de la página
+  .page-header {
+    background: linear-gradient(135deg, var(--ekokai-primary), var(--ekokai-primary-dark));
+    border-radius: var(--border-radius-lg);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-medium);
 
-    .stat-card {
-      border-radius: var(--border-radius-lg);
-      box-shadow: var(--shadow-medium);
-      border: none;
-      transition: transform 0.2s, box-shadow 0.2s;
-      background: var(--color-white);
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 24px;
 
-      &:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: var(--shadow-large);
-      }
-
-      ion-card-content {
+      .header-icon {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
         display: flex;
         align-items: center;
+        justify-content: center;
+
+        ion-icon {
+          font-size: 32px;
+          color: white;
+        }
+      }
+
+      .header-text {
+        flex: 1;
+        color: white;
+
+        h1 {
+          margin: 0 0 8px 0;
+          font-size: 28px;
+          font-weight: 700;
+        }
+
+        p {
+          margin: 0;
+          font-size: 16px;
+          opacity: 0.9;
+        }
+      }
+
+      .header-stats {
+        display: flex;
         gap: 20px;
-        padding: 28px 24px;
 
-        .stat-icon {
-          width: 56px;
-          height: 56px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-          background: var(--ekokai-primary);
+        .stat-item {
+          text-align: center;
+          background: rgba(255, 255, 255, 0.15);
+          border-radius: var(--border-radius-md);
+          padding: 16px;
+          min-width: 80px;
 
-          &.bg-success { background: var(--color-success); }
-          &.bg-warning { background: var(--color-warning); }
-          &.bg-info { background: var(--color-info); }
+          .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 4px;
+          }
 
-          ion-icon {
-            font-size: 2rem;
-            color: var(--color-white);
+          .stat-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+        }
+      }
+    }
+  }
+
+  // Card de filtros
+  .filters-card {
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--color-border-light);
+    margin-bottom: 20px;
+    overflow: hidden;
+
+    .filters-header {
+      background: linear-gradient(135deg, var(--color-info), #2980b9);
+      color: white;
+      padding: 20px;
+
+      ion-card-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0;
+
+        ion-icon {
+          font-size: 24px;
+        }
+      }
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      padding: 20px;
+
+      .filter-item {
+        --padding-start: 0;
+        --padding-end: 0;
+        --inner-padding-end: 0;
+        border-radius: var(--border-radius-md);
+        border: 2px solid var(--color-border-light);
+        background: var(--color-white);
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: var(--ekokai-primary);
+          box-shadow: var(--shadow-light);
+        }
+
+        &:focus-within {
+          border-color: var(--ekokai-primary);
+          box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .filter-icon {
+          color: var(--ekokai-primary);
+          font-size: 20px;
+          margin-right: 12px;
+        }
+
+        .filter-input,
+        .filter-select {
+          --padding-start: 16px;
+          --padding-end: 16px;
+          --padding-top: 12px;
+          --padding-bottom: 12px;
+          border-radius: var(--border-radius-sm);
+          background: var(--color-gray-light);
+          border: 1px solid var(--color-border);
+          font-size: 16px;
+          transition: all 0.2s ease;
+
+          &:focus {
+            background: white;
+            border-color: var(--ekokai-primary);
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+          }
+        }
+      }
+
+      .clear-filters-btn {
+        --color: var(--color-text-muted);
+        --background: var(--color-gray-light);
+        --border-radius: var(--border-radius-md);
+        height: 48px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+
+        &:hover {
+          --background: var(--color-gray);
+          --color: var(--color-text);
+        }
+
+        ion-icon {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+
+  // Card de lista de ecopuntos
+  .ecopuntos-list-card {
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--color-border-light);
+    overflow: hidden;
+
+    .list-header {
+      background: linear-gradient(135deg, var(--ekokai-secondary), #1b5e20);
+      color: white;
+      padding: 20px;
+
+      ion-card-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin: 0 0 8px 0;
+
+        ion-icon {
+          font-size: 24px;
+        }
+      }
+
+      ion-card-subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.95rem;
+        margin: 0;
+      }
+    }
+
+    .ecopuntos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      padding: 20px;
+
+      .ecopunto-card {
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-light);
+        border: 1px solid var(--color-border-light);
+        transition: all 0.3s ease;
+        overflow: hidden;
+
+        &:hover {
+          box-shadow: var(--shadow-medium);
+          transform: translateY(-2px);
+        }
+
+        .ecopunto-header {
+          background: var(--color-gray-light);
+          border-bottom: 1px solid var(--color-border-light);
+          padding: 16px;
+
+          .ecopunto-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+
+            .ecopunto-icon {
+              color: var(--ekokai-primary);
+              font-size: 24px;
+            }
+
+            h3 {
+              margin: 0;
+              font-size: 1.2rem;
+              font-weight: 600;
+              color: var(--color-text);
+            }
+          }
+
+          .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: var(--border-radius-sm);
+
+            ion-icon {
+              font-size: 14px;
+            }
           }
         }
 
-        .stat-info {
-          flex: 1;
+        .ecopunto-content {
+          padding: 20px;
 
-          h3 {
-            font-size: 2.1rem;
-            font-weight: 800;
-            color: var(--color-text);
-            margin: 0 0 2px 0;
-            letter-spacing: -1px;
+          .ecopunto-info {
+            margin-bottom: 20px;
+
+            .info-item {
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              margin-bottom: 12px;
+              padding: 8px 0;
+
+              ion-icon {
+                color: var(--ekokai-primary);
+                font-size: 18px;
+                min-width: 20px;
+              }
+
+              span {
+                color: var(--color-text);
+                font-size: 14px;
+              }
+            }
           }
 
-          p {
-            font-size: 1.05rem;
-            color: var(--color-text-light);
-            margin: 0;
+          .ecopunto-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+
+            .stat-card {
+              background: var(--color-gray-light);
+              border-radius: var(--border-radius-md);
+              padding: 16px;
+              text-align: center;
+              border: 1px solid var(--color-border-light);
+
+              .stat-icon {
+                background: var(--ekokai-primary);
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 12px;
+
+                ion-icon {
+                  color: white;
+                  font-size: 20px;
+                }
+              }
+
+              .stat-content {
+                .stat-value {
+                  font-size: 18px;
+                  font-weight: 700;
+                  color: var(--color-text);
+                  margin-bottom: 4px;
+                }
+
+                .stat-label {
+                  font-size: 12px;
+                  color: var(--color-text-light);
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+                }
+              }
+            }
+          }
+
+          .encargado-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--color-success);
+            color: white;
+            padding: 12px 16px;
+            border-radius: var(--border-radius-md);
+            margin-bottom: 20px;
+
+            .encargado-icon {
+              font-size: 20px;
+            }
+
+            .encargado-details {
+              display: flex;
+              flex-direction: column;
+              gap: 2px;
+
+              .encargado-name {
+                font-weight: 600;
+                font-size: 14px;
+              }
+
+              .encargado-email {
+                font-size: 12px;
+                opacity: 0.9;
+              }
+            }
+          }
+
+          .ecopunto-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+
+            .action-btn {
+              --border-radius: var(--border-radius-sm);
+              height: 40px;
+              font-size: 12px;
+              font-weight: 600;
+              transition: all 0.2s ease;
+
+              ion-icon {
+                margin-right: 6px;
+                font-size: 16px;
+              }
+
+              &.enrolar {
+                --color: var(--color-success);
+
+                &:hover {
+                  --background: var(--color-success);
+                  --color: white;
+                }
+              }
+
+              &.stats {
+                --color: var(--color-info);
+
+                &:hover {
+                  --background: var(--color-info);
+                  --color: white;
+                }
+              }
+
+              &.metas {
+                --color: var(--color-warning);
+
+                &:hover {
+                  --background: var(--color-warning);
+                  --color: white;
+                }
+              }
+
+              &.edit {
+                --color: var(--ekokai-primary);
+
+                &:hover {
+                  --background: var(--ekokai-primary);
+                  --color: white;
+                }
+              }
+
+              &.delete {
+                --color: var(--color-danger);
+
+                &:hover {
+                  --background: var(--color-danger);
+                  --color: white;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Botón de crear en el toolbar
+.create-button {
+  --background: var(--ekokai-primary);
+  --color: white;
+  --border-radius: var(--border-radius-sm);
+  --padding-start: 16px;
+  --padding-end: 16px;
+  font-weight: 600;
+
+  ion-icon {
+    margin-right: 6px;
+  }
+
+  .button-text {
+    display: inline;
+  }
+}
+
+// Estilos para badges y botones
+.status-badge {
+  .badge-text {
+    display: inline;
+  }
+}
+
+.action-btn {
+  .button-text {
+    display: inline;
+  }
+}
+
+.clear-filters-btn {
+  .button-text {
+    display: inline;
+  }
+}
+
+// Estilos para modales
+.form-section {
+  margin-bottom: 24px;
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 16px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--color-border-light);
+
+    ion-icon {
+      color: var(--ekokai-primary);
+      font-size: 20px;
+    }
+  }
+}
+
+.form-item {
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-end: 0;
+  margin-bottom: 16px;
+  border-radius: var(--border-radius-md);
+  border: 2px solid var(--color-border-light);
+  transition: all 0.2s ease;
+  background: var(--color-white);
+
+  &:hover {
+    border-color: var(--ekokai-primary);
+    box-shadow: var(--shadow-light);
+  }
+
+  &:focus-within {
+    border-color: var(--ekokai-primary);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+  }
+
+  ion-label {
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    ion-icon {
+      color: var(--ekokai-primary);
+      font-size: 18px;
+    }
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    border-radius: var(--border-radius-sm);
+    background: var(--color-gray-light);
+    border: 1px solid var(--color-border);
+    font-size: 16px;
+    transition: all 0.2s ease;
+
+    &:focus {
+      background: white;
+      border-color: var(--ekokai-primary);
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+    }
+  }
+}
+
+.toggle-item {
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-end: 0;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-border-light);
+  background: var(--color-white);
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--ekokai-primary);
+    box-shadow: var(--shadow-light);
+  }
+
+  ion-label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: var(--color-text);
+
+      ion-icon {
+        color: var(--ekokai-primary);
+        font-size: 18px;
+      }
+
+      span {
+        font-size: 16px;
+      }
+    }
+
+    p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--color-text-light);
+      line-height: 1.4;
+    }
+  }
+
+  .custom-toggle {
+    --background: var(--color-gray);
+    --background-checked: var(--ekokai-primary);
+    --handle-background: var(--color-white);
+    --handle-background-checked: var(--color-white);
+    --handle-width: 20px;
+    --handle-height: 20px;
+    --width: 44px;
+    --height: 24px;
+  }
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border-light);
+
+  .cancel-btn {
+    --border-color: var(--color-text-muted);
+    --color: var(--color-text-muted);
+    font-weight: 600;
+
+    ion-icon {
+      margin-right: 6px;
+    }
+  }
+
+  .save-btn {
+    --background: var(--ekokai-primary);
+    --color: white;
+    font-weight: 600;
+
+    ion-icon {
+      margin-right: 6px;
+    }
+  }
+
+  .enrolar-btn {
+    --background: var(--color-success);
+    --color: white;
+    font-weight: 600;
+
+    ion-icon {
+      margin-right: 6px;
+    }
+  }
+
+  .delete-btn {
+    --background: var(--color-danger);
+    --color: white;
+    font-weight: 600;
+
+    ion-icon {
+      margin-right: 6px;
+    }
+  }
+}
+
+// Estilos para cards de resumen
+.ecopunto-summary {
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--color-border-light);
+  margin-bottom: 20px;
+
+  ion-card-header {
+    padding-bottom: 8px;
+
+    ion-card-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      i {
+        color: #ffd700;
+        font-size: 1.2rem;
+      }
+    }
+
+    ion-card-subtitle {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1rem;
+      margin-top: 4px;
+    }
+  }
+
+  // Estilos para detalles
+  .detail-card {
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--color-border-light);
+
+    .detail-grid {
+      display: grid;
+      gap: 16px;
+
+      .detail-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px;
+        background: var(--color-gray-light);
+        border-radius: var(--border-radius-sm);
+
+        ion-icon {
+          color: var(--ekokai-primary);
+          font-size: 20px;
+          margin-top: 2px;
+        }
+
+        .detail-content {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+
+          .detail-label {
+            font-size: 12px;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+          }
+
+          .detail-value {
+            font-size: 14px;
+            color: var(--color-text);
             font-weight: 500;
           }
         }
@@ -69,165 +734,329 @@
     }
   }
 
-  .filters-bar {
-    margin-bottom: 24px;
-    box-shadow: var(--shadow-light);
+  // Estilos para metas
+  .meta-header-card {
     border-radius: var(--border-radius-md);
-    padding: 12px 20px;
-    background: var(--color-white);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--color-border-light);
+    margin-bottom: 20px;
 
-    .filters-flex {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      width: 100%;
-      align-items: center;
-      justify-content: flex-start;
-    }
+    ion-card-header {
+      background: linear-gradient(135deg, var(--color-warning), #f39c12);
+      color: white;
 
-    .filter-item {
-      // flex: 1 1 180px;
-      min-width: 180px;
-      max-width: 260px;
-      background: var(--color-gray-light);
-      border-radius: 8px;
-      margin: 0;
-      --background: var(--color-gray-light);
-      --padding-start: 8px;
-      --padding-end: 8px;
-      --inner-padding-end: 0;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      ion-icon {
-        font-size: 1.2rem;
-        color: var(--ekokai-primary);
-        margin-right: 8px;
-      }
-      ion-input, ion-select {
-        font-size: 1rem;
-        background: transparent;
-        border: none;
-        box-shadow: none;
-        width: 100%;
-        min-width: 0;
-      }
-    }
-
-    .clear-filters-btn {
-      margin-left: 8px;
-      color: var(--color-danger);
-      font-weight: 500;
-      --background: transparent;
-      --color: var(--color-danger);
-      ion-icon {
-        margin-right: 4px;
-      }
-    }
-  }
-
-  .charts-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-    gap: 32px;
-    margin-bottom: 32px;
-
-    .chart-card {
-      border-radius: var(--border-radius-lg);
-      box-shadow: var(--shadow-light);
-      border: none;
-      background: var(--color-white);
-      padding-bottom: 8px;
-
-      canvas {
-        max-height: 320px;
-      }
-    }
-  }
-
-  ion-list {
-    .usuario-item {
-      --padding-start: 16px;
-      --padding-end: 16px;
-      --inner-padding-end: 0;
-      margin-bottom: 10px;
-      border-radius: var(--border-radius-md);
-      border: 1px solid var(--color-border-light);
-      transition: all 0.2s;
-      align-items: flex-start;
-      background: var(--color-white);
-
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-medium);
-      }
-
-      ion-avatar {
-        width: 44px;
-        height: 44px;
-        background: var(--ekokai-primary);
+      ion-card-title {
         display: flex;
+        color: white;
         align-items: center;
-        justify-content: center;
+        gap: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
 
         ion-icon {
-          font-size: 24px;
-          color: var(--color-white);
+          font-size: 20px;
+        }
+      }
+    }
+  }
+
+  .meta-card {
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--color-border-light);
+    margin-bottom: 20px;
+
+    ion-card-header {
+      background: var(--color-gray-light);
+      border-bottom: 1px solid var(--color-border-light);
+      color: white;
+
+      ion-card-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+
+        ion-icon {
+          color: var(--color-warning);
+          font-size: 20px;
+        }
+      }
+    }
+
+    .meta-progress {
+      .meta-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+
+        .meta-stat {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+
+          .meta-label {
+            font-size: 12px;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+          }
+
+          .meta-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--color-text);
+          }
         }
       }
 
-      ion-label {
-        h3 {
-          font-size: 1.15rem;
-          font-weight: 700;
+      .progress-bar {
+        margin-bottom: 8px;
+      }
+
+      .progress-text {
+        text-align: center;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--ekokai-primary);
+      }
+    }
+  }
+
+  // Estilos para gráficos
+  .chart-card {
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--color-border-light);
+    margin-bottom: 20px;
+
+    ion-card-header {
+      background: var(--color-gray-light);
+      border-bottom: 1px solid var(--color-border-light);
+
+      ion-card-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+
+        ion-icon {
+          color: var(--color-info);
+          font-size: 20px;
+        }
+      }
+    }
+
+    .chart-container {
+      height: 300px;
+      position: relative;
+    }
+  }
+
+  // Estilos para entregas
+  .entregas-card {
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--color-border-light);
+    margin-bottom: 20px;
+
+    ion-card-header {
+      background: var(--color-gray-light);
+      border-bottom: 1px solid var(--color-border-light);
+
+      ion-card-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+
+        ion-icon {
+          color: var(--ekokai-primary);
+          font-size: 20px;
+        }
+      }
+    }
+
+    .entregas-list {
+      .entrega-item {
+        --padding-start: 0;
+        --padding-end: 0;
+        --inner-padding-end: 0;
+        border-radius: var(--border-radius-sm);
+        margin-bottom: 8px;
+        border: 1px solid var(--color-border-light);
+
+        .entrega-icon {
+          color: var(--ekokai-primary);
+          font-size: 20px;
+        }
+
+        .entrega-nombre {
+          font-size: 14px;
+          font-weight: 600;
           color: var(--color-text);
-          margin-bottom: 2px;
+          margin: 0 0 4px 0;
         }
 
-        p {
-          font-size: 1rem;
+        .entrega-details {
+          font-size: 12px;
           color: var(--color-text-light);
-          margin-bottom: 8px;
+          margin: 0;
+        }
+      }
+    }
+
+    .no-entregas {
+      text-align: center;
+      color: var(--color-text-muted);
+      font-style: italic;
+      margin: 20px 0;
+    }
+  }
+
+  // Estilos para loading
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    text-align: center;
+
+    .loading-spinner {
+      margin-bottom: 16px;
+    }
+
+    .loading-text {
+      color: var(--color-text-muted);
+      font-size: 14px;
+      margin: 0;
+    }
+  }
+}
+
+// ===== RESPONSIVE DESIGN =====
+
+// Tablet y mobile grande
+@media (max-width: 768px) {
+  .ecopuntos-container {
+    padding: 12px;
+
+    .page-header {
+      padding: 20px;
+      margin-bottom: 20px;
+
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+
+        .header-icon {
+          width: 50px;
+          height: 50px;
+
+          ion-icon {
+            font-size: 28px;
+          }
         }
 
-        .usuario-stats {
-          display: flex;
-          gap: 10px;
-          flex-wrap: wrap;
+        .header-text {
+          h1 {
+            font-size: 24px;
+          }
 
-          .stat {
-            font-size: 0.85rem;
-            color: var(--color-text-muted);
-            background: var(--color-gray);
-            padding: 4px 10px;
-            border-radius: 14px;
-            font-weight: 600;
+          p {
+            font-size: 14px;
+          }
+        }
 
-            &.active {
-              background: var(--color-success);
-              color: var(--color-white);
+        .header-stats {
+          justify-content: center;
+          gap: 16px;
+
+          .stat-item {
+            min-width: 70px;
+            padding: 12px;
+
+            .stat-number {
+              font-size: 20px;
             }
 
-            &.inactive {
-              background: var(--color-danger);
-              color: var(--color-white);
+            .stat-label {
+              font-size: 11px;
+            }
+          }
+        }
+      }
+    }
+
+    .filters-card {
+      .filters-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 16px;
+      }
+    }
+
+    .ecopuntos-list-card {
+      .ecopuntos-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 16px;
+
+        .ecopunto-card {
+          .ecopunto-content {
+            padding: 16px;
+
+            .ecopunto-stats {
+              grid-template-columns: repeat(3, 1fr);
+              gap: 12px;
+
+              .stat-card {
+                padding: 12px;
+
+                .stat-icon {
+                  // width: 36px;
+                  // height: 36px;
+
+                  ion-icon {
+                    font-size: 18px;
+                  }
+                }
+
+                .stat-content {
+                  .stat-value {
+                    font-size: 16px;
+                  }
+
+                  .stat-label {
+                    font-size: 11px;
+                  }
+                }
+              }
             }
 
-            // Rol chip
-            &.rol-admin {
-              background: #388e3c;
-              color: #fff;
-            }
-            &.rol-encargado {
-              background: #ff9800;
-              color: #fff;
-            }
-            &.rol-vecino {
-              background: #1976d2;
-              color: #fff;
+            .ecopunto-actions {
+              grid-template-columns: repeat(2, 1fr);
+              gap: 8px;
+
+              .action-btn {
+                height: 44px;
+                font-size: 13px;
+
+                ion-icon {
+                  font-size: 18px;
+                }
+              }
             }
           }
         }
@@ -235,714 +1064,528 @@
     }
   }
 
-  .truncate {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 180px;
-    display: inline-block;
-    vertical-align: bottom;
-  }
-
-  .modal-actions {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-    margin-top: 24px;
-    padding-top: 16px;
-    border-top: 1px solid var(--color-border-light);
-  }
-
-  @media (max-width: 900px) {
-    .stats-grid, .charts-section {
-      grid-template-columns: 1fr;
-    }
-    .charts-section .chart-card {
-      padding-bottom: 0;
-    }
-    ion-list .usuario-item ion-label .usuario-stats {
-      flex-direction: column;
-      gap: 4px;
-    }
-  }
-}
-
-// Responsive
-@media (max-width: 768px) {
-  .ecopuntos-container {
-    padding: 8px;
-
-    .stats-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .filters-bar .filters-flex {
-      flex-direction: column;
-      gap: 10px;
-      align-items: stretch;
-    }
-
-    .filters-bar .filter-item {
-      min-width: 120px;
-      max-width: 100%;
-    }
-
-    .truncate {
-      max-width: 100px;
-    }
-
-    .charts-section {
-      grid-template-columns: 1fr;
-    }
-  }
-}
-
-.usuario-item.zebra {
-  background: #f7f9fa;
-}
-.usuario-item ion-avatar {
-  background: var(--color-gray-light);
-  color: var(--color-text);
-  font-weight: 700;
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.avatar-iniciales {
-  color: var(--color-white);
-  font-weight: 700;
-  font-size: 1.1rem;
-  letter-spacing: 1px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-.avatar-administrador {
-  background: #388e3c !important;
-}
-.avatar-encargado {
-  background: #ff9800 !important;
-}
-.avatar-vecino {
-  background: #1976d2 !important;
-}
-.avatar-default {
-  background: var(--ekokai-primary) !important;
-}
-.usuario-item ion-buttons ion-button {
-  transition: background 0.15s;
-  border-radius: 8px;
-}
-.usuario-item ion-buttons ion-button:hover {
-  background: var(--color-gray-light);
-}
-/* ===== Estilos para el formulario de editar usuario ===== */
-.edit-user-modal {
-  h2.section-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-top: 20px;
-    margin-bottom: 10px;
-    color: var(--color-text);
-  }
-
-  .form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    margin-bottom: 20px;
-
-    ion-item {
-      --inner-padding-end: 0;
-      border-radius: 8px;
-      background: var(--color-gray-light);
-      --background: var(--color-gray-light);
-    }
-  }
-.edit-user-modal {
-  h2.section-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-top: 20px;
-    margin-bottom: 10px;
-    color: var(--color-text);
-  }
-
-  .form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    margin-bottom: 20px;
-
-    ion-item {
-      --inner-padding-end: 0;
-      border-radius: 8px;
-      background: var(--color-gray-light);
-      --background: var(--color-gray-light);
-    }
-  }
-
-  .form-actions {
-    display: flex;
-    gap: 16px;
-    margin-top: 32px;
-
-    &.centered {
-      justify-content: center; /* 👈 centramos horizontalmente */
-    }
-
-    ion-button {
-      min-width: 140px;
-      height: 48px;
-      font-weight: 600;
-      border-radius: var(--border-radius-sm);
-      box-shadow: var(--shadow-light);
-      transition: all 0.2s ease;
-
-      &.save-btn {
-        --background: var(--ekokai-primary);
-        --color: var(--color-white);
-
-        &:hover {
-          --background: var(--ekokai-primary-dark);
-          box-shadow: var(--shadow-medium);
-        }
-      }
-
-      &.cancel-btn {
-        --background: var(--color-gray);
-        --color: var(--color-text);
-
-        &:hover {
-          --background: var(--color-border);
-          box-shadow: var(--shadow-medium);
-        }
-      }
-    }
-  }
-
-  @media (max-width: 768px) {
-    .form-actions {
-      flex-direction: column;
-      gap: 12px;
-
-      ion-button {
-        min-width: 100%;
-      }
-    }
-  }
-}
-
-  .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 24px;
-    padding-top: 16px;
-    border-top: 1px solid var(--color-border-light);
-  }
-}
-/* ===== Estilos del modal Editar Usuario con diseño eco-form ===== */
-/* ===== Estilos del modal Editar Usuario con diseño eco-form ultracompacto ===== */
-.eco-form-content {
-  height: 100%;
-  min-height: 0;
-  background: var(--color-background);
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  padding: 0;
-}
-
-.eco-form-wrapper {
-  background: var(--color-white);
-  border-radius: 0;
-  box-shadow: none;
-  padding: 12px 16px; /* 👈 más reducido */
-  margin: 0;
-  width: 100%;
-  max-width: 100vw;
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.eco-form-title {
-  font-size: 1.4rem; /* 👈 más pequeño */
-  font-weight: 700;
-  margin-bottom: 4px;
-  color: var(--color-text);
-  text-align: left;
-}
-
-.eco-form-subtitle {
-  color: var(--ekokai-primary);
-  font-size: 0.9rem; /* 👈 más pequeño */
-  margin-bottom: 10px;
-  text-align: left;
-}
-
-.eco-form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 8px; /* 👈 más pequeño */
-}
-
-.eco-form-item {
-  --background: var(--color-gray);
-  --border-radius: var(--border-radius-sm);
-  --padding-start: 8px;  /* 👈 más pequeño */
-  --padding-end: 8px;
-  box-shadow: var(--shadow-light);
-  min-height: 38px; /* 👈 más pequeño */
-  border: 1px solid var(--color-border-light);
-  transition: all 0.2s ease;
-
-  &:focus-within {
-    border-color: var(--ekokai-primary);
-    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
-  }
-
-  ion-label {
-    font-weight: 500;
-    font-size: 0.8rem; /* 👈 más pequeño */
-    color: var(--ekokai-primary);
-  }
-
-  ion-input {
-    font-size: 0.9rem; /* 👈 más pequeño */
-    color: var(--color-text);
-  }
-}
-
-.eco-form-actions {
-  margin-top: 12px; /* 👈 más pequeño */
-  display: flex;
-  flex-direction: row;
-  gap: 8px; /* 👈 más pequeño */
-  justify-content: center;
-  align-items: center;
-
-  ion-button {
-    font-size: 0.85rem; /* 👈 más pequeño */
-    height: 32px; /* 👈 más pequeño */
-    min-height: 32px;
-    --border-radius: var(--border-radius-sm);
-    --padding-start: 0;
-    --padding-end: 0;
-    --box-shadow: var(--shadow-light);
-    min-width: 100px; /* 👈 más pequeño */
-    max-width: 140px;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    transition: all 0.2s ease;
-  }
-
-  .eco-save-btn {
-    --background: var(--ekokai-primary);
-    --color: var(--color-white);
-
-    &:hover {
-      --background: var(--ekokai-primary-dark);
-      --box-shadow: var(--shadow-medium);
-    }
-  }
-
-  .eco-cancel-btn {
-    --background: var(--color-gray);
-    --color: var(--color-text);
-
-    &:hover {
-      --background: var(--color-border);
-      --box-shadow: var(--shadow-medium);
-    }
-  }
-}
-
-@media (max-width: 900px) {
-  .eco-form-wrapper {
-    padding: 10px 6px;
-    min-height: 100%;
-  }
-
-  .eco-form-actions {
-    flex-direction: column;
-    gap: 6px;
-
-    ion-button {
-      min-width: 100%;
-      max-width: none;
-    }
-  }
-}
-.close-btn {
-  --color: var(--color-white); /* color del icono sobre toolbar oscura */
-  font-size: 1.2rem;
-
-  ion-icon {
-    font-size: 1.8rem; /* tamaño de la X */
-  }
-}
-
-
-@media (max-width: 900px) {
-  .eco-form-wrapper {
-    padding: 16px 8px 8px 8px;
-    min-height: 100%;
-  }
-
-  .eco-form-actions {
-    flex-direction: column;
-    gap: 8px;
-
-    ion-button {
-      min-width: 100%;
-      max-width: none;
-    }
-  }
-}
-
-
-.eco-form-actions {
-  margin-top: 24px;
-  display: flex;
-  flex-direction: row;
-  gap: 16px;
-  justify-content: center;
-  align-items: center;
-
-  ion-button {
-    font-size: 0.98rem;
-    height: 44px;
-    // min-height: 44px;
-    --border-radius: var(--border-radius-sm);
-    --padding-start: 0;
-    --padding-end: 0;
-    --box-shadow: var(--shadow-light);
-    min-width: 120px;
-    max-width: 180px;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    transition: all 0.2s ease;
-  }
-
-  .eco-save-btn {
-    --background: var(--ekokai-primary);
-    --color: var(--color-white);
-
-    &:hover {
-      --background: var(--ekokai-primary-dark);
-      --box-shadow: var(--shadow-medium);
-    }
-  }
-
-  .eco-cancel-btn {
-    --background: var(--color-gray);
-    --color: var(--color-text);
-
-    &:hover {
-      --background: var(--color-border);
-      --box-shadow: var(--shadow-medium);
-    }
-  }
-}
-.paginador {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  margin-top: 16px;
-
-  .pagina-info {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--color-text);
-  }
-
-  ion-button {
-    --padding-start: 8px;
-    --padding-end: 8px;
-    --border-radius: 6px;
-  }
-}
-
-
-@media (max-width: 900px) {
-  .eco-form-wrapper {
-    padding: 18px 8px 12px 8px;
-    min-height: 100vh;
-  }
-
-  .eco-form-actions {
-    flex-direction: column;
-    gap: 10px;
-
-    ion-button {
-      min-width: 100%;
-      max-width: none;
-    }
-  }
-}
-
-
-@media (max-width: 700px) {
-  .usuario-item {
-    flex-direction: column;
-    align-items: flex-start;
-    ion-buttons {
-      margin-top: 8px;
-      width: 100%;
-      display: flex;
-      justify-content: flex-end;
-    }
-  }
-} 
-
-.ecopunto-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-
-  h3 {
-    margin: 0;
-    flex: 1;
-  }
-
-  ion-badge {
-    margin-left: 8px;
-  }
-}
-
-.meta-progress {
-  .meta-info {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    font-size: 14px;
-
-    span {
-      flex: 1;
-    }
-  }
-
-  ion-progress-bar {
-    margin-bottom: 8px;
-  }
-
-  .progress-text {
-    text-align: center;
-    font-weight: bold;
-    color: var(--ion-color-primary);
-    display: block;
-  }
-}
-
-.chart-container {
-  height: 300px;
-  position: relative;
-}
-
-.loading-container {
-  text-align: center;
-  padding: 40px 20px;
-
-  ion-spinner {
-    margin-bottom: 16px;
-  }
-
-  p {
-    color: var(--ion-color-medium);
-    margin: 0;
-  }
-}
-
-// Mejoras en los filtros
-.filters-flex {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-
-  .filter-item {
-    flex: 1;
-    min-width: 200px;
-  }
-
-  .clear-filters-btn {
-    flex-shrink: 0;
-  }
-}
-
-// Mejoras en las tarjetas de ecopunto
-.ecopunto-item {
-  margin-bottom: 16px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-
-  ion-card-content {
-    padding: 16px;
-  }
-
-  .ecopunto-stats {
-    margin: 12px 0;
-    line-height: 1.6;
-
-    .stat {
-      display: block;
-      margin-bottom: 4px;
-      font-size: 14px;
-      color: var(--ion-color-medium);
-    }
-  }
-
-  .encargado-asignado {
-    display: flex;
-    align-items: center;
-    margin-top: 12px;
-    padding: 8px 12px;
-    background: var(--ion-color-light);
-    border-radius: 8px;
+  // Botón de crear en mobile
+  .create-button {
+    --padding-start: 12px;
+    --padding-end: 12px;
     font-size: 14px;
 
     ion-icon {
-      margin-right: 8px;
-      color: var(--ion-color-success);
+      margin-right: 4px;
     }
   }
 
-  ion-buttons {
-    display: flex;
+  // Modales en mobile
+  .modal-actions {
+    flex-direction: column;
     gap: 8px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 16px;
 
     ion-button {
-      --padding-start: 8px;
-      --padding-end: 8px;
-      min-width: 44px;
-      height: 44px;
+      width: 100%;
+      height: 48px;
+    }
+  }
+
+  // Meta progress en mobile
+  .meta-progress {
+    .meta-info {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+  }
+
+  // Mejorar experiencia táctil en tablet
+  .action-btn,
+  .clear-filters-btn {
+    --min-height: 44px;
+    --border-radius: var(--border-radius-md);
+  }
+
+  // Mejorar espaciado de filtros
+  .filter-item {
+    --min-height: 48px;
+  }
+
+  // Mejorar espaciado de cards
+  .ecopunto-card {
+    .ecopunto-header {
+      .ecopunto-title {
+        h3 {
+          font-size: 1.1rem;
+        }
+      }
     }
   }
 }
 
-// Mejoras en los modales
-.modal-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px solid var(--ion-color-light);
+// Mobile pequeño
+@media (max-width: 480px) {
+  .ecopuntos-container {
+    padding: 8px;
 
-  ion-button {
-    min-width: 100px;
-  }
-}
+    .page-header {
+      padding: 16px;
+      margin-bottom: 16px;
 
-// Responsive design
-@media (max-width: 768px) {
-  .filters-flex {
-    flex-direction: column;
+      .header-content {
+        gap: 12px;
 
-    .filter-item {
-      min-width: 100%;
+        .header-icon {
+          width: 45px;
+          height: 45px;
+
+          ion-icon {
+            font-size: 24px;
+          }
+        }
+
+        .header-text {
+          h1 {
+            font-size: 20px;
+            margin-bottom: 6px;
+          }
+
+          p {
+            font-size: 13px;
+          }
+        }
+
+        .header-stats {
+          gap: 12px;
+
+          .stat-item {
+            min-width: 60px;
+            padding: 10px;
+
+            .stat-number {
+              font-size: 18px;
+            }
+
+            .stat-label {
+              font-size: 10px;
+            }
+          }
+        }
+      }
     }
-  }
 
-  .ecopunto-item {
-    ion-buttons {
-      justify-content: center;
-      gap: 4px;
+    .filters-card {
+      .filters-header {
+        padding: 16px;
 
-      ion-button {
-        min-width: 40px;
-        height: 40px;
+        ion-card-title {
+          font-size: 1.1rem;
+        }
+      }
+
+      .filters-grid {
+        padding: 12px;
+        gap: 10px;
+      }
+    }
+
+    .ecopuntos-list-card {
+      .list-header {
+        padding: 16px;
+
+        ion-card-title {
+          font-size: 1.1rem;
+        }
+      }
+
+      .ecopuntos-grid {
+        padding: 12px;
+        gap: 12px;
+
+        .ecopunto-card {
+          .ecopunto-header {
+            padding: 12px;
+
+            .ecopunto-title {
+              h3 {
+                font-size: 1.1rem;
+              }
+            }
+          }
+
+          .ecopunto-content {
+            padding: 12px;
+
+            .ecopunto-info {
+              .info-item {
+                span {
+                  font-size: 13px;
+                }
+              }
+            }
+
+            .ecopunto-stats {
+              grid-template-columns: 1fr;
+              gap: 10px;
+
+              .stat-card {
+                padding: 10px;
+
+                .stat-content {
+                  .stat-value {
+                    font-size: 16px;
+                  }
+
+                  .stat-label {
+                    font-size: 10px;
+                  }
+                }
+              }
+            }
+
+            .ecopunto-actions {
+              grid-template-columns: 1fr;
+              gap: 8px;
+
+              .action-btn {
+                height: 48px;
+                font-size: 14px;
+                justify-content: center;
+
+                ion-icon {
+                  margin-right: 8px;
+                  font-size: 18px;
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
 
-  .modal-actions {
-    flex-direction: column;
+  // Botón de crear en mobile pequeño
+  .create-button {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    font-size: 13px;
 
-    ion-button {
-      width: 100%;
+    ion-icon {
+      margin-right: 3px;
     }
   }
-}
 
-// Estados de ecopunto
-.ecopunto-item.inactivo {
-  opacity: 0.7;
-  background: var(--ion-color-light);
+  // Formularios en mobile pequeño
+  .form-section {
+    margin-bottom: 20px;
 
-  ion-buttons ion-button:not([color="success"]) {
-    opacity: 0.5;
-  }
-}
-
-// Animaciones
-.ecopunto-item {
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  }
-}
-
-// Mejoras en el gráfico
-.chart-container {
-  background: var(--ion-color-light);
-  border-radius: 8px;
-  padding: 16px;
-  margin: 16px 0;
-}
-
-// Estilos para las estadísticas
-.estadisticas-card {
-  margin-bottom: 16px;
-
-  ion-card-header {
-    background: var(--ion-color-primary);
-    color: white;
-
-    ion-card-title {
-      color: white;
-      font-size: 18px;
-    }
-
-    ion-card-subtitle {
-      color: rgba(255, 255, 255, 0.8);
+    .section-title {
+      font-size: 1rem;
     }
   }
-}
 
-// Lista de entregas
-.entregas-list {
-  ion-item {
-    --padding-start: 0;
-    --inner-padding-end: 0;
-    margin-bottom: 8px;
-    border-radius: 8px;
-    background: var(--ion-color-light);
+  .form-item {
+    margin-bottom: 12px;
 
-    h3 {
-      font-size: 16px;
-      font-weight: 600;
-      margin: 0 0 4px 0;
-    }
-
-    p {
-      margin: 0;
-      color: var(--ion-color-medium);
+    ion-label {
       font-size: 14px;
     }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      --padding-start: 12px;
+      --padding-end: 12px;
+      --padding-top: 10px;
+      --padding-bottom: 10px;
+      font-size: 15px;
+    }
   }
-} 
+
+  // Toggle en mobile pequeño
+  .toggle-item {
+    ion-label {
+      .toggle-label {
+        span {
+          font-size: 14px;
+        }
+      }
+
+      p {
+        font-size: 12px;
+      }
+    }
+  }
+
+  // Mejorar experiencia táctil en mobile pequeño
+  .action-btn,
+  .clear-filters-btn {
+    --min-height: 44px;
+    --border-radius: var(--border-radius-md);
+  }
+
+  // Mejorar espaciado de filtros
+  .filter-item {
+    --min-height: 48px;
+  }
+}
+
+// Mobile muy pequeño
+@media (max-width: 360px) {
+  .ecopuntos-container {
+    padding: 6px;
+
+    .page-header {
+      padding: 12px;
+      margin-bottom: 12px;
+
+      .header-content {
+        .header-text {
+          h1 {
+            font-size: 18px;
+          }
+
+          p {
+            font-size: 12px;
+          }
+        }
+
+        .header-stats {
+          .stat-item {
+            min-width: 55px;
+            padding: 8px;
+
+            .stat-number {
+              font-size: 16px;
+            }
+
+            .stat-label {
+              font-size: 9px;
+            }
+          }
+        }
+      }
+    }
+
+    .ecopuntos-list-card {
+      .ecopuntos-grid {
+        padding: 8px;
+        gap: 8px;
+
+        .ecopunto-card {
+          .ecopunto-content {
+            padding: 10px;
+
+            .ecopunto-stats {
+              .stat-card {
+                padding: 8px;
+
+                .stat-content {
+                  .stat-value {
+                    font-size: 14px;
+                  }
+
+                  .stat-label {
+                    font-size: 9px;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Botón de crear en mobile muy pequeño
+  .create-button {
+    --padding-start: 6px;
+    --padding-end: 6px;
+    font-size: 12px;
+
+    .button-text {
+      display: none;
+    }
+
+    ion-icon {
+      margin-right: 0;
+      font-size: 20px;
+    }
+  }
+
+  // Ocultar texto de botones de acción en mobile muy pequeño
+  .action-btn {
+    .button-text {
+      display: none;
+    }
+
+    ion-icon {
+      margin-right: 0;
+      font-size: 20px;
+    }
+  }
+
+  // Ocultar texto del botón limpiar
+  .clear-filters-btn {
+    .button-text {
+      display: none;
+    }
+
+    ion-icon {
+      margin-right: 0;
+      font-size: 20px;
+    }
+  }
+
+  // Ocultar texto del badge de estado
+  .status-badge {
+    .badge-text {
+      display: none;
+    }
+
+    ion-icon {
+      margin-right: 0;
+      font-size: 16px;
+    }
+  }
+}
+
+// Orientación landscape en mobile
+@media (max-width: 768px) and (orientation: landscape) {
+  .ecopuntos-container {
+    .page-header {
+      .header-content {
+        flex-direction: row;
+        text-align: left;
+        gap: 20px;
+
+        .header-stats {
+          justify-content: flex-end;
+        }
+      }
+    }
+
+    .ecopuntos-list-card {
+      .ecopuntos-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      }
+    }
+  }
+}
+
+// Mejoras generales para mobile
+@media (max-width: 768px) {
+  // Mejorar scroll en mobile
+  ion-content {
+    --overflow: auto;
+  }
+
+  // Mejorar espaciado de modales en mobile
+  ion-modal {
+    .ion-padding {
+      padding: 16px;
+    }
+  }
+
+  // Mejorar formularios en mobile
+  .form-item {
+    --border-radius: var(--border-radius-md);
+    --min-height: 48px;
+  }
+
+  // Mejorar botones en mobile
+  ion-button {
+    --border-radius: var(--border-radius-md);
+    --min-height: 44px;
+  }
+
+  // Mejorar cards en mobile
+  ion-card {
+    --border-radius: var(--border-radius-md);
+    margin: 8px 0;
+  }
+
+  // Mejorar inputs en mobile
+  ion-input,
+  ion-select,
+  ion-textarea {
+    --border-radius: var(--border-radius-md);
+    --min-height: 48px;
+  }
+
+  // Mejorar badges en mobile
+  ion-badge {
+    --border-radius: var(--border-radius-md);
+    --padding-start: 8px;
+    --padding-end: 8px;
+    --padding-top: 6px;
+    --padding-bottom: 6px;
+  }
+}
+
+// Mejoras específicas para mobile pequeño
+@media (max-width: 480px) {
+  // Reducir padding en mobile pequeño
+  .ecopuntos-container {
+    .page-header {
+      .header-content {
+        .header-stats {
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+      }
+    }
+  }
+
+  // Mejorar layout de estadísticas en mobile pequeño
+  .ecopunto-stats {
+    .stat-card {
+      .stat-icon {
+        width: 32px !important;
+        height: 32px !important;
+
+        ion-icon {
+          font-size: 16px !important;
+        }
+      }
+    }
+  }
+
+  // Mejorar botones de acción en mobile pequeño
+  .ecopunto-actions {
+    .action-btn {
+      --min-height: 48px;
+      --border-radius: var(--border-radius-md);
+      font-weight: 600;
+    }
+  }
+}
+
+// Mejoras para mobile muy pequeño
+@media (max-width: 360px) {
+  // Reducir aún más el padding
+  .ecopuntos-container {
+    padding: 4px;
+  }
+
+  // Mejorar iconos en mobile muy pequeño
+  .header-icon {
+    width: 40px !important;
+    height: 40px !important;
+
+    ion-icon {
+      font-size: 20px !important;
+    }
+  }
+
+  // Mejorar estadísticas en mobile muy pequeño
+  .header-stats {
+    .stat-item {
+      min-width: 50px !important;
+      padding: 6px !important;
+
+      .stat-number {
+        font-size: 14px !important;
+      }
+
+      .stat-label {
+        font-size: 8px !important;
+      }
+    }
+  }
+}

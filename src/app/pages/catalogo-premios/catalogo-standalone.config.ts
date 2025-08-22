@@ -68,3 +68,4 @@ export const CATALOGO_STANDALONE_CONFIG: CatalogoStandaloneConfig = {
     accentColor: '#ffd700'
   }
 };
+

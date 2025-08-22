@@ -1,0 +1,66 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Detalle del Premio</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()" fill="clear">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="premio-detalle">
+    <!-- Imagen del premio -->
+    <div class="imagen-container">
+      <img [src]="getImagenPremio()" [alt]="premio.nombre" class="imagen-premio">
+    </div>
+
+    <!-- Información del premio -->
+    <div class="info-premio">
+      <h1 class="nombre-premio">{{ premio.nombre }}</h1>
+      
+      <div class="categoria-badge">
+        <ion-badge color="primary">{{ premio.categoria }}</ion-badge>
+      </div>
+
+      <div class="descripcion">
+        <h3>Descripción</h3>
+        <p>{{ premio.descripcion }}</p>
+      </div>
+
+      <div class="detalles">
+        <div class="detalle-item">
+          <ion-icon name="star" color="warning"></ion-icon>
+          <span class="label">Precio:</span>
+          <span class="valor">1 cupón</span>
+        </div>
+
+        <div class="detalle-item">
+          <ion-icon name="cube" color="primary"></ion-icon>
+          <span class="label">Stock disponible:</span>
+          <span class="valor" [class.sin-stock]="premio.stock <= 0">
+            {{ premio.stock > 0 ? premio.stock + ' unidades' : 'Sin stock' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Botón de canje -->
+      <ion-button 
+        expand="block" 
+        color="primary" 
+        size="large"
+        (click)="canjearPremio()"
+        [disabled]="premio.stock <= 0"
+        class="btn-canjear">
+        <ion-icon name="whatsapp" slot="start"></ion-icon>
+        {{ premio.stock > 0 ? 'Canjear por WhatsApp' : 'Sin stock disponible' }}
+      </ion-button>
+
+      <div class="info-adicional">
+        <p><ion-icon name="information-circle" color="medium"></ion-icon>
+        Al hacer clic en "Canjear por WhatsApp" se abrirá una conversación con nuestro equipo para procesar tu canje.</p>
+      </div>
+    </div>
+  </div>
+</ion-content>

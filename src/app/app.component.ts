@@ -85,22 +85,34 @@ export class AppComponent implements OnInit, OnDestroy {
       const refreshedUser = this.authService.getUser();
       if (refreshedUser && refreshedUser.rol) {
         this.userRole = refreshedUser.rol;
-        // Redirigir según el rol
-        if (this.userRole === 'worker') {
-          if (!this.router.url.includes('worker-dashboard')) {
-            this.router.navigate(['/worker-dashboard']);
+        const currentUrl = this.router.url;
+        console.log('[AppComponent] Usuario logueado con rol:', this.userRole, 'en ruta:', currentUrl);
+        
+        // Redirigir según el rol, pero solo si se permite
+        if (this.shouldAllowRedirect(currentUrl)) {
+          console.log('[AppComponent] Redirección permitida, verificando...');
+          if (this.userRole === 'worker') {
+            if (!currentUrl.includes('worker-dashboard')) {
+              console.log('[AppComponent] Redirigiendo worker a dashboard');
+              this.router.navigate(['/worker-dashboard']);
+            }
+          } else if (this.userRole === 'encargado') {
+            if (!currentUrl.startsWith('/encargado')) {
+              console.log('[AppComponent] Redirigiendo encargado a home');
+              this.router.navigate(['/encargado/home']);
+            }
+          } else if (this.userRole === 'admin' || this.userRole === 'administrador') {
+            if (!currentUrl.startsWith('/administrador')) {
+              console.log('[AppComponent] Redirigiendo admin a home');
+              this.router.navigate(['/administrador/home']);
+            }
           }
-        } else if (this.userRole === 'encargado') {
-          if (!this.router.url.startsWith('/encargado')) {
-            this.router.navigate(['/encargado/home']);
-          }
-        } else if (this.userRole === 'admin' || this.userRole === 'administrador') {
-          if (!this.router.url.startsWith('/administrador')) {
-            this.router.navigate(['/administrador/home']);
-          }
+        } else {
+          console.log('[AppComponent] Redirección no permitida para esta URL');
         }
       } else {
         this.userRole = '';
+        console.log('[AppComponent] Usuario no logueado');
       }
       this.updateMenuByRole();
     });
@@ -110,22 +122,57 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Verifica si se debe permitir la redirección basada en la URL actual
+   */
+  private shouldAllowRedirect(url: string): boolean {
+    // NO permitir redirección si está en el catálogo
+    if (url.startsWith('/catalogo')) {
+      console.log('[AppComponent] shouldAllowRedirect - En catálogo, NO se permite redirección');
+      return false;
+    }
+    
+    // NO permitir redirección si está en auth
+    if (url.startsWith('/auth')) {
+      console.log('[AppComponent] shouldAllowRedirect - En auth, NO se permite redirección');
+      return false;
+    }
+    
+    console.log('[AppComponent] shouldAllowRedirect - Redirección permitida para URL:', url);
+    return true;
+  }
+
+  /**
    * Verifica el rol al iniciar la aplicación y redirige si es necesario
    */
   private async checkInitialRole() {
     await this.authService.ensureUserFromToken();
     const user = this.authService.getUser();
     if (!user) return;
+    
+    const currentUrl = this.router.url;
+    console.log('[AppComponent] checkInitialRole - Usuario:', user.rol, 'en ruta:', currentUrl);
+    
+    // NO redirigir si no se debe permitir
+    if (!this.shouldAllowRedirect(currentUrl)) {
+      console.log('[AppComponent] checkInitialRole - Redirección no permitida para esta URL');
+      return;
+    }
+    
+    console.log('[AppComponent] checkInitialRole - Verificando redirección...');
+    
     if (user.rol === 'worker') {
-      if (!this.router.url.includes('worker-dashboard')) {
+      if (!currentUrl.includes('worker-dashboard')) {
+        console.log('[AppComponent] checkInitialRole - Redirigiendo worker a dashboard');
         this.router.navigate(['/worker-dashboard']);
       }
     } else if (user.rol === 'encargado') {
-      if (!this.router.url.startsWith('/encargado')) {
+      if (!currentUrl.startsWith('/encargado')) {
+        console.log('[AppComponent] checkInitialRole - Redirigiendo encargado a home');
         this.router.navigate(['/encargado/home']);
       }
     } else if (user.rol === 'admin' || user.rol === 'administrador') {
-      if (!this.router.url.startsWith('/administrador')) {
+      if (!currentUrl.startsWith('/administrador')) {
+        console.log('[AppComponent] checkInitialRole - Redirigiendo admin a home');
         this.router.navigate(['/administrador/home']);
       }
     }

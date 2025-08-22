@@ -12,46 +12,6 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <!-- Premios Destacados -->
-  <div class="premios-destacados" *ngIf="premiosDestacados.length > 0">
-    <ion-card class="destacados-card">
-      <ion-card-header>
-        <ion-card-title>
-          <i class="bi bi-star-fill"></i> Premios Destacados
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-grid>
-          <ion-row>
-            <ion-col 
-              size="12" 
-              size-md="6" 
-              *ngFor="let premio of premiosDestacados">
-              <ion-card class="premio-destacado">
-                <img [src]="getImagenPremio(premio)" [alt]="premio.nombre">
-                <ion-card-header>
-                  <ion-card-title>{{ premio.nombre }}</ion-card-title>
-                  <ion-card-subtitle>{{ premio.cuponesRequeridos }} cupones</ion-card-subtitle>
-                </ion-card-header>
-                <ion-card-content>
-                  <p>{{ premio.descripcion }}</p>
-                  <ion-button 
-                    expand="block" 
-                    color="primary" 
-                    (click)="canjearPremio(premio)"
-                    [disabled]="premio.stock <= 0">
-                    <i class="bi bi-whatsapp"></i>
-                    {{ premio.stock > 0 ? 'Canjear por WhatsApp' : 'Sin stock' }}
-                  </ion-button>
-                </ion-card-content>
-              </ion-card>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-card-content>
-    </ion-card>
-  </div>
-
   <!-- Barra de búsqueda y filtros -->
   <div class="filtros-container">
     <ion-searchbar
@@ -68,6 +28,7 @@
         [color]="categoriaSeleccionada === '' ? 'primary' : 'medium'"
         (click)="filtrarPorCategoria('')"
         class="categoria-chip">
+        <i class="bi bi-grid-3x3-gap"></i>
         Todos
       </ion-chip>
       <ion-chip 
@@ -75,6 +36,7 @@
         [color]="categoriaSeleccionada === categoria ? 'primary' : 'medium'"
         (click)="filtrarPorCategoria(categoria)"
         class="categoria-chip">
+        <i [class]="'bi ' + getIconoCategoria(categoria)"></i>
         {{ categoria }}
       </ion-chip>
       
@@ -106,7 +68,7 @@
           size-md="6" 
           size-lg="4" 
           *ngFor="let premio of premiosFiltrados">
-          <ion-card class="premio-card">
+          <ion-card class="premio-card" (click)="mostrarDetallePremio(premio)">
             <img [src]="getImagenPremio(premio)" [alt]="premio.nombre">
             
             <ion-card-header>
@@ -124,7 +86,7 @@
               <div class="premio-info">
                 <div class="puntos">
                   <i class="bi bi-star-fill"></i>
-                  <strong>{{ premio.cuponesRequeridos }} cupones</strong>
+                  <strong>1 cupón</strong>
                 </div>
                 
                 <div class="stock" [class.sin-stock]="premio.stock <= 0">
@@ -136,10 +98,11 @@
               <ion-button 
                 expand="block" 
                 color="primary"
-                (click)="canjearPremio(premio)"
-                [disabled]="premio.stock <= 0">
-                <i class="bi bi-whatsapp"></i>
-                {{ premio.stock > 0 ? 'Canjear por WhatsApp' : 'Sin stock' }}
+                (click)="mostrarDetallePremio(premio); $event.stopPropagation()"
+                [disabled]="premio.stock <= 0"
+                class="btn-ver-detalle">
+                <i class="bi bi-eye"></i>
+                Ver Detalle
               </ion-button>
             </ion-card-content>
           </ion-card>

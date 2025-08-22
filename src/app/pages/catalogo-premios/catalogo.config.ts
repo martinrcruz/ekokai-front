@@ -16,13 +16,7 @@ export interface CatalogoConfig {
     showCategories: boolean;
     showClearButton: boolean;
     categoryColors: { [key: string]: string };
-  };
-  
-  // Configuración de premios destacados
-  featured: {
-    showSection: boolean;
-    title: string;
-    maxItems: number;
+    categoryIcons: { [key: string]: string };
   };
   
   // Configuración de la lista de premios
@@ -61,14 +55,44 @@ export const CATALOGO_CONFIG: CatalogoConfig = {
       'Deportes': 'success',
       'Moda': 'warning',
       'Libros': 'info',
-      'Otros': 'medium'
+      'Otros': 'medium',
+      'Alimentación': 'danger',
+      'Belleza': 'tertiary',
+      'Juguetes': 'success',
+      'Jardín': 'success',
+      'Música': 'tertiary',
+      'Arte': 'warning',
+      'Tecnología': 'primary',
+      'Fitness': 'success',
+      'Viajes': 'primary',
+      'Educación': 'info',
+      'Salud': 'danger',
+      'Automotriz': 'medium',
+      'Mascotas': 'tertiary',
+      'Construcción': 'medium'
+    },
+    categoryIcons: {
+      'Electrónicos': 'bi-phone',
+      'Hogar': 'bi-house',
+      'Deportes': 'bi-trophy',
+      'Moda': 'bi-bag',
+      'Libros': 'bi-book',
+      'Otros': 'bi-gift',
+      'Alimentación': 'bi-cup-hot',
+      'Belleza': 'bi-mirror',
+      'Juguetes': 'bi-controller',
+      'Jardín': 'bi-flower1',
+      'Música': 'bi-music-note',
+      'Arte': 'bi-palette',
+      'Tecnología': 'bi-laptop',
+      'Fitness': 'bi-heart-pulse',
+      'Viajes': 'bi-airplane',
+      'Educación': 'bi-mortarboard',
+      'Salud': 'bi-heart',
+      'Automotriz': 'bi-car-front',
+      'Mascotas': 'bi-heart-pulse',
+      'Construcción': 'bi-tools'
     }
-  },
-  
-  featured: {
-    showSection: true,
-    title: 'Premios Destacados',
-    maxItems: 6
   },
   
   list: {
@@ -78,13 +102,13 @@ export const CATALOGO_CONFIG: CatalogoConfig = {
       desktop: 3
     },
     showStock: true,
-    showCupones: true
+    showCupones: false // Ya no se muestran cupones, siempre es 1
   },
   
   whatsapp: {
     buttonText: 'Canjear por WhatsApp',
     buttonColor: 'primary',
     buttonIcon: 'bi-whatsapp',
-    messageTemplate: '¡Hola! Quiero canjear el premio "{nombre}" (Código: {codigo}) por {cupones} cupones.'
+    messageTemplate: '¡Hola! Quiero canjear el premio "{nombre}" (Código: {codigo}) por 1 cupón.'
   }
 };

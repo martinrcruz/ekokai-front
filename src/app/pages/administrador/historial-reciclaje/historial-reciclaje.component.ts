@@ -150,4 +150,116 @@ export class HistorialReciclajeComponent implements OnInit {
     // Implementar exportación a CSV/Excel
     console.log('Exportando historial...');
   }
+
+  // Métodos para estadísticas
+  getKilosTotales(): number {
+    return this.historialFiltrado.reduce((total, entrega) => total + (entrega.pesoKg || 0), 0);
+  }
+
+  getUsuariosUnicos(): number {
+    const usuariosUnicos = new Set(this.historialFiltrado.map(e => e.usuario._id));
+    return usuariosUnicos.size;
+  }
+
+  getEcopuntosUnicos(): number {
+    const ecopuntosUnicos = new Set(this.historialFiltrado.map(e => e.ecopunto._id));
+    return ecopuntosUnicos.size;
+  }
+
+  getEntregasCompletadas(): number {
+    return this.historialFiltrado.filter(e => e.estado === 'completado').length;
+  }
+
+  // Métodos para estado
+  getEstadoIcon(estado: string): string {
+    switch (estado) {
+      case 'completado': return 'checkmark-circle';
+      case 'pendiente': return 'time';
+      case 'rechazado': return 'close-circle';
+      default: return 'help-circle';
+    }
+  }
+
+  getEstadoText(estado: string): string {
+    return this.getEstadoTexto(estado);
+  }
+
+  // Métodos para top usuarios
+  getTopUsuarios(): any[] {
+    const usuariosMap = new Map<string, { nombre: string, totalKilos: number }>();
+    
+    this.historialFiltrado.forEach(entrega => {
+      const usuarioId = entrega.usuario._id;
+      const nombre = entrega.usuario?.nombre || 'Usuario Desconocido';
+      const kilos = entrega.pesoKg || 0;
+      
+      if (usuariosMap.has(usuarioId)) {
+        usuariosMap.get(usuarioId)!.totalKilos += kilos;
+      } else {
+        usuariosMap.set(usuarioId, { nombre, totalKilos: kilos });
+      }
+    });
+    
+    return Array.from(usuariosMap.values())
+      .sort((a, b) => b.totalKilos - a.totalKilos)
+      .slice(0, 10);
+  }
+
+  getRankIcon(rank: number): string {
+    if (rank === 1) return 'trophy';
+    if (rank === 2) return 'medal';
+    if (rank === 3) return 'ribbon';
+    return 'star';
+  }
+
+  // Métodos para acciones
+  verDetalle(entrega: EntregaResiduo) {
+    console.log('Ver detalle de entrega:', entrega);
+    // Implementar modal de detalle
+  }
+
+  editarEntrega(entrega: EntregaResiduo) {
+    console.log('Editar entrega:', entrega);
+    // Implementar modal de edición
+  }
+
+  eliminarEntrega(entrega: EntregaResiduo) {
+    console.log('Eliminar entrega:', entrega);
+    // Implementar confirmación y eliminación
+  }
+
+  // Configuración para gráficos
+  lineChartType: any = 'line';
+  lineChartData: any = {
+    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+    datasets: [{
+      data: [65, 59, 80, 81, 56, 55],
+      label: 'KG Reciclados',
+      borderColor: 'rgba(76,175,80,1)',
+      backgroundColor: 'rgba(76,175,80,0.1)',
+      tension: 0.4
+    }]
+  };
+  lineChartOptions: any = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0,0,0,0.1)'
+        }
+      },
+      x: {
+        grid: {
+          color: 'rgba(0,0,0,0.1)'
+        }
+      }
+    }
+  };
 }

@@ -5,9 +5,9 @@
     </ion-buttons>
     <ion-title>Gestión de Premios</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="abrirCrearModal()">
-        <ion-icon name="add-outline"></ion-icon>
-        Crear premio
+      <ion-button (click)="abrirCrearModal()" class="create-button">
+        <ion-icon name="add-circle-outline"></ion-icon>
+        Crear Premio
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -15,238 +15,274 @@
 
 <ion-content [fullscreen]="true">
   <div class="premios-container">
+    <!-- Header de la página -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-icon">
+          <ion-icon name="gift-outline"></ion-icon>
+        </div>
+        <div class="header-text">
+          <h1>Gestión de Premios</h1>
+          <p>Administra el catálogo de premios disponibles para canjear</p>
+        </div>
+        <div class="header-stats">
+          <div class="stat-item">
+            <div class="stat-number">{{ premiosFiltrados.length }}</div>
+            <div class="stat-label">Total</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ getPremiosActivos() }}</div>
+            <div class="stat-label">Activos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Pestanas principales -->
-    <ion-segment [(ngModel)]="pestanaActiva" (ionChange)="cambiarPestana($event.detail.value?.toString())">
-      <ion-segment-button value="premios">
+    <ion-segment [(ngModel)]="pestanaActiva" (ionChange)="cambiarPestana($event.detail.value?.toString())" class="main-segment">
+      <ion-segment-button value="premios" class="segment-btn">
+        <ion-icon name="gift-outline"></ion-icon>
         <ion-label>Premios</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="estadisticas">
+      <ion-segment-button value="estadisticas" class="segment-btn">
+        <ion-icon name="analytics-outline"></ion-icon>
         <ion-label>Estadísticas</ion-label>
       </ion-segment-button>
     </ion-segment>
 
     <!-- Pestana de Premios -->
-    <div *ngIf="pestanaActiva === 'premios'">
-      <ion-card class="filters-bar">
-        <div class="filters-flex">
-          <ion-item lines="none" class="filter-item">
-            <ion-icon name="search-outline" slot="start"></ion-icon>
-            <ion-input [(ngModel)]="filtroNombre" placeholder="Buscar por nombre" clearInput></ion-input>
-          </ion-item>
-          <ion-item lines="none" class="filter-item">
-            <ion-select [(ngModel)]="filtroCategoria" placeholder="Filtrar por categoría">
-              <ion-select-option value="">Todas las categorías</ion-select-option>
-              <ion-select-option *ngFor="let categoria of estadisticas.categorias" [value]="categoria">
-                {{ categoria }}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
-          <ion-button fill="clear" color="medium" class="clear-filters-btn" (click)="limpiarFiltros()">
-            <ion-icon name="close-circle-outline"></ion-icon>
-            Limpiar
-          </ion-button>
-        </div>
-      </ion-card>
-
-      <ion-card *ngFor="let premio of premiosFiltrados">
-        <ion-card-header>
-          <ion-card-title>{{ premio.nombre }}</ion-card-title>
-          <ion-card-subtitle>{{ premio.descripcion }}</ion-card-subtitle>
-          <div class="premio-badges">
-            <ion-badge [color]="getCategoriaColor(premio.categoria)">{{ premio.categoria }}</ion-badge>
-            <ion-badge [color]="getActivoColor(premio.activo)">{{ premio.activo ? 'Activo' : 'Inactivo' }}</ion-badge>
-            <ion-badge [color]="getDestacadoColor(premio.destacado)">{{ premio.destacado ? 'Destacado' : 'Normal' }}</ion-badge>
-          </div>
+    <div *ngIf="pestanaActiva === 'premios'" class="premios-tab">
+      <!-- Filtros -->
+      <ion-card class="filters-card">
+        <ion-card-header class="filters-header">
+          <ion-card-title style="color: white;">
+            <ion-icon name="filter-outline"></ion-icon>
+            Filtros de Búsqueda
+          </ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <ion-label>
-            <p><strong>Cupones requeridos:</strong> {{ premio.cuponesRequeridos }}</p>
-            <p><strong>Stock disponible:</strong> {{ premio.stock }}</p>
-            <p><strong>Orden de visualización:</strong> {{ premio.orden }}</p>
-            <p><strong>Fecha de creación:</strong> {{ premio.createdDate | date:'shortDate' }}</p>
-          </ion-label>
+          <div class="filters-grid">
+            <ion-item class="filter-item">
+              <ion-icon name="search-outline" slot="start" class="filter-icon"></ion-icon>
+              <ion-input [(ngModel)]="filtroNombre" placeholder="Buscar por nombre" clearInput class="filter-input"></ion-input>
+            </ion-item>
+            
+            <ion-item class="filter-item">
+              <ion-icon name="pricetag-outline" slot="start" class="filter-icon"></ion-icon>
+              <ion-select [(ngModel)]="filtroCategoria" placeholder="Filtrar por categoría" class="filter-select">
+                <ion-select-option value="">Todas las categorías</ion-select-option>
+                <ion-select-option *ngFor="let categoria of estadisticas.categorias" [value]="categoria">
+                  {{ categoria }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+            
+            <ion-button fill="clear" color="medium" class="clear-filters-btn" (click)="limpiarFiltros()">
+              <ion-icon name="refresh-outline"></ion-icon>
+              Limpiar
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
 
-          <ion-buttons slot="end">
-            <ion-button fill="clear" (click)="abrirEditarModal(premio)">
-              <ion-icon name="create" size="large"></ion-icon>
-            </ion-button>
-            <ion-button fill="clear" color="danger" (click)="eliminarPremio(premio)">
-              <ion-icon name="trash" size="large"></ion-icon>
-            </ion-button>
-          </ion-buttons>
+      <!-- Lista de premios -->
+      <ion-card class="premios-list-card">
+        <ion-card-header class="list-header">
+          <ion-card-title style="color: white;">
+            <ion-icon name="list-outline"></ion-icon>
+            Catálogo de Premios
+          </ion-card-title>
+          <ion-card-subtitle>{{ premiosFiltrados.length }} premio{{ premiosFiltrados.length !== 1 ? 's' : '' }} encontrado{{ premiosFiltrados.length !== 1 ? 's' : '' }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="premios-grid">
+            <ion-card *ngFor="let premio of premiosFiltrados" class="premio-card">
+              <ion-card-header class="premio-header">
+                <div class="premio-image-container">
+                  <img [src]="getImagenPremio(premio)" [alt]="premio.nombre" class="premio-imagen">
+                  <div class="premio-status-overlay">
+                    <ion-badge [color]="getActivoColor(premio.activo)" class="status-badge">
+                      <ion-icon [name]="premio.activo ? 'checkmark-circle' : 'close-circle'"></ion-icon>
+                      {{ premio.activo ? 'Activo' : 'Inactivo' }}
+                    </ion-badge>
+                  </div>
+                </div>
+                
+                <div class="premio-info">
+                  <h3 class="premio-nombre">{{ premio.nombre }}</h3>
+                  <p class="premio-descripcion">{{ premio.descripcion }}</p>
+                  
+                  <div class="premio-badges">
+                    <ion-badge [color]="getCategoriaColor(premio.categoria)" class="categoria-badge">
+                      <ion-icon name="pricetag-outline"></ion-icon>
+                      {{ premio.categoria }}
+                    </ion-badge>
+                    
+                    <ion-badge [color]="getDestacadoColor(premio.destacado)" class="destacado-badge" *ngIf="premio.destacado">
+                      <ion-icon name="star"></ion-icon>
+                      Destacado
+                    </ion-badge>
+                  </div>
+                </div>
+              </ion-card-header>
+              
+              <ion-card-content class="premio-content">
+                <div class="premio-stats">
+                  <div class="stat-item">
+                    <ion-icon name="card-outline"></ion-icon>
+                    <div class="stat-content">
+                      <span class="stat-label">Cupones</span>
+                      <span class="stat-value">{{ premio.cuponesRequeridos }}</span>
+                    </div>
+                  </div>
+                  
+                  <div class="stat-item">
+                    <ion-icon name="cube-outline"></ion-icon>
+                    <div class="stat-content">
+                      <span class="stat-label">Stock</span>
+                      <span class="stat-value">{{ premio.stock }}</span>
+                    </div>
+                  </div>
+                  
+                  <div class="stat-item">
+                    <ion-icon name="list-outline"></ion-icon>
+                    <div class="stat-content">
+                      <span class="stat-label">Orden</span>
+                      <span class="stat-value">{{ premio.orden }}</span>
+                    </div>
+                  </div>
+                  
+                  <div class="stat-item">
+                    <ion-icon name="calendar-outline"></ion-icon>
+                    <div class="stat-content">
+                      <span class="stat-label">Creado</span>
+                      <span class="stat-value">{{ premio.createdDate | date:'shortDate' }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="premio-actions">
+                  <ion-button fill="clear" (click)="abrirEditarModal(premio)" class="action-btn edit">
+                    <ion-icon name="create-outline"></ion-icon>
+                    <span>Editar</span>
+                  </ion-button>
+                  
+                  <ion-button fill="clear" color="danger" (click)="eliminarPremio(premio)" class="action-btn delete">
+                    <ion-icon name="trash-outline"></ion-icon>
+                    <span>Eliminar</span>
+                  </ion-button>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          </div>
         </ion-card-content>
       </ion-card>
     </div>
 
+    <!-- Pestana de Estadísticas -->
+    <div *ngIf="pestanaActiva === 'estadisticas'" class="estadisticas-tab">
+      <!-- Resumen general -->
+      <ion-card class="summary-card">
+        <ion-card-header class="summary-header">
+          <ion-card-title style="color: white;">
+            <ion-icon name="analytics-outline"></ion-icon>
+            Resumen General
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="summary-grid">
+            <div class="summary-item">
+              <div class="summary-icon">
+                <ion-icon name="gift-outline"></ion-icon>
+              </div>
+              <div class="summary-content">
+                <div class="summary-value">{{ estadisticas.totalPremios || 0 }}</div>
+                <div class="summary-label">Total Premios</div>
+              </div>
+            </div>
+            
+            <div class="summary-item">
+              <div class="summary-icon">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+              </div>
+              <div class="summary-content">
+                <div class="summary-value">{{ getPremiosActivos() }}</div>
+                <div class="summary-label">Premios Activos</div>
+              </div>
+            </div>
+            
+            <div class="summary-item">
+              <div class="summary-icon">
+                <ion-icon name="star-outline"></ion-icon>
+              </div>
+              <div class="summary-content">
+                <div class="summary-value">{{ getPremiosDestacados() }}</div>
+                <div class="summary-label">Premios Destacados</div>
+              </div>
+            </div>
+            
+            <div class="summary-item">
+              <div class="summary-icon">
+                <ion-icon name="pricetag-outline"></ion-icon>
+              </div>
+              <div class="summary-content">
+                <div class="summary-value">{{ estadisticas.categorias?.length || 0 }}</div>
+                <div class="summary-label">Categorías</div>
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
 
+      <!-- Distribución por categorías -->
+      <ion-card class="categorias-card">
+        <ion-card-header class="categorias-header">
+          <ion-card-title style="color: white;">
+            <ion-icon name="pie-chart-outline"></ion-icon>
+            Distribución por Categorías
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="categorias-list">
+            <div *ngFor="let categoria of estadisticas.categorias" class="categoria-item">
+              <div class="categoria-info">
+                <ion-icon name="pricetag-outline" class="categoria-icon"></ion-icon>
+                <span class="categoria-nombre">{{ categoria }}</span>
+              </div>
+              <div class="categoria-count">
+                {{ getPremiosPorCategoria(categoria) }} premios
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
 
-    <!-- Pestana de Estadisticas -->
-    <div *ngIf="pestanaActiva === 'estadisticas'">
-      <ion-grid>
-        <ion-row>
-          <ion-col size="6">
-            <ion-card>
-              <ion-card-header>
-                <ion-card-title>Total Premios</ion-card-title>
-              </ion-card-header>
-              <ion-card-content>
-                <h2>{{ estadisticas.totalPremios || 0 }}</h2>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-          <ion-col size="6">
-            <ion-card>
-              <ion-card-header>
-                <ion-card-title>Premios Activos</ion-card-title>
-              </ion-card-header>
-              <ion-card-content>
-                <h2>{{ estadisticas.premiosActivos || 0 }}</h2>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size="6">
-            <ion-card>
-              <ion-card-header>
-                <ion-card-title>Premios Destacados</ion-card-title>
-              </ion-card-header>
-              <ion-card-content>
-                <h2>{{ estadisticas.premiosDestacados || 0 }}</h2>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-          <ion-col size="6">
-            <ion-card>
-              <ion-card-header>
-                <ion-card-title>Categorías</ion-card-title>
-              </ion-card-header>
-              <ion-card-content>
-                <h2>{{ estadisticas.categorias?.length || 0 }}</h2>
-                <p *ngFor="let categoria of estadisticas.categorias">{{ categoria }}</p>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+      <!-- Top premios más caros -->
+      <ion-card class="top-premios-card">
+        <ion-card-header class="top-header">
+          <ion-card-title style="color: white;">
+            <ion-icon name="trophy-outline"></ion-icon>
+            Top Premios por Cupones
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="top-premios-list">
+            <div *ngFor="let premio of getTopPremios(); let i = index" class="top-premio-item">
+              <div class="premio-rank">
+                <ion-icon [name]="getRankIcon(i + 1)"></ion-icon>
+                <span class="rank-number">{{ i + 1 }}</span>
+              </div>
+              <div class="premio-info">
+                <img [src]="getImagenPremio(premio)" [alt]="premio.nombre" class="premio-thumbnail">
+                <div class="premio-details">
+                  <span class="premio-nombre">{{ premio.nombre }}</span>
+                  <span class="premio-cupones">{{ premio.cuponesRequeridos }} cupones</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
     </div>
-
-    <!-- Modal Crear -->
-    <ion-modal [isOpen]="showCrearModal" (didDismiss)="cerrarCrearModal()">
-      <ng-template>
-        <ion-header>
-          <ion-toolbar>
-            <ion-title>Crear cupón</ion-title>
-            <ion-buttons slot="end">
-              <ion-button (click)="cerrarCrearModal()">Cerrar</ion-button>
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-header>
-        <ion-content>
-          <form (ngSubmit)="crearPremio()">
-            <ion-item>
-              <ion-label position="stacked">Nombre</ion-label>
-              <ion-input [(ngModel)]="premioForm.nombre" name="nombre" required></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Descripción</ion-label>
-              <ion-input [(ngModel)]="premioForm.descripcion" name="descripcion"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Cupones requeridos</ion-label>
-              <ion-input type="number" [(ngModel)]="premioForm.cuponesRequeridos" name="cuponesRequeridos" required min="0"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Stock disponible</ion-label>
-              <ion-input type="number" [(ngModel)]="premioForm.stock" name="stock" required min="0"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Categoría</ion-label>
-              <ion-select [(ngModel)]="premioForm.categoria" name="categoria" required>
-                <ion-select-option value="Electrónicos">Electrónicos</ion-select-option>
-                <ion-select-option value="Hogar">Hogar</ion-select-option>
-                <ion-select-option value="Deportes">Deportes</ion-select-option>
-                <ion-select-option value="Libros">Libros</ion-select-option>
-                <ion-select-option value="Moda">Moda</ion-select-option>
-              </ion-select>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Orden de visualización</ion-label>
-              <ion-input type="number" [(ngModel)]="premioForm.orden" name="orden" min="0"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Destacado</ion-label>
-              <ion-toggle [(ngModel)]="premioForm.destacado" name="destacado"></ion-toggle>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Activo</ion-label>
-              <ion-toggle [(ngModel)]="premioForm.activo" name="activo"></ion-toggle>
-            </ion-item>
-            <ion-button expand="block" type="submit" [disabled]="guardando">Crear Premio</ion-button>
-          </form>
-        </ion-content>
-      </ng-template>
-    </ion-modal>
-
-
-
-    <!-- Modal Editar -->
-    <ion-modal [isOpen]="showEditarModal" (didDismiss)="cerrarEditarModal()">
-      <ng-template>
-        <ion-header>
-          <ion-toolbar>
-            <ion-title>Editar premio</ion-title>
-            <ion-buttons slot="end">
-              <ion-button (click)="cerrarEditarModal()">Cerrar</ion-button>
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-header>
-        <ion-content *ngIf="premioEditando">
-          <form (ngSubmit)="guardarEdicion()">
-            <ion-item>
-              <ion-label position="stacked">Nombre</ion-label>
-              <ion-input [(ngModel)]="premioEditando.nombre" name="nombre" required></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Descripción</ion-label>
-              <ion-input [(ngModel)]="premioEditando.descripcion" name="descripcion"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Cupones requeridos</ion-label>
-              <ion-input type="number" [(ngModel)]="premioEditando.cuponesRequeridos" name="cuponesRequeridos" required min="0"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Stock disponible</ion-label>
-              <ion-input type="number" [(ngModel)]="premioEditando.stock" name="stock" required min="0"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Categoría</ion-label>
-              <ion-select [(ngModel)]="premioEditando.categoria" name="categoria" required>
-                <ion-select-option value="Electrónicos">Electrónicos</ion-select-option>
-                <ion-select-option value="Hogar">Hogar</ion-select-option>
-                <ion-select-option value="Deportes">Deportes</ion-select-option>
-                <ion-select-option value="Libros">Libros</ion-select-option>
-                <ion-select-option value="Moda">Moda</ion-select-option>
-              </ion-select>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Orden de visualización</ion-label>
-              <ion-input type="number" [(ngModel)]="premioEditando.orden" name="orden" min="0"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Destacado</ion-label>
-              <ion-toggle [(ngModel)]="premioEditando.destacado" name="destacado"></ion-toggle>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Activo</ion-label>
-              <ion-toggle [(ngModel)]="premioEditando.activo" name="activo"></ion-toggle>
-            </ion-item>
-            <ion-button expand="block" type="submit" [disabled]="guardando">Guardar Cambios</ion-button>
-          </form>
-        </ion-content>
-      </ng-template>
-    </ion-modal>
-
-
   </div>
 </ion-content>

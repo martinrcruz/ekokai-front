@@ -4,158 +4,300 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Centro de Reciclaje</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="conectarBalanza()" [disabled]="conectando" fill="clear" class="balance-btn">
+        <ion-icon [name]="conectando ? 'sync-outline' : 'hardware-chip-outline'"></ion-icon>
+        {{ conectando ? 'Conectando...' : 'Balanza' }}
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div class="reciclar-page">
+  <div class="reciclar-container">
+    <!-- Header de la página -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-icon">
+          <ion-icon name="reload-circle-outline"></ion-icon>
+        </div>
+        <div class="header-text">
+          <h1>Centro de Reciclaje</h1>
+          <p>Gestiona las entregas de residuos de los vecinos</p>
+        </div>
+        <div class="header-stats">
+          <div class="stat-item">
+            <div class="stat-number">{{ estadisticasUsuario.kilosHoy | number:'1.0-1' }}</div>
+            <div class="stat-label">KG Hoy</div>
+          </div>
+          <!-- <div class="stat-item">
+            <div class="stat-number">{{ estadisticasUsuario.porcentajeMeta | number:'1.0-0' }}%</div>
+            <div class="stat-label">Meta</div>
+          </div> -->
+        </div>
+      </div>
+    </div>
 
     <!-- Card: Saludo y estadísticas del usuario -->
-    <ion-card class="card card-saludo">
+    <ion-card class="welcome-card">
       <ion-card-content>
-        <div class="saludo-container">
-          <div class="saludo-texto">
-            <h2>¡Hola, {{ getNombreUsuarioLogueado() }}!</h2>
-            <p class="estadistica-dia">
-              Hoy has ayudado a reciclar <strong>{{ estadisticasUsuario.kilosHoy | number:'1.0-1' }} kg</strong>.
-            </p>
-            <p class="meta-info">
-              Estás a <strong>{{ estadisticasUsuario.kilosRestantes | number:'1.0-1' }} kg</strong> de cumplir tu meta diaria de <strong>{{ estadisticasUsuario.metaDiaria }} kg</strong>!
-            </p>
+        <div class="welcome-container">
+          <div class="welcome-info">
+            <div class="welcome-icon">
+              <ion-icon name="person-circle-outline"></ion-icon>
+            </div>
+            <div class="welcome-text">
+              <h2>¡Hola, {{ getNombreUsuarioLogueado() }}!</h2>
+              <p class="stats-today">
+                Hoy has ayudado a reciclar <strong>{{ estadisticasUsuario.kilosHoy | number:'1.0-1' }} kg</strong>
+              </p>
+              <!-- <p class="goal-info">
+                Estás a <strong>{{ estadisticasUsuario.kilosRestantes | number:'1.0-1' }} kg</strong> de cumplir tu meta diaria de <strong>{{ estadisticasUsuario.metaDiaria }} kg</strong>!
+              </p> -->
+            </div>
           </div>
-          <div class="meta-progress">
-            <ion-progress-bar 
+          <div class="goal-progress">
+            <!-- <div class="progress-header">
+              <span class="progress-label">Progreso diario</span>
+              <span class="progress-percentage">{{ estadisticasUsuario.porcentajeMeta | number:'1.0-0' }}%</span>
+            </div> -->
+            <!-- <ion-progress-bar 
               [value]="estadisticasUsuario.porcentajeMeta / 100"
-              [color]="estadisticasUsuario.porcentajeMeta >= 100 ? 'success' : 'primary'">
+              [color]="estadisticasUsuario.porcentajeMeta >= 100 ? 'success' : 'primary'"
+              class="progress-bar">
             </ion-progress-bar>
-            <span class="progress-text">{{ estadisticasUsuario.porcentajeMeta | number:'1.0-0' }}%</span>
+            <div class="progress-details">
+              <span class="current-kg">{{ estadisticasUsuario.kilosHoy | number:'1.0-1' }} kg</span>
+              <span class="goal-kg">Meta: {{ estadisticasUsuario.metaDiaria }} kg</span>
+            </div> -->
           </div>
         </div>
       </ion-card-content>
     </ion-card>
 
-    <!-- Card: Identificación -->
-    <ion-card class="card card-id">
+    <!-- Card: Identificación del vecino -->
+    <ion-card class="identification-card">
       <ion-card-header>
-        <ion-card-title>Identificar vecino</ion-card-title>
-        <ion-card-subtitle>Ingresa DNI, teléfono o nombre para buscar</ion-card-subtitle>
+        <div class="card-header-content">
+          <div class="header-icon">
+            <ion-icon name="search-outline"></ion-icon>
+          </div>
+          <div class="header-text">
+            <ion-card-title>Identificar Vecino</ion-card-title>
+            <ion-card-subtitle>Ingresa DNI, teléfono o nombre para buscar</ion-card-subtitle>
+          </div>
+        </div>
       </ion-card-header>
+      
       <ion-card-content [formGroup]="formId">
-        <div class="grid-3">
-          <ion-item>
-            <ion-label position="stacked">DNI *</ion-label>
-            <ion-input formControlName="dni" placeholder="12345678" type="number"></ion-input>
-          </ion-item>
+        <div class="search-form">
+          <div class="form-grid">
+            <div class="form-item dni-field">
+              <ion-label position="stacked">
+                <ion-icon name="card-outline"></ion-icon>
+                DNI *
+              </ion-label>
+              <ion-input 
+                formControlName="dni" 
+                placeholder="12345678" 
+                type="number"
+                class="search-input">
+              </ion-input>
+            </div>
 
-          <ion-item>
-            <ion-label position="stacked">Teléfono *</ion-label>
-            <ion-input formControlName="telefono" placeholder="1123456789" type="tel"></ion-input>
-          </ion-item>
+            <div class="form-item phone-field">
+              <ion-label position="stacked">
+                <ion-icon name="call-outline"></ion-icon>
+                Teléfono *
+              </ion-label>
+              <ion-input 
+                formControlName="telefono" 
+                placeholder="1123456789" 
+                type="tel"
+                class="search-input">
+              </ion-input>
+            </div>
 
-          <ion-item>
-            <ion-label position="stacked">Nombre (opcional)</ion-label>
-            <ion-input formControlName="nombre" placeholder="Nombre Apellido"></ion-input>
-          </ion-item>
+            <div class="form-item name-field">
+              <ion-label position="stacked">
+                <ion-icon name="person-outline"></ion-icon>
+                Nombre (opcional)
+              </ion-label>
+              <ion-input 
+                formControlName="nombre" 
+                placeholder="Nombre Apellido"
+                class="search-input">
+              </ion-input>
+            </div>
+          </div>
+
+          <div class="search-actions">
+            <ion-button 
+              (click)="buscarVecino()" 
+              [disabled]="buscando || (!formId.value.dni && !formId.value.telefono)"
+              class="search-btn">
+              <ion-icon name="search-outline" slot="start"></ion-icon>
+              {{ buscando ? 'Buscando...' : 'Buscar Vecino' }}
+            </ion-button>
+
+            <ion-button 
+              (click)="registrarVecinoExpress()" 
+              [disabled]="!formId.value.dni || !formId.value.telefono || !formId.value.nombre"
+              class="register-btn" 
+              fill="outline">
+              <ion-icon name="person-add-outline" slot="start"></ion-icon>
+              Registro Express
+            </ion-button>
+
+            <ion-button 
+              (click)="limpiarBusqueda()" 
+              class="clear-btn" 
+              fill="clear">
+              <ion-icon name="refresh-outline" slot="start"></ion-icon>
+              Limpiar
+            </ion-button>
+          </div>
+
+          <!-- Resultado de búsqueda exitosa -->
+          <div class="search-result success" *ngIf="vecinoSeleccionado">
+            <div class="result-content">
+              <div class="result-icon">
+                <ion-icon name="checkmark-circle"></ion-icon>
+              </div>
+              <div class="result-info">
+                <h4>Vecino encontrado</h4>
+                <p>{{ vecinoSeleccionado?.nombre }} {{ vecinoSeleccionado?.apellido }}</p>
+                <span class="result-details">{{ vecinoSeleccionado?.telefono }} · {{ vecinoSeleccionado?.dni }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mensaje de búsqueda fallida -->
+          <div class="search-result warning" *ngIf="busquedaFallida && !vecinoSeleccionado">
+            <div class="result-content">
+              <div class="result-icon">
+                <ion-icon name="alert-circle"></ion-icon>
+              </div>
+              <div class="result-info">
+                <h4>No se encontró el vecino</h4>
+                <p>No se encontró ningún vecino con esos datos. Puedes usar "Registro Express" para crear uno nuevo.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Error general -->
+          <div class="search-result error" *ngIf="error">
+            <div class="result-content">
+              <div class="result-icon">
+                <ion-icon name="close-circle"></ion-icon>
+              </div>
+              <div class="result-info">
+                <h4>Error</h4>
+                <p>{{ error }}</p>
+              </div>
+            </div>
+          </div>
         </div>
-
-        <div class="inline-actions">
-          <ion-button 
-            (click)="buscarVecino()" 
-            [disabled]="buscando || (!formId.value.dni && !formId.value.telefono)"
-            color="primary">
-            <ion-icon name="search-outline" slot="start"></ion-icon>
-            {{ buscando ? 'Buscando...' : 'Buscar vecino' }}
-          </ion-button>
-
-          <ion-button 
-            (click)="registrarVecinoExpress()" 
-            [disabled]="!formId.value.dni || !formId.value.telefono || !formId.value.nombre"
-            color="secondary" 
-            fill="outline">
-            <ion-icon name="person-add-outline" slot="start"></ion-icon>
-            Registro express
-          </ion-button>
-
-          <ion-button 
-            (click)="limpiarBusqueda()" 
-            color="medium" 
-            fill="clear">
-            <ion-icon name="refresh-outline" slot="start"></ion-icon>
-            Limpiar
-          </ion-button>
-        </div>
-
-        <!-- Resultado de búsqueda -->
-        <div class="search-result" *ngIf="vecinoSeleccionado">
-          <ion-chip color="success" class="chip-encontrado" outline="true">
-            <ion-icon name="person-circle-outline"></ion-icon>
-            <ion-label>{{ vecinoSeleccionado?.nombre }} {{ vecinoSeleccionado?.apellido }} · {{ vecinoSeleccionado?.telefono }}</ion-label>
-          </ion-chip>
-        </div>
-
-        <!-- Mensaje de búsqueda fallida -->
-        <div class="search-error" *ngIf="busquedaFallida && !vecinoSeleccionado">
-          <ion-text color="warning">
-            <p>No se encontró ningún vecino con esos datos. Puedes usar "Registro express" para crear uno nuevo.</p>
-          </ion-text>
-        </div>
-
-        <!-- Error general -->
-        <ion-text color="danger" *ngIf="error" class="err">{{ error }}</ion-text>
       </ion-card-content>
     </ion-card>
 
     <!-- Card: Detalles del reciclaje -->
-    <ion-card class="card card-form" [class.locked]="!vecinoSeleccionado">
+    <ion-card class="recycling-card" [class.locked]="!vecinoSeleccionado">
       <ion-card-header>
-        <ion-card-title>Detalles del reciclaje</ion-card-title>
-        <ion-card-subtitle *ngIf="!vecinoSeleccionado">Bloqueado hasta validar vecino</ion-card-subtitle>
+        <div class="card-header-content">
+          <div class="header-icon">
+            <ion-icon name="leaf-outline"></ion-icon>
+          </div>
+          <div class="header-text">
+            <ion-card-title>Detalles del Reciclaje</ion-card-title>
+            <ion-card-subtitle *ngIf="!vecinoSeleccionado">Bloqueado hasta validar vecino</ion-card-subtitle>
+            <ion-card-subtitle *ngIf="vecinoSeleccionado">Completa los detalles para registrar el reciclaje</ion-card-subtitle>
+          </div>
+        </div>
       </ion-card-header>
 
       <ion-card-content [formGroup]="formReciclaje">
-        <!-- Overlay bloqueo -->
+        <!-- Overlay de bloqueo -->
         <div class="lock-overlay" *ngIf="!vecinoSeleccionado">
-          <ion-icon name="lock-closed-outline"></ion-icon>
-          <span>Valida al vecino para continuar</span>
+          <div class="lock-content">
+            <ion-icon name="lock-closed-outline"></ion-icon>
+            <span>Valida al vecino para continuar</span>
+          </div>
         </div>
 
-        <div class="grid-2">
-          <ion-item class="field">
-            <ion-label position="stacked">Tipo de residuo *</ion-label>
-            <ion-select formControlName="tipoResiduo" [disabled]="!vecinoSeleccionado" interface="popover"
-              placeholder="Selecciona">
-              <ion-select-option *ngFor="let t of tiposResiduo" [value]="t._id">{{ t.nombre }}</ion-select-option>
-            </ion-select>
-          </ion-item>
+        <div class="recycling-form">
+          <div class="form-grid">
+            <div class="form-item type-field">
+              <ion-label position="stacked">
+                <ion-icon name="trash-outline"></ion-icon>
+                Tipo de Residuo *
+              </ion-label>
+              <ion-select 
+                formControlName="tipoResiduo" 
+                [disabled]="!vecinoSeleccionado" 
+                interface="popover"
+                placeholder="Selecciona el tipo"
+                class="type-select">
+                <ion-select-option *ngFor="let t of tiposResiduo" [value]="t._id">
+                  {{ t.nombre }}
+                </ion-select-option>
+              </ion-select>
+            </div>
 
-          <ion-item class="field weight-field">
-            <ion-label position="stacked">Peso (kg) *</ion-label>
-            <ion-input formControlName="pesoKg" readonly placeholder="0.00"></ion-input>
-            <ion-button slot="end" (click)="conectarBalanza()" [disabled]="!vecinoSeleccionado || conectando">
-              <ion-icon [name]="conectando ? 'sync-outline' : 'hardware-chip-outline'" slot="start"></ion-icon>
-              {{ conectando ? 'Conectando...' : 'Obtener peso' }}
-            </ion-button>
-          </ion-item>
+            <div class="form-item weight-field">
+              <ion-label position="stacked">
+                <ion-icon name="scale-outline"></ion-icon>
+                Peso (kg) *
+              </ion-label>
+              <div class="weight-input-container">
+                <ion-input 
+                  formControlName="pesoKg" 
+                  readonly 
+                  placeholder="0.00"
+                  class="weight-input">
+                </ion-input>
+                <ion-button 
+                  (click)="conectarBalanza()" 
+                  [disabled]="!vecinoSeleccionado || conectando"
+                  class="balance-btn-inline">
+                  <ion-icon [name]="conectando ? 'sync-outline' : 'hardware-chip-outline'" slot="start"></ion-icon>
+                  {{ conectando ? 'Conectando...' : 'Obtener Peso' }}
+                </ion-button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Información adicional -->
+          <div class="additional-info">
+            <div class="info-badges">
+              <ion-badge color="medium" *ngIf="!vecinoSeleccionado" class="info-badge">
+                <ion-icon name="time-outline"></ion-icon>
+                Fecha se asignará al guardar
+              </ion-badge>
+              <ion-badge color="success" *ngIf="vecinoSeleccionado" class="info-badge">
+                <ion-icon name="calendar-outline"></ion-icon>
+                Se guardará con fecha: {{ now | date:'short' }}
+              </ion-badge>
+              <ion-badge color="tertiary" *ngIf="formReciclaje.value.pesoKg" class="info-badge">
+                <ion-icon name="gift-outline"></ion-icon>
+                Cupones estimados: {{ tokensEstimados() }}
+              </ion-badge>
+            </div>
+          </div>
+
+          <!-- Botón de guardar -->
+          <ion-button 
+            expand="block" 
+            shape="round" 
+            size="large" 
+            (click)="generarCanje()"
+            [disabled]="!vecinoSeleccionado || formReciclaje.invalid || canjeando"
+            class="save-btn">
+            <ion-icon name="save-outline" slot="start"></ion-icon>
+            {{ canjeando ? 'Guardando...' : 'Guardar Reciclaje' }}
+          </ion-button>
         </div>
-
-        <ion-item class="field">
-          <ion-label position="stacked">Descripción (opcional)</ion-label>
-          <ion-textarea formControlName="descripcion" placeholder="Detalles adicionales..." rows="2"></ion-textarea>
-        </ion-item>
-
-        <div class="meta">
-          <ion-badge color="medium" *ngIf="!vecinoSeleccionado">Fecha se asignará al guardar</ion-badge>
-          <ion-badge color="success" *ngIf="vecinoSeleccionado">Se guardará con fecha: {{ now | date:'short' }}</ion-badge>
-          <ion-badge color="tertiary" *ngIf="formReciclaje.value.pesoKg">Cupones estimados: {{ tokensEstimados() }}</ion-badge>
-        </div>
-
-        <ion-button expand="block" shape="round" size="large" (click)="generarCanje()"
-          [disabled]="!vecinoSeleccionado || formReciclaje.invalid || canjeando">
-          <ion-icon name="save-outline" slot="start"></ion-icon>
-          {{ canjeando ? 'Guardando...' : 'Guardar reciclaje' }}
-        </ion-button>
       </ion-card-content>
     </ion-card>
-
   </div>
 </ion-content>

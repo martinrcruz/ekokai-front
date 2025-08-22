@@ -27,6 +27,10 @@ export class EcopuntosComponent {
     );
   }
 
+  getEcopuntosActivos(): number {
+    return this.ecopuntos.filter(e => e?.activo).length;
+  }
+
   // Chart
   barChartType: ChartConfiguration<'bar'>['type'] = 'bar';
   barChartOptions: ChartConfiguration<'bar'>['options'] = {

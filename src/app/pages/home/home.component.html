@@ -10,145 +10,265 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding dashboard-content">
-  <div class="dashboard-section dashboard-top-cards">
-    <div class="top-card">
-      <div class="top-card-icon"><ion-icon name="leaf-outline"></ion-icon></div>
-      <div class="top-card-value">{{ totalKilos | number }}</div>
-      <div class="top-card-label">Kg reciclados</div>
-    </div>
-    <div class="top-card">
-      <div class="top-card-icon"><ion-icon name="people-outline"></ion-icon></div>
-      <div class="top-card-value">{{ totalUsuarios }}</div>
-      <div class="top-card-label">Usuarios</div>
-    </div>
-    <div class="top-card">
-      <div class="top-card-icon"><ion-icon name="star-outline"></ion-icon></div>
-      <div class="top-card-value">{{ mejorEcopunto.kilosMes }}</div>
-      <div class="top-card-label">Mejor Ecopunto</div>
-      <div class="top-card-sub">{{ mejorEcopunto.nombre }}</div>
-    </div>
-    <!-- <div class="top-card">
-      <div class="top-card-icon"><ion-icon name="star-outline"></ion-icon></div>
-      <div class="top-card-value">{{ mejorEcopunto.kilosMes }}</div>
-      <div class="top-card-label">Peor Ecopunto</div>
-      <div class="top-card-sub">{{ mejorEcopunto.nombre }}</div>
-    </div> -->
-  </div>
-
-  <!-- Sección del Catálogo de Premios -->
-  <!-- <div class="dashboard-section">
-    <ion-card class="catalogo-card">
-      <ion-card-header>
-        <ion-card-title>
-          <i class="bi bi-gift"></i> Catálogo de Premios
-        </ion-card-title>
-        <ion-card-subtitle>Canjea tus puntos por increíbles premios</ion-card-subtitle>
-      </ion-card-header>
-      <ion-card-content>
-        <p>Descubre todos los premios disponibles para canjear con los puntos que obtienes al reciclar.</p>
-        <ion-button 
-          expand="block" 
-          color="primary" 
-          routerLink="/catalogo"
-          class="catalogo-button">
-          <i class="bi bi-gift"></i>
-          Ver Catálogo Completo
-        </ion-button>
-      </ion-card-content>
-    </ion-card>
-  </div> -->
-
-  <!-- <div class="dashboard-section dashboard-graphs-row">
-    <div class="graph-card">
-      <div class="graph-title">Distribución mensual</div>
-      <canvas baseChart [data]="barChartData" [options]="barChartOptions" [type]="barChartType" [legend]="barChartLegend"></canvas>
-      <div class="graph-legend">
-        <span class="legend-dot green"></span> Kilos reciclados
+<ion-content [fullscreen]="true">
+  <div class="home-container">
+    <!-- Header de la página -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-icon">
+          <ion-icon name="home-outline"></ion-icon>
+        </div>
+        <div class="header-text">
+          <h1>Dashboard Ekokai</h1>
+          <p>Visión general del sistema de reciclaje comunitario</p>
+        </div>
+        <div class="header-stats">
+          <div class="stat-item">
+            <div class="stat-number">{{ totalKilos | number }}</div>
+            <div class="stat-label">KG Total</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ totalUsuarios }}</div>
+            <div class="stat-label">Usuarios</div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="graph-card doughnut-card">
-      <div class="graph-title">% Meta mensual</div>
-      <canvas baseChart [data]="doughnutChartData" [options]="doughnutChartOptions" [type]="doughnutChartType"></canvas>
-      <div class="circle-chart-value">
-        {{ metaPorcentaje }}%
-      </div>
-    </div>
-  </div> -->
 
-  <div class="dashboard-section dashboard-table-card">
-    <div class="table-tabs">
-      <span class="tab active">Usuarios recientes</span>
-      <span class="tab">Ecopuntos</span>
-      <span class="tab">Más</span>
+    <!-- Cards de métricas principales -->
+    <div class="metrics-grid">
+      <ion-card class="metric-card total-kilos-card">
+        <ion-card-content>
+          <div class="metric-content">
+            <div class="metric-icon">
+              <ion-icon name="leaf-outline"></ion-icon>
+            </div>
+            <div class="metric-info">
+              <div class="metric-value">{{ totalKilos | number }}</div>
+              <div class="metric-label">Kg Reciclados</div>
+              <div class="metric-description">Total acumulado en el sistema</div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="metric-card total-users-card">
+        <ion-card-content>
+          <div class="metric-content">
+            <div class="metric-icon">
+              <ion-icon name="people-outline"></ion-icon>
+            </div>
+            <div class="metric-info">
+              <div class="metric-value">{{ totalUsuarios }}</div>
+              <div class="metric-label">Usuarios Activos</div>
+              <div class="metric-description">Participantes en el programa</div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="metric-card best-ecopoint-card">
+        <ion-card-content>
+          <div class="metric-content">
+            <div class="metric-icon">
+              <ion-icon name="star-outline"></ion-icon>
+            </div>
+            <div class="metric-info">
+              <div class="metric-value">{{ mejorEcopunto.kilosMes }}</div>
+              <div class="metric-label">Mejor Ecopunto</div>
+              <div class="metric-description">{{ mejorEcopunto.nombre }}</div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- <ion-card class="metric-card monthly-goal-card">
+        <ion-card-content>
+          <div class="metric-content">
+            <div class="metric-icon">
+              <ion-icon name="trophy-outline"></ion-icon>
+            </div>
+            <div class="metric-info">
+              <div class="metric-value">{{ metaPorcentaje }}%</div>
+              <div class="metric-label">Meta Mensual</div>
+              <div class="metric-description">Progreso del objetivo</div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card> -->
     </div>
-    <ion-card>
+
+    <!-- Sección de gráficos -->
+    <div class="charts-section">
+      <ion-card class="chart-card bar-chart-card">
+        <ion-card-header>
+          <div class="card-header-content">
+            <div class="header-icon">
+              <ion-icon name="bar-chart-outline"></ion-icon>
+            </div>
+            <div class="header-text">
+              <ion-card-title>Distribución Mensual</ion-card-title>
+              <ion-card-subtitle>Evolución de kilos reciclados por mes</ion-card-subtitle>
+            </div>
+          </div>
+        </ion-card-header>
+        
+        <ion-card-content>
+          <div class="chart-container">
+            <canvas baseChart 
+              [data]="barChartData" 
+              [options]="barChartOptions" 
+              [type]="barChartType" 
+              [legend]="barChartLegend">
+            </canvas>
+            <div class="chart-legend">
+              <span class="legend-item">
+                <span class="legend-dot green"></span>
+                Kilos reciclados
+              </span>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="chart-card doughnut-chart-card">
+        <ion-card-header>
+          <div class="card-header-content">
+            <div class="header-icon">
+              <ion-icon name="pie-chart-outline"></ion-icon>
+            </div>
+            <div class="header-text">
+              <ion-card-title>Meta Mensual</ion-card-title>
+              <ion-card-subtitle>Porcentaje de cumplimiento del objetivo</ion-card-subtitle>
+            </div>
+          </div>
+        </ion-card-header>
+        
+        <ion-card-content>
+          <div class="chart-container">
+            <div class="chart-overlay">
+              <div class="chart-center-value">
+                {{ metaPorcentaje }}%
+              </div>
+            </div>
+            <canvas baseChart 
+              [data]="doughnutChartData" 
+              [options]="doughnutChartOptions" 
+              [type]="doughnutChartType">
+            </canvas>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Sección de usuarios recientes -->
+    <!-- <ion-card class="users-section-card">
       <ion-card-header>
-        <ion-card-title>Usuarios recientes ({{ usuariosRecientesFiltrados.length }})</ion-card-title>
-        <div class="filtros-section">
-          <ion-row>
-            <ion-col size="12" size-md="4">
-              <ion-item>
-                <ion-input 
-                  label="Buscar usuario" 
-                  labelPlacement="floating"
-                  [(ngModel)]="filtroUsuario"
-                  (ionInput)="onFiltroUsuarioChange()"
-                  placeholder="Nombre o email">
-                </ion-input>
-              </ion-item>
-            </ion-col>
-            <ion-col size="12" size-md="4">
-              <ion-item>
-                <ion-select 
-                  label="Filtrar por mes" 
-                  labelPlacement="floating"
-                  [(ngModel)]="filtroMes"
-                  (ionChange)="onFiltroMesChange()">
-                  <ion-select-option value="">Todos los meses</ion-select-option>
-                  <ion-select-option *ngFor="let mes of meses" [value]="mes.value">{{ mes.label }}</ion-select-option>
-                </ion-select>
-              </ion-item>
-            </ion-col>
-            <ion-col size="12" size-md="4">
-              <ion-button fill="clear" (click)="limpiarFiltros()">
-                <ion-icon name="refresh-outline" slot="start"></ion-icon>
-                Limpiar filtros
-              </ion-button>
-            </ion-col>
-          </ion-row>
+        <div class="card-header-content">
+          <div class="header-icon">
+            <ion-icon name="people-circle-outline"></ion-icon>
+          </div>
+          <div class="header-text">
+            <ion-card-title>Usuarios Recientes</ion-card-title>
+            <ion-card-subtitle>{{ usuariosRecientesFiltrados.length }} usuarios encontrados</ion-card-subtitle>
+          </div>
         </div>
       </ion-card-header>
+
       <ion-card-content>
-        <ion-list>
-          <ion-item *ngFor="let user of usuariosRecientesFiltrados; let i = index" class="usuario-item" [class.zebra]="i % 2 === 1">
-            <ion-avatar slot="start" [ngClass]="'avatar-' + (user.rol ? user.rol.toLowerCase() : 'default')">
-              <span class="avatar-iniciales">
+        <div class="filters-section">
+          <div class="filters-grid">
+            <div class="filter-item search-filter">
+              <ion-label position="stacked">
+                <ion-icon name="search-outline"></ion-icon>
+                Buscar Usuario
+              </ion-label>
+              <ion-input 
+                [(ngModel)]="filtroUsuario"
+                (ionInput)="onFiltroUsuarioChange()"
+                placeholder="Nombre o email"
+                class="search-input">
+              </ion-input>
+            </div>
+
+            <div class="filter-item month-filter">
+              <ion-label position="stacked">
+                <ion-icon name="calendar-outline"></ion-icon>
+                Filtrar por Mes
+              </ion-label>
+              <ion-select 
+                [(ngModel)]="filtroMes"
+                (ionChange)="onFiltroMesChange()"
+                placeholder="Seleccionar mes"
+                class="month-select">
+                <ion-select-option value="">Todos los meses</ion-select-option>
+                <ion-select-option *ngFor="let mes of meses" [value]="mes.value">{{ mes.label }}</ion-select-option>
+              </ion-select>
+            </div>
+
+            <div class="filter-item clear-filter">
+              <ion-button 
+                fill="clear" 
+                (click)="limpiarFiltros()"
+                class="clear-filters-btn">
+                <ion-icon name="refresh-outline"></ion-icon>
+                Limpiar Filtros
+              </ion-button>
+            </div>
+          </div>
+        </div>
+
+        <div class="users-list">
+          <ion-item *ngFor="let user of usuariosRecientesFiltrados; let i = index" 
+                    class="user-item" 
+                    [class.zebra]="i % 2 === 1">
+            <div class="user-avatar" slot="start">
+              <div class="avatar-initials" [ngClass]="'avatar-' + (user.rol ? user.rol.toLowerCase() : 'default')">
                 {{ (user.nombre ? user.nombre[0] : '') + (user.apellido ? user.apellido[0] : '') }}
-              </span>
-            </ion-avatar>
-            <ion-label>
-              <h3 class="truncate">{{ user.nombre }} {{ user.apellido }}</h3>
-              <p class="usuario-stats">
-                <span class="stat" [ngClass]="'rol-' + (user.rol ? user.rol.toLowerCase() : 'default')">{{ user.rol | titlecase }}</span>
-                <span class="stat">{{ user.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</span>
-              </p>
+              </div>
+            </div>
+            
+            <ion-label class="user-info">
+              <h3 class="user-name">{{ user.nombre }} {{ user.apellido }}</h3>
+              <div class="user-details">
+                <ion-badge [ngClass]="'role-badge-' + (user.rol ? user.rol.toLowerCase() : 'default')" class="role-badge">
+                  <ion-icon name="person-circle-outline"></ion-icon>
+                  {{ user.rol | titlecase }}
+                </ion-badge>
+                <span class="user-date">
+                  <ion-icon name="calendar-outline"></ion-icon>
+                  {{ user.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}
+                </span>
+              </div>
             </ion-label>
-            <ion-buttons slot="end">
-              <ion-button fill="clear" (click)="verUsuario(user)" title="Ver usuario">
+            
+            <div class="user-actions" slot="end">
+              <ion-button fill="clear" 
+                         (click)="verUsuario(user)" 
+                         title="Ver usuario"
+                         class="action-btn view-btn">
                 <ion-icon name="eye-outline"></ion-icon>
               </ion-button>
-              <ion-button fill="clear" (click)="editarUsuario(user)" title="Editar usuario">
+              <ion-button fill="clear" 
+                         (click)="editarUsuario(user)" 
+                         title="Editar usuario"
+                         class="action-btn edit-btn">
                 <ion-icon name="create-outline"></ion-icon>
               </ion-button>
-            </ion-buttons>
+            </div>
           </ion-item>
-        </ion-list>
-        <div *ngIf="usuariosRecientesFiltrados.length === 0" class="no-data">
-          <ion-icon name="people-outline"></ion-icon>
-          <p>No hay usuarios que coincidan con los filtros aplicados</p>
+
+          <div *ngIf="usuariosRecientesFiltrados.length === 0" class="empty-state">
+            <div class="empty-content">
+              <div class="empty-icon">
+                <ion-icon name="people-outline"></ion-icon>
+              </div>
+              <h3>No hay usuarios</h3>
+              <p>No se encontraron usuarios que coincidan con los filtros aplicados</p>
+            </div>
+          </div>
         </div>
       </ion-card-content>
-    </ion-card>
+    </ion-card> -->
   </div>
 </ion-content>

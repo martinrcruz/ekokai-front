@@ -1,74 +1,4 @@
 // Estilos para el catálogo de premios
-.premios-destacados {
-  margin: 16px;
-  
-  .destacados-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 16px;
-    
-    ion-card-header {
-      padding-bottom: 8px;
-      
-      ion-card-title {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: white;
-        
-        i {
-          color: #ffd700;
-          margin-right: 8px;
-        }
-      }
-    }
-    
-    .premio-destacado {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 12px;
-      margin: 8px;
-      
-      img {
-        width: 100%;
-        height: 120px;
-        object-fit: cover;
-        border-radius: 8px 8px 0 0;
-      }
-      
-      ion-card-header {
-        padding: 12px;
-        
-        ion-card-title {
-          font-size: 1rem;
-          color: white;
-        }
-        
-        ion-card-subtitle {
-          color: #ffd700;
-          font-weight: 600;
-        }
-      }
-      
-      ion-card-content {
-        padding: 12px;
-        
-        p {
-          color: rgba(255, 255, 255, 0.9);
-          font-size: 0.9rem;
-          margin-bottom: 12px;
-        }
-        
-        ion-button {
-          --background: #ffd700;
-          --color: #333;
-          font-weight: 600;
-          height: 36px;
-        }
-      }
-    }
-  }
-}
 
 .filtros-container {
   margin: 16px;
@@ -98,16 +28,52 @@
       cursor: pointer;
       transition: all 0.3s ease;
       font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 20px;
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      i {
+        margin-right: 6px;
+        font-size: 1.1rem;
+        vertical-align: middle;
+        opacity: 0.9;
+      }
       
       &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        
+        i {
+          opacity: 1;
+          transform: scale(1.1);
+        }
+      }
+      
+      &:active {
+        transform: translateY(0);
+        transition: transform 0.1s ease;
+      }
+      
+      // Estilo para categoría seleccionada
+      &[color="primary"] {
+        i {
+          opacity: 1;
+          transform: scale(1.05);
+        }
+        
+        &:hover {
+          i {
+            transform: scale(1.15);
+          }
+        }
       }
     }
     
     .limpiar-btn {
       margin-left: auto;
-      --color: var(--ion-color-medium);
       font-size: 0.9rem;
       
       i {
@@ -126,27 +92,30 @@
     color: var(--ion-color-medium);
     
     ion-icon {
-      font-size: 64px;
+      font-size: 4rem;
       margin-bottom: 16px;
+      opacity: 0.5;
     }
     
     h3 {
       margin: 0 0 8px 0;
+      font-size: 1.2rem;
       font-weight: 600;
     }
     
     p {
       margin: 0;
-      font-size: 0.9rem;
+      font-size: 1rem;
+      opacity: 0.8;
     }
   }
   
   .premio-card {
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
     transition: all 0.3s ease;
-    margin-bottom: 16px;
+    border-radius: 16px;
     overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     
     &:hover {
       transform: translateY(-4px);
@@ -157,6 +126,7 @@
       width: 100%;
       height: 200px;
       object-fit: cover;
+      border-radius: 16px 16px 0 0;
     }
     
     ion-card-header {
@@ -165,8 +135,9 @@
       ion-card-title {
         font-size: 1.1rem;
         font-weight: 600;
-        margin-bottom: 8px;
         color: var(--ion-color-dark);
+        margin-bottom: 8px;
+        line-height: 1.3;
       }
       
       ion-card-subtitle {
@@ -187,7 +158,7 @@
         line-height: 1.4;
         margin-bottom: 16px;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
+        -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
@@ -230,14 +201,20 @@
         }
       }
       
-      ion-button {
+      .btn-ver-detalle {
         width: 100%;
         height: 44px;
         font-weight: 600;
         border-radius: 8px;
+        --background: var(--ion-color-secondary);
+        --color: white;
         
         i {
           margin-right: 8px;
+        }
+        
+        &:hover {
+          --background: var(--ion-color-secondary-shade);
         }
       }
     }
@@ -246,41 +223,6 @@
 
 // Responsive design
 @media (max-width: 768px) {
-  .premios-destacados {
-    margin: 12px;
-    
-    .destacados-card {
-      .premio-destacado {
-        margin: 4px;
-        
-        img {
-          height: 100px;
-        }
-        
-        ion-card-header {
-          padding: 8px;
-          
-          ion-card-title {
-            font-size: 0.9rem;
-          }
-        }
-        
-        ion-card-content {
-          padding: 8px;
-          
-          p {
-            font-size: 0.8rem;
-          }
-          
-          ion-button {
-            height: 32px;
-            font-size: 0.8rem;
-          }
-        }
-      }
-    }
-  }
-  
   .filtros-container {
     margin: 12px;
     padding: 12px;
@@ -298,91 +240,137 @@
     
     .premio-card {
       ion-card-header {
-        padding: 12px 12px 6px;
+        padding: 8px 8px 4px;
         
         ion-card-title {
-          font-size: 1rem;
+          font-size: 0.9rem;
+          line-height: 1.2;
+        }
+        
+        ion-card-subtitle {
+          ion-badge {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+          }
         }
       }
       
       ion-card-content {
-        padding: 6px 12px 12px;
+        padding: 4px 8px 8px;
+        
+        .descripcion {
+          font-size: 0.75rem;
+          -webkit-line-clamp: 2;
+          margin-bottom: 8px;
+          line-height: 1.3;
+        }
         
         .premio-info {
+          padding: 6px;
+          margin-bottom: 8px;
           flex-direction: column;
-          gap: 8px;
+          gap: 4px;
           align-items: flex-start;
           
           .puntos, .stock {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
+            gap: 4px;
           }
         }
+        
+        .btn-ver-detalle {
+          height: 36px;
+          font-size: 0.8rem;
+          --padding-start: 8px;
+          --padding-end: 8px;
+          
+          i {
+            margin-right: 4px;
+            font-size: 0.9rem;
+          }
+        }
+      }
+      
+      img {
+        height: 120px;
       }
     }
   }
 }
 
-// Animaciones
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+// Estilos para pantallas muy pequeñas (móviles en portrait)
+@media (max-width: 480px) {
+  .premios-container {
+    padding: 0 8px 8px;
+    
+    .premio-card {
+      ion-card-header {
+        padding: 6px 6px 3px;
+        
+        ion-card-title {
+          font-size: 0.85rem;
+        }
+      }
+      
+      ion-card-content {
+        padding: 3px 6px 6px;
+        
+        .descripcion {
+          font-size: 0.7rem;
+          margin-bottom: 6px;
+        }
+        
+        .premio-info {
+          padding: 4px;
+          margin-bottom: 6px;
+          
+          .puntos, .stock {
+            font-size: 0.65rem;
+          }
+        }
+        
+        .btn-ver-detalle {
+          height: 32px;
+          font-size: 0.75rem;
+          
+          i {
+            font-size: 0.8rem;
+          }
+        }
+      }
+      
+      img {
+        height: 100px;
+      }
+    }
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
-.premio-card {
-  animation: fadeIn 0.5s ease-out;
-}
-
-// Estados de carga
-ion-spinner {
-  display: block;
-  margin: 40px auto;
-}
-
-// Botón flotante
-ion-fab-button {
-  --background: var(--ion-color-primary);
-  --color: white;
-  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  
-  &:hover {
-    --box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-  }
-}
-
-// Footer del catálogo
+// Estilos para el footer
 .catalogo-footer {
-  background: var(--ion-color-dark);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   
   .footer-content {
-    padding: 20px 16px;
+    padding: 20px 0;
     
     .footer-section {
       text-align: center;
-      margin-bottom: 16px;
       
       h4 {
-        color: var(--ion-color-primary);
-        font-weight: 600;
-        margin-bottom: 8px;
+        margin: 0 0 8px 0;
         font-size: 1.1rem;
+        font-weight: 600;
       }
       
       p {
-        color: rgba(255, 255, 255, 0.8);
-        font-size: 0.9rem;
-        line-height: 1.4;
         margin: 0;
+        font-size: 0.9rem;
+        opacity: 0.9;
       }
       
       ion-button {
-        --color: var(--ion-color-primary);
+        --color: white;
         font-weight: 500;
         
         i {
@@ -393,14 +381,28 @@ ion-fab-button {
   }
   
   .footer-bottom {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 12px 16px;
-    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 16px 0;
     
     p {
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 0.8rem;
+      text-align: center;
       margin: 0;
+      font-size: 0.8rem;
+      opacity: 0.8;
+    }
+  }
+}
+
+// Estilos para el botón flotante
+ion-fab {
+  ion-fab-button {
+    --background: var(--ion-color-primary);
+    --color: white;
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    
+    &:hover {
+      --background: var(--ion-color-primary-shade);
+      transform: scale(1.1);
     }
   }
 }

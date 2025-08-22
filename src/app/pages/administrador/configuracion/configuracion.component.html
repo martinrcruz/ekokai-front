@@ -5,8 +5,9 @@
     </ion-buttons>
     <ion-title>Configuración del Sistema</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="guardarConfiguracion()">
-        <ion-icon name="save-outline"></ion-icon>
+      <ion-button (click)="guardarConfiguracion()" class="save-button">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        Guardar
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -14,173 +15,292 @@
 
 <ion-content [fullscreen]="true">
   <div class="configuracion-container">
-    <!-- Configuración General -->
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>
+    <!-- Header de la página -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-icon">
           <ion-icon name="settings-outline"></ion-icon>
-          Configuración General
+        </div>
+        <div class="header-text">
+          <h1>Configuración del Sistema</h1>
+          <p>Gestiona la configuración general de la aplicación Ekokai</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Configuración General -->
+    <ion-card class="config-card">
+      <ion-card-header class="card-header-primary">
+        <ion-card-title>
+          <ion-icon name="business-outline"></ion-icon>
+          Información de la Empresa
         </ion-card-title>
+        <ion-card-subtitle>Datos básicos de la organización</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
-        <ion-item>
-          <ion-label position="stacked">Nombre de la Empresa</ion-label>
-          <ion-input [(ngModel)]="configuracion.general.nombreEmpresa" placeholder="Ekokai"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Email de Contacto</ion-label>
-          <ion-input [(ngModel)]="configuracion.general.emailContacto" type="email" placeholder="contacto@ekokai.com"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Teléfono</ion-label>
-          <ion-input [(ngModel)]="configuracion.general.telefono" placeholder="+34 123 456 789"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Dirección</ion-label>
-          <ion-input [(ngModel)]="configuracion.general.direccion" placeholder="Calle Principal 123, Madrid"></ion-input>
-        </ion-item>
+        <div class="form-grid">
+          <ion-item class="form-item">
+            <ion-label position="stacked">
+              <ion-icon name="business-outline"></ion-icon>
+              Nombre de la Empresa
+            </ion-label>
+            <ion-input [(ngModel)]="configuracion.general.nombreEmpresa" placeholder="Ekokai" class="form-input"></ion-input>
+          </ion-item>
+          <ion-item class="form-item">
+            <ion-label position="stacked">
+              <ion-icon name="mail-outline"></ion-icon>
+              Email de Contacto
+            </ion-label>
+            <ion-input [(ngModel)]="configuracion.general.emailContacto" type="email" placeholder="contacto@ekokai.com" class="form-input"></ion-input>
+          </ion-item>
+          <ion-item class="form-item">
+            <ion-label position="stacked">
+              <ion-icon name="call-outline"></ion-icon>
+              Teléfono
+            </ion-label>
+            <ion-input [(ngModel)]="configuracion.general.telefono" placeholder="+34 123 456 789" class="form-input"></ion-input>
+          </ion-item>
+          <ion-item class="form-item">
+            <ion-label position="stacked">
+              <ion-icon name="location-outline"></ion-icon>
+              Dirección
+            </ion-label>
+            <ion-input [(ngModel)]="configuracion.general.direccion" placeholder="Calle Principal 123, Madrid" class="form-input"></ion-input>
+          </ion-item>
+        </div>
       </ion-card-content>
     </ion-card>
 
     <!-- Configuración de Tokens -->
-    <ion-card>
-      <ion-card-header>
+    <ion-card class="config-card">
+      <ion-card-header class="card-header-success">
         <ion-card-title>
           <ion-icon name="star-outline"></ion-icon>
-          Configuración de Tokens
+          Sistema de Tokens
         </ion-card-title>
+        <ion-card-subtitle>Configuración de la economía interna</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
-        <ion-item>
-          <ion-label position="stacked">Tokens por Kilo</ion-label>
-          <ion-input [(ngModel)]="configuracion.tokens.tokensPorKilo" type="number" placeholder="10"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Tokens Mínimos para Retiro</ion-label>
-          <ion-input [(ngModel)]="configuracion.tokens.tokensMinimosRetiro" type="number" placeholder="100"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Máximo Tokens por Día</ion-label>
-          <ion-input [(ngModel)]="configuracion.tokens.maxTokensPorDia" type="number" placeholder="500"></ion-input>
-        </ion-item>
+        <div class="form-grid">
+          <ion-item class="form-item">
+            <ion-label position="stacked">
+              <ion-icon name="trending-up-outline"></ion-icon>
+              Tokens por Kilo
+            </ion-label>
+            <ion-input [(ngModel)]="configuracion.tokens.tokensPorKilo" type="number" placeholder="10" class="form-input"></ion-input>
+            <ion-note slot="helper">Cantidad de tokens otorgados por cada kilo de residuo</ion-note>
+          </ion-item>
+          <ion-item class="form-item">
+            <ion-label position="stacked">
+              <ion-icon name="wallet-outline"></ion-icon>
+              Tokens Mínimos para Retiro
+            </ion-label>
+            <ion-input [(ngModel)]="configuracion.tokens.tokensMinimosRetiro" type="number" placeholder="100" class="form-input"></ion-input>
+            <ion-note slot="helper">Mínimo de tokens necesarios para canjear premios</ion-note>
+          </ion-item>
+          <ion-item class="form-item">
+            <ion-label position="stacked">
+              <ion-icon name="speedometer-outline"></ion-icon>
+              Máximo Tokens por Día
+            </ion-label>
+            <ion-input [(ngModel)]="configuracion.tokens.maxTokensPorDia" type="number" placeholder="500" class="form-input"></ion-input>
+            <ion-note slot="helper">Límite diario de tokens por usuario</ion-note>
+          </ion-item>
+        </div>
       </ion-card-content>
     </ion-card>
 
     <!-- Configuración de Notificaciones -->
-    <ion-card>
-      <ion-card-header>
+    <ion-card class="config-card">
+      <ion-card-header class="card-header-info">
         <ion-card-title>
           <ion-icon name="notifications-outline"></ion-icon>
-          Notificaciones
+          Sistema de Notificaciones
         </ion-card-title>
+        <ion-card-subtitle>Gestiona las alertas y comunicaciones</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
-        <ion-item>
-          <ion-label>Notificaciones por Email</ion-label>
-          <ion-toggle [(ngModel)]="configuracion.notificaciones.emailActivo"></ion-toggle>
-        </ion-item>
-        <ion-item>
-          <ion-label>Notificaciones Push</ion-label>
-          <ion-toggle [(ngModel)]="configuracion.notificaciones.pushActivo"></ion-toggle>
-        </ion-item>
-        <ion-item>
-          <ion-label>Recordatorios</ion-label>
-          <ion-toggle [(ngModel)]="configuracion.notificaciones.recordatorios"></ion-toggle>
-        </ion-item>
-        <ion-item>
-          <ion-label>Reportes Automáticos</ion-label>
-          <ion-toggle [(ngModel)]="configuracion.notificaciones.reportes"></ion-toggle>
-        </ion-item>
+        <div class="toggle-grid">
+          <ion-item class="toggle-item">
+            <ion-label>
+              <div class="toggle-label">
+                <ion-icon name="mail-outline"></ion-icon>
+                <span>Notificaciones por Email</span>
+              </div>
+              <p>Enviar alertas por correo electrónico</p>
+            </ion-label>
+            <ion-toggle [(ngModel)]="configuracion.notificaciones.emailActivo" class="custom-toggle"></ion-toggle>
+          </ion-item>
+          <ion-item class="toggle-item">
+            <ion-label>
+              <div class="toggle-label">
+                <ion-icon name="phone-portrait-outline"></ion-icon>
+                <span>Notificaciones Push</span>
+              </div>
+              <p>Alertas en tiempo real en dispositivos móviles</p>
+            </ion-label>
+            <ion-toggle [(ngModel)]="configuracion.notificaciones.pushActivo" class="custom-toggle"></ion-toggle>
+          </ion-item>
+          <ion-item class="toggle-item">
+            <ion-label>
+              <div class="toggle-label">
+                <ion-icon name="time-outline"></ion-icon>
+                <span>Recordatorios</span>
+              </div>
+              <p>Recordatorios automáticos de actividades</p>
+            </ion-label>
+            <ion-toggle [(ngModel)]="configuracion.notificaciones.recordatorios" class="custom-toggle"></ion-toggle>
+          </ion-item>
+          <ion-item class="toggle-item">
+            <ion-label>
+              <div class="toggle-label">
+                <ion-icon name="analytics-outline"></ion-icon>
+                <span>Reportes Automáticos</span>
+              </div>
+              <p>Generación automática de reportes</p>
+            </ion-label>
+            <ion-toggle [(ngModel)]="configuracion.notificaciones.reportes" class="custom-toggle"></ion-toggle>
+          </ion-item>
+        </div>
       </ion-card-content>
     </ion-card>
 
     <!-- Configuración de Seguridad -->
-    <ion-card>
-      <ion-card-header>
+    <ion-card class="config-card">
+      <ion-card-header class="card-header-warning">
         <ion-card-title>
-          <ion-icon name="shield-outline"></ion-icon>
-          Seguridad
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          Configuración de Seguridad
         </ion-card-title>
+        <ion-card-subtitle>Parámetros de autenticación y protección</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
-        <ion-item>
-          <ion-label position="stacked">Timeout de Sesión (minutos)</ion-label>
-          <ion-input [(ngModel)]="configuracion.seguridad.sesionTimeout" type="number" placeholder="30"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Intentos Máximos de Login</ion-label>
-          <ion-input [(ngModel)]="configuracion.seguridad.intentosMaximos" type="number" placeholder="3"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Longitud Mínima de Contraseña</ion-label>
-          <ion-input [(ngModel)]="configuracion.seguridad.passwordMinLength" type="number" placeholder="8"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label>Requerir Mayúsculas</ion-label>
-          <ion-toggle [(ngModel)]="configuracion.seguridad.requiereMayusculas"></ion-toggle>
-        </ion-item>
-        <ion-item>
-          <ion-label>Requerir Números</ion-label>
-          <ion-toggle [(ngModel)]="configuracion.seguridad.requiereNumeros"></ion-toggle>
-        </ion-item>
+        <div class="form-grid">
+          <ion-item class="form-item">
+            <ion-label position="stacked">
+              <ion-icon name="timer-outline"></ion-icon>
+              Timeout de Sesión (minutos)
+            </ion-label>
+            <ion-input [(ngModel)]="configuracion.seguridad.sesionTimeout" type="number" placeholder="30" class="form-input"></ion-input>
+            <ion-note slot="helper">Tiempo de inactividad antes de cerrar sesión</ion-note>
+          </ion-item>
+          <ion-item class="form-item">
+            <ion-label position="stacked">
+              <ion-icon name="lock-closed-outline"></ion-icon>
+              Intentos Máximos de Login
+            </ion-label>
+            <ion-input [(ngModel)]="configuracion.seguridad.intentosMaximos" type="number" placeholder="3" class="form-input"></ion-input>
+            <ion-note slot="helper">Número de intentos antes de bloquear cuenta</ion-note>
+          </ion-item>
+          <ion-item class="form-item">
+            <ion-label position="stacked">
+              <ion-icon name="key-outline"></ion-icon>
+              Longitud Mínima de Contraseña
+            </ion-label>
+            <ion-input [(ngModel)]="configuracion.seguridad.passwordMinLength" type="number" placeholder="8" class="form-input"></ion-input>
+            <ion-note slot="helper">Caracteres mínimos requeridos</ion-note>
+          </ion-item>
+        </div>
+        <div class="toggle-grid">
+          <ion-item class="toggle-item">
+            <ion-label>
+              <div class="toggle-label">
+                <ion-icon name="text-outline"></ion-icon>
+                <span>Requerir Mayúsculas</span>
+              </div>
+              <p>Contraseñas deben incluir letras mayúsculas</p>
+            </ion-label>
+            <ion-toggle [(ngModel)]="configuracion.seguridad.requiereMayusculas" class="custom-toggle"></ion-toggle>
+          </ion-item>
+          <ion-item class="toggle-item">
+            <ion-label>
+              <div class="toggle-label">
+                <ion-icon name="calculator-outline"></ion-icon>
+                <span>Requerir Números</span>
+              </div>
+              <p>Contraseñas deben incluir números</p>
+            </ion-label>
+            <ion-toggle [(ngModel)]="configuracion.seguridad.requiereNumeros" class="custom-toggle"></ion-toggle>
+          </ion-item>
+        </div>
       </ion-card-content>
     </ion-card>
 
     <!-- Configuración de Ecopuntos -->
-    <ion-card>
-      <ion-card-header>
+    <ion-card class="config-card">
+      <ion-card-header class="card-header-primary">
         <ion-card-title>
           <ion-icon name="location-outline"></ion-icon>
-          Configuración de Ecopuntos
+          Gestión de Ecopuntos
         </ion-card-title>
+        <ion-card-subtitle>Configuración de ubicaciones de reciclaje</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
-        <ion-item>
-          <ion-label position="stacked">Radio Máximo (km)</ion-label>
-          <ion-input [(ngModel)]="configuracion.ecopuntos.radioMaximo" type="number" placeholder="5"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Horario de Apertura</ion-label>
-          <ion-input [(ngModel)]="configuracion.ecopuntos.horarioApertura" type="time"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Horario de Cierre</ion-label>
-          <ion-input [(ngModel)]="configuracion.ecopuntos.horarioCierre" type="time"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Máximo Usuarios por Ecopunto</ion-label>
-          <ion-input [(ngModel)]="configuracion.ecopuntos.maxUsuariosPorEcopunto" type="number" placeholder="100"></ion-input>
-        </ion-item>
+        <div class="form-grid">
+          <ion-item class="form-item">
+            <ion-label position="stacked">
+              <ion-icon name="navigate-outline"></ion-icon>
+              Radio Máximo (km)
+            </ion-label>
+            <ion-input [(ngModel)]="configuracion.ecopuntos.radioMaximo" type="number" placeholder="5" class="form-input"></ion-input>
+            <ion-note slot="helper">Distancia máxima para mostrar ecopuntos cercanos</ion-note>
+          </ion-item>
+          <ion-item class="form-item">
+            <ion-label position="stacked">
+              <ion-icon name="sunny-outline"></ion-icon>
+              Horario de Apertura
+            </ion-label>
+            <ion-input [(ngModel)]="configuracion.ecopuntos.horarioApertura" type="time" class="form-input"></ion-input>
+            <ion-note slot="helper">Hora de apertura diaria</ion-note>
+          </ion-item>
+          <ion-item class="form-item">
+            <ion-label position="stacked">
+              <ion-icon name="moon-outline"></ion-icon>
+              Horario de Cierre
+            </ion-label>
+            <ion-input [(ngModel)]="configuracion.ecopuntos.horarioCierre" type="time" class="form-input"></ion-input>
+            <ion-note slot="helper">Hora de cierre diario</ion-note>
+          </ion-item>
+          <ion-item class="form-item">
+            <ion-label position="stacked">
+              <ion-icon name="people-outline"></ion-icon>
+              Máximo Usuarios por Ecopunto
+            </ion-label>
+            <ion-input [(ngModel)]="configuracion.ecopuntos.maxUsuariosPorEcopunto" type="number" placeholder="100" class="form-input"></ion-input>
+            <ion-note slot="helper">Límite de usuarios simultáneos</ion-note>
+          </ion-item>
+        </div>
       </ion-card-content>
     </ion-card>
 
     <!-- Acciones del Sistema -->
-    <ion-card>
-      <ion-card-header>
+    <ion-card class="config-card">
+      <ion-card-header class="card-header-secondary">
         <ion-card-title>
           <ion-icon name="construct-outline"></ion-icon>
-          Acciones del Sistema
+          Mantenimiento del Sistema
         </ion-card-title>
+        <ion-card-subtitle>Herramientas de administración y respaldo</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
         <div class="actions-grid">
-          <ion-button expand="block" fill="outline" (click)="exportarConfiguracion()">
+          <ion-button expand="block" fill="outline" (click)="exportarConfiguracion()" class="action-button export">
             <ion-icon name="download-outline"></ion-icon>
             Exportar Configuración
           </ion-button>
-          <ion-button expand="block" fill="outline" (click)="importarConfiguracion()">
+          <ion-button expand="block" fill="outline" (click)="importarConfiguracion()" class="action-button import">
             <ion-icon name="upload-outline"></ion-icon>
             Importar Configuración
           </ion-button>
-          <ion-button expand="block" fill="outline" (click)="generarBackup()">
+          <ion-button expand="block" fill="outline" (click)="generarBackup()" class="action-button backup">
             <ion-icon name="save-outline"></ion-icon>
             Generar Backup
           </ion-button>
-          <ion-button expand="block" fill="outline" (click)="restaurarBackup()">
+          <ion-button expand="block" fill="outline" (click)="restaurarBackup()" class="action-button restore">
             <ion-icon name="refresh-outline"></ion-icon>
             Restaurar Backup
           </ion-button>
-          <ion-button expand="block" fill="outline" color="warning" (click)="resetearConfiguracion()">
+          <ion-button expand="block" fill="outline" color="warning" (click)="resetearConfiguracion()" class="action-button reset">
             <ion-icon name="refresh-circle-outline"></ion-icon>
             Resetear Configuración
           </ion-button>

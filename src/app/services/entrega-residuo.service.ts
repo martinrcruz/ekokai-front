@@ -87,3 +87,4 @@ export class EntregaResiduoService {
     return this.http.get<EntregaResiduo[]>(url);
   }
 }
+
