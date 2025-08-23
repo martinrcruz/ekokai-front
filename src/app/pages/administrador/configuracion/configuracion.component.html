@@ -6,7 +6,7 @@
     <ion-title>Configuración del Sistema</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="guardarConfiguracion()" class="save-button">
-        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <i class="bi bi-check-circle-fill"></i>
         Guardar
       </ion-button>
     </ion-buttons>
@@ -19,7 +19,7 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-icon">
-          <ion-icon name="settings-outline"></ion-icon>
+          <i class="bi bi-gear-fill"></i>
         </div>
         <div class="header-text">
           <h1>Configuración del Sistema</h1>
@@ -285,23 +285,23 @@
       <ion-card-content>
         <div class="actions-grid">
           <ion-button expand="block" fill="outline" (click)="exportarConfiguracion()" class="action-button export">
-            <ion-icon name="download-outline"></ion-icon>
+            <i class="bi bi-download"></i>
             Exportar Configuración
           </ion-button>
           <ion-button expand="block" fill="outline" (click)="importarConfiguracion()" class="action-button import">
-            <ion-icon name="upload-outline"></ion-icon>
+            <i class="bi bi-upload"></i>
             Importar Configuración
           </ion-button>
           <ion-button expand="block" fill="outline" (click)="generarBackup()" class="action-button backup">
-            <ion-icon name="save-outline"></ion-icon>
+            <i class="bi bi-save-fill"></i>
             Generar Backup
           </ion-button>
           <ion-button expand="block" fill="outline" (click)="restaurarBackup()" class="action-button restore">
-            <ion-icon name="refresh-outline"></ion-icon>
+            <i class="bi bi-arrow-clockwise"></i>
             Restaurar Backup
           </ion-button>
           <ion-button expand="block" fill="outline" color="warning" (click)="resetearConfiguracion()" class="action-button reset">
-            <ion-icon name="refresh-circle-outline"></ion-icon>
+            <i class="bi bi-arrow-repeat"></i>
             Resetear Configuración
           </ion-button>
         </div>

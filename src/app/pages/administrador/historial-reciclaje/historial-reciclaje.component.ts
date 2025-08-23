@@ -17,6 +17,7 @@ export class HistorialReciclajeComponent implements OnInit {
   historialFiltrado: EntregaResiduo[] = [];
   loading = false;
   estadisticas: any = {};
+  error: string | null = null;
   
   // Filtros
   filtroUsuario = '';
@@ -33,6 +34,8 @@ export class HistorialReciclajeComponent implements OnInit {
   // Estados
   pestanaActiva = 'historial'; // 'historial' | 'estadisticas'
   showFiltros = false;
+  showDetalleModal = false;
+  entregaSeleccionada: EntregaResiduo | null = null;
 
   constructor(private entregaService: EntregaResiduoService) {}
 
@@ -43,6 +46,7 @@ export class HistorialReciclajeComponent implements OnInit {
 
   async cargarHistorial() {
     this.loading = true;
+    this.error = null;
     try {
       const filtros: any = {};
       
@@ -57,9 +61,37 @@ export class HistorialReciclajeComponent implements OnInit {
       if (response?.ok) {
         this.historial = response.historial;
         this.aplicarFiltros();
+        console.log('Historial cargado:', this.historial.length, 'entregas');
+        console.log('Estadísticas calculadas:', {
+          kilosTotales: this.getKilosTotales(),
+          usuariosUnicos: this.getUsuariosUnicos(),
+          ecopuntosUnicos: this.getEcopuntosUnicos(),
+          entregasCompletadas: this.getEntregasCompletadas()
+        });
+      } else {
+        this.error = 'No se pudo cargar el historial';
+        console.warn('Respuesta de historial no válida:', response);
       }
     } catch (error) {
       console.error('Error al cargar historial:', error);
+      
+      // Determinar el tipo de error para mostrar un mensaje más específico
+      if (error && typeof error === 'object' && 'status' in error) {
+        const httpError = error as { status: number };
+        if (httpError.status === 0) {
+          this.error = 'No se puede conectar con el servidor. Verifique que el backend esté ejecutándose.';
+        } else if (httpError.status === 401) {
+          this.error = 'Sesión expirada. Por favor, inicie sesión nuevamente.';
+        } else if (httpError.status === 403) {
+          this.error = 'No tiene permisos para acceder a esta información.';
+        } else if (httpError.status === 500) {
+          this.error = 'Error interno del servidor. Intente nuevamente más tarde.';
+        } else {
+          this.error = 'Error al cargar el historial. Verifique su conexión e intente nuevamente.';
+        }
+      } else {
+        this.error = 'Error al cargar el historial. Verifique su conexión e intente nuevamente.';
+      }
     } finally {
       this.loading = false;
     }
@@ -67,13 +99,37 @@ export class HistorialReciclajeComponent implements OnInit {
 
   async cargarEstadisticas() {
     try {
+      console.log('🔄 Cargando estadísticas desde API...');
       const response = await this.entregaService.obtenerEstadisticas().toPromise();
       if (response?.ok) {
         this.estadisticas = response.estadisticas;
+        console.log('✅ Estadísticas cargadas desde API:', this.estadisticas);
+      } else {
+        console.warn('⚠️ Respuesta de estadísticas no válida:', response);
       }
     } catch (error) {
-      console.error('Error al cargar estadísticas:', error);
+      console.error('❌ Error al cargar estadísticas desde API:', error);
+      // Fallback: usar estadísticas calculadas del historial local
+      console.log('🔄 Usando estadísticas calculadas del historial local...');
     }
+  }
+
+  // Método para verificar conectividad del backend
+  async verificarConectividad() {
+    try {
+      // Intentar hacer una petición simple para verificar conectividad
+      const response = await this.entregaService.obtenerHistorialCompleto({}).toPromise();
+      return true;
+    } catch (error) {
+      console.error('Error de conectividad:', error);
+      return false;
+    }
+  }
+
+  // Método para refrescar estadísticas
+  async refrescarEstadisticas() {
+    await this.cargarHistorial();
+    await this.cargarEstadisticas();
   }
 
   cambiarPestana(pestana: string | undefined) {
@@ -85,6 +141,7 @@ export class HistorialReciclajeComponent implements OnInit {
   aplicarFiltros() {
     this.historialFiltrado = [...this.historial];
     this.paginaActual = 1;
+    this.error = null; // Clear any previous errors
   }
 
   limpiarFiltros() {
@@ -143,7 +200,7 @@ export class HistorialReciclajeComponent implements OnInit {
   }
 
   formatearPeso(peso: number): string {
-    return `${peso.toFixed(2)} kg`;
+    return this.formatearPesoConDecimales(peso);
   }
 
   exportarHistorial() {
@@ -153,20 +210,41 @@ export class HistorialReciclajeComponent implements OnInit {
 
   // Métodos para estadísticas
   getKilosTotales(): number {
-    return this.historialFiltrado.reduce((total, entrega) => total + (entrega.pesoKg || 0), 0);
+    if (!this.historialFiltrado || this.historialFiltrado.length === 0) return 0;
+    const total = this.historialFiltrado.reduce((total, entrega) => total + (entrega.pesoKg || 0), 0);
+    return this.formatearDecimales(total, 3);
+  }
+
+  // Método para formatear decimales
+  formatearDecimales(numero: number, decimales: number = 3): number {
+    return Number(numero.toFixed(decimales));
+  }
+
+  // Método para formatear peso con 3 decimales
+  formatearPesoConDecimales(peso: number): string {
+    return `${this.formatearDecimales(peso, 3)} kg`;
+  }
+
+  // Método para formatear kilos del header
+  getKilosTotalesFormateados(): string {
+    const kilos = this.getKilosTotales();
+    return this.formatearDecimales(kilos, 3).toString();
   }
 
   getUsuariosUnicos(): number {
-    const usuariosUnicos = new Set(this.historialFiltrado.map(e => e.usuario._id));
+    if (!this.historialFiltrado || this.historialFiltrado.length === 0) return 0;
+    const usuariosUnicos = new Set(this.historialFiltrado.map(e => e.usuario?._id).filter(Boolean));
     return usuariosUnicos.size;
   }
 
   getEcopuntosUnicos(): number {
-    const ecopuntosUnicos = new Set(this.historialFiltrado.map(e => e.ecopunto._id));
+    if (!this.historialFiltrado || this.historialFiltrado.length === 0) return 0;
+    const ecopuntosUnicos = new Set(this.historialFiltrado.map(e => e.ecopunto?._id).filter(Boolean));
     return ecopuntosUnicos.size;
   }
 
   getEntregasCompletadas(): number {
+    if (!this.historialFiltrado || this.historialFiltrado.length === 0) return 0;
     return this.historialFiltrado.filter(e => e.estado === 'completado').length;
   }
 
@@ -186,9 +264,13 @@ export class HistorialReciclajeComponent implements OnInit {
 
   // Métodos para top usuarios
   getTopUsuarios(): any[] {
+    if (!this.historialFiltrado || this.historialFiltrado.length === 0) return [];
+    
     const usuariosMap = new Map<string, { nombre: string, totalKilos: number }>();
     
     this.historialFiltrado.forEach(entrega => {
+      if (!entrega.usuario?._id) return; // Skip if no user ID
+      
       const usuarioId = entrega.usuario._id;
       const nombre = entrega.usuario?.nombre || 'Usuario Desconocido';
       const kilos = entrega.pesoKg || 0;
@@ -201,6 +283,10 @@ export class HistorialReciclajeComponent implements OnInit {
     });
     
     return Array.from(usuariosMap.values())
+      .map(usuario => ({
+        ...usuario,
+        totalKilos: this.formatearDecimales(usuario.totalKilos, 3)
+      }))
       .sort((a, b) => b.totalKilos - a.totalKilos)
       .slice(0, 10);
   }
@@ -214,13 +300,19 @@ export class HistorialReciclajeComponent implements OnInit {
 
   // Métodos para acciones
   verDetalle(entrega: EntregaResiduo) {
-    console.log('Ver detalle de entrega:', entrega);
-    // Implementar modal de detalle
+    this.entregaSeleccionada = entrega;
+    this.showDetalleModal = true;
+  }
+
+  cerrarDetalleModal() {
+    this.showDetalleModal = false;
+    this.entregaSeleccionada = null;
   }
 
   editarEntrega(entrega: EntregaResiduo) {
     console.log('Editar entrega:', entrega);
     // Implementar modal de edición
+    this.cerrarDetalleModal();
   }
 
   eliminarEntrega(entrega: EntregaResiduo) {
@@ -263,3 +355,4 @@ export class HistorialReciclajeComponent implements OnInit {
     }
   };
 }
+

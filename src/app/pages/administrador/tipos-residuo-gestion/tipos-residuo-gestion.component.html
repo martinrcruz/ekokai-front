@@ -5,10 +5,7 @@
     </ion-buttons>
     <ion-title class="page-title">Gestión de Tipos de Residuo</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="abrirCrearModal()" class="create-button">
-        <ion-icon name="add-circle-outline"></ion-icon>
-        <span class="button-text">Nuevo Tipo</span>
-      </ion-button>
+      <!-- Botón removido - reemplazado por botón flotante -->
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -19,7 +16,7 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-icon">
-          <ion-icon name="leaf-outline"></ion-icon>
+          <i class="bi bi-leaf-fill"></i>
         </div>
         <div class="header-text">
           <h1>Gestión de Tipos de Residuo</h1>
@@ -43,7 +40,7 @@
       <ion-card-header>
         <div class="card-header-content">
           <div class="header-icon">
-            <ion-icon name="filter-outline"></ion-icon>
+            <i class="bi bi-funnel"></i>
           </div>
           <div class="header-text">
             <ion-card-title>Filtros de Búsqueda</ion-card-title>
@@ -56,7 +53,7 @@
         <div class="filters-grid">
           <div class="filter-item search-filter">
             <ion-label position="stacked">
-              <ion-icon name="search-outline"></ion-icon>
+              <i class="bi bi-search"></i>
               <span class="label-text">Buscar por nombre</span>
             </ion-label>
             <ion-input 
@@ -70,7 +67,7 @@
 
           <div class="filter-item tokens-filter">
             <ion-label position="stacked">
-              <ion-icon name="trending-up-outline"></ion-icon>
+              <i class="bi bi-trending-up"></i>
               <span class="label-text">Rango de tokens</span>
             </ion-label>
             <ion-select 
@@ -91,7 +88,7 @@
               color="medium" 
               class="clear-filters-btn" 
               (click)="limpiarFiltros()">
-              <ion-icon name="refresh-outline"></ion-icon>
+              <i class="bi bi-arrow-clockwise"></i>
               <span class="button-text">Limpiar Filtros</span>
             </ion-button>
           </div>
@@ -163,7 +160,7 @@
       <ion-card-header>
         <div class="card-header-content">
           <div class="header-icon">
-            <ion-icon name="list-outline"></ion-icon>
+            <i class="bi bi-list"></i>
           </div>
           <div class="header-text">
             <ion-card-title>Tipos de Residuo</ion-card-title>
@@ -183,15 +180,15 @@
         <div *ngIf="!loading && residuosFiltrados.length === 0" class="empty-state">
           <div class="empty-content">
             <div class="empty-icon">
-              <ion-icon name="leaf-outline"></ion-icon>
+              <i class="bi bi-leaf-fill" style="color:white"></i>
             </div>
             <h3>No hay tipos de residuo</h3>
             <p *ngIf="filtroNombre || filtroTokens">No se encontraron resultados con los filtros aplicados</p>
-            <p *ngIf="!filtroNombre && !filtroTokens">Crea el primer tipo de residuo para comenzar</p>
-            <ion-button (click)="abrirCrearModal()" class="create-first-btn">
-              <ion-icon name="add-circle-outline"></ion-icon>
+            <!-- <p *ngIf="!filtroNombre && !filtroTokens">Crea el primer tipo de residuo para comenzar</p> -->
+            <!-- <ion-button (click)="abrirCrearModal()" class="create-first-btn">
+              <i class="bi bi-plus-circle-fill" style="color:white"></i>
               <span class="button-text">Crear Primer Tipo</span>
-            </ion-button>
+            </ion-button> -->
           </div>
         </div>
 
@@ -201,7 +198,7 @@
             <ion-card-content>
               <div class="residuo-header">
                 <div class="residuo-icon">
-                  <ion-icon name="leaf-outline"></ion-icon>
+                  <i class="bi bi-leaf-fill" style="color:white"></i>
                 </div>
                 <div class="residuo-info">
                   <h3 class="residuo-nombre">{{ residuo.nombre }}</h3>
@@ -209,10 +206,10 @@
                 </div>
                 <div class="residuo-actions">
                   <ion-button fill="clear" (click)="editarResiduo(residuo)" class="edit-btn" title="Editar">
-                    <ion-icon name="create-outline"></ion-icon>
+                    <i class="bi bi-pencil-square"></i>
                   </ion-button>
                   <ion-button fill="clear" color="danger" (click)="eliminarResiduo(residuo)" [disabled]="eliminando" class="delete-btn" title="Eliminar">
-                    <ion-icon name="trash-outline" *ngIf="!eliminando"></ion-icon>
+                    <i class="bi bi-trash"></i>
                     <ion-spinner name="crescent" *ngIf="eliminando"></ion-spinner>
                   </ion-button>
                 </div>
@@ -220,12 +217,12 @@
               
               <div class="residuo-stats">
                 <div class="stat-item tokens-stat">
-                  <ion-icon name="trending-up-outline"></ion-icon>
+                  <i class="bi bi-trending-up"></i>
                   <span class="stat-value">{{ residuo.tokensPorKg }}</span>
                   <span class="stat-label">tokens/kg</span>
                 </div>
                 <div class="stat-item category-stat" [class]="getTokenCategory(residuo.tokensPorKg)">
-                  <ion-icon name="pricetag-outline"></ion-icon>
+                  <i class="bi bi-tag"></i>
                   <span class="stat-value">{{ getTokenCategory(residuo.tokensPorKg) }}</span>
                 </div>
               </div>
@@ -242,13 +239,13 @@
           <ion-toolbar>
             <ion-buttons slot="start">
               <ion-button (click)="cancelarEdicion()" fill="clear" class="close-btn">
-                <ion-icon name="close-outline"></ion-icon>
+                <i class="bi bi-x-lg"></i>
               </ion-button>
             </ion-buttons>
             <ion-title>Editar Tipo de Residuo</ion-title>
             <ion-buttons slot="end">
               <ion-button (click)="guardarEdicion()" [disabled]="guardando" class="save-btn">
-                <ion-icon name="checkmark-outline" *ngIf="!guardando"></ion-icon>
+                <i class="bi bi-check-lg" *ngIf="!guardando"></i>
                 <ion-spinner name="crescent" *ngIf="guardando"></ion-spinner>
                 <span class="button-text">{{ guardando ? 'Guardando...' : 'Guardar' }}</span>
               </ion-button>
@@ -260,7 +257,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <div class="modal-icon">
-                <ion-icon name="create-outline"></ion-icon>
+                <i class="bi bi-pencil-square"></i>
               </div>
               <h2>Editar Información del Residuo</h2>
               <p>Modifica los datos del tipo de residuo seleccionado</p>
@@ -269,7 +266,7 @@
             <form (ngSubmit)="guardarEdicion()" class="edit-form">
               <div class="form-item">
                 <ion-label position="stacked">
-                  <ion-icon name="leaf-outline"></ion-icon>
+                  <i class="bi bi-leaf-fill"></i>
                   <span class="label-text">Nombre del Residuo *</span>
                 </ion-label>
                 <ion-input 
@@ -283,7 +280,7 @@
 
               <div class="form-item">
                 <ion-label position="stacked">
-                  <ion-icon name="document-text-outline"></ion-icon>
+                  <i class="bi bi-file-text"></i>
                   <span class="label-text">Descripción *</span>
                 </ion-label>
                 <ion-textarea 
@@ -298,7 +295,7 @@
 
               <div class="form-item">
                 <ion-label position="stacked">
-                  <ion-icon name="trending-up-outline"></ion-icon>
+                  <i class="bi bi-trending-up"></i>
                   <span class="label-text">Tokens por Kilogramo *</span>
                 </ion-label>
                 <ion-input 
@@ -312,7 +309,7 @@
                   class="form-input">
                 </ion-input>
                 <ion-note slot="helper">
-                  <ion-icon name="information-circle-outline"></ion-icon>
+                  <i class="bi bi-info-circle"></i>
                   <span class="note-text">Ingresa cuántos tokens se otorgan por kilogramo de este residuo</span>
                 </ion-note>
               </div>
@@ -329,13 +326,13 @@
           <ion-toolbar>
             <ion-buttons slot="start">
               <ion-button (click)="cancelarCreacion()" fill="clear" class="close-btn">
-                <ion-icon name="close-outline"></ion-icon>
+                <i class="bi bi-x-lg"></i>
               </ion-button>
             </ion-buttons>
             <ion-title>Nuevo Tipo de Residuo</ion-title>
             <ion-buttons slot="end">
               <ion-button (click)="crearResiduo()" [disabled]="guardando" class="create-btn">
-                <ion-icon name="add-outline" *ngIf="!guardando"></ion-icon>
+                <i class="bi bi-plus-lg" *ngIf="!guardando"></i>
                 <ion-spinner name="crescent" *ngIf="guardando"></ion-spinner>
                 <span class="button-text">{{ guardando ? 'Creando...' : 'Crear' }}</span>
               </ion-button>
@@ -347,7 +344,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <div class="modal-icon">
-                <ion-icon name="add-circle-outline"></ion-icon>
+                <i class="bi bi-plus-circle-fill"></i>
               </div>
               <h2>Crear Nuevo Tipo de Residuo</h2>
               <p>Define un nuevo tipo de residuo reciclable</p>
@@ -356,7 +353,7 @@
             <form (ngSubmit)="crearResiduo()" class="create-form">
               <div class="form-item">
                 <ion-label position="stacked">
-                  <ion-icon name="leaf-outline"></ion-icon>
+                  <i class="bi bi-leaf-fill"></i>
                   <span class="label-text">Nombre *</span>
                 </ion-label>
                 <ion-input 
@@ -370,7 +367,7 @@
 
               <div class="form-item">
                 <ion-label position="stacked">
-                  <ion-icon name="document-text-outline"></ion-icon>
+                  <i class="bi bi-file-text"></i>
                   <span class="label-text">Descripción *</span>
                 </ion-label>
                 <ion-textarea 
@@ -385,7 +382,7 @@
 
               <div class="form-item">
                 <ion-label position="stacked">
-                  <ion-icon name="trending-up-outline"></ion-icon>
+                  <i class="bi bi-trending-up"></i>
                   <span class="label-text">Tokens por Kilogramo *</span>
                 </ion-label>
                 <ion-input 
@@ -399,7 +396,7 @@
                   class="form-input">
                 </ion-input>
                 <ion-note slot="helper">
-                  <ion-icon name="information-circle-outline"></ion-icon>
+                  <i class="bi bi-info-circle"></i>
                   <span class="note-text">Define cuántos tokens se otorgan por kilogramo de este residuo</span>
                 </ion-note>
               </div>
@@ -409,4 +406,9 @@
       </ng-template>
     </ion-modal>
   </div>
+
+  <!-- Botón flotante para crear tipo de residuo -->
+  <button class="floating-action-button" (click)="abrirCrearModal()" title="Crear Tipo de Residuo">
+    <i class="bi bi-plus"></i>
+  </button>
 </ion-content>

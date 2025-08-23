@@ -8,8 +8,8 @@
       <!-- <ion-button (click)="showFiltros = !showFiltros" fill="clear" class="filter-toggle-btn">
         <ion-icon name="filter-outline"></ion-icon>
         {{ showFiltros ? 'Ocultar' : 'Mostrar' }} Filtros
-      </ion-button> -->
-      <!-- <ion-button (click)="exportarHistorial()" fill="clear" color="secondary" class="export-btn">
+      </ion-button>
+      <ion-button (click)="exportarHistorial()" fill="clear" color="secondary" class="export-btn">
         <ion-icon name="download-outline"></ion-icon>
         Exportar
       </ion-button> -->
@@ -35,7 +35,7 @@
             <div class="stat-label">Total</div>
           </div>
           <div class="stat-item">
-            <div class="stat-number">{{ getKilosTotales() }}</div>
+            <div class="stat-number">{{ getKilosTotalesFormateados() }}</div>
             <div class="stat-label">KG Total</div>
           </div>
         </div>
@@ -56,6 +56,17 @@
 
     <!-- Pestana de Historial -->
     <div *ngIf="pestanaActiva === 'historial'" class="historial-tab">
+      <!-- Mensaje de error -->
+      <ion-card *ngIf="error" class="error-card">
+        <ion-card-content class="error-content">
+          <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+          <p>{{ error }}</p>
+          <ion-button (click)="cargarHistorial()" fill="outline" color="primary" size="small">
+            Reintentar
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+      
       <!-- Filtros -->
       <ion-card *ngIf="showFiltros" class="filters-card">
         <ion-card-header class="filters-header">
@@ -175,7 +186,7 @@
                   
                                      <div class="info-item">
                      <ion-icon name="scale-outline"></ion-icon>
-                     <span><strong>Peso:</strong> {{ entrega.pesoKg || 0 }} kg</span>
+                     <span><strong>Peso:</strong> {{ formatearPesoConDecimales(entrega.pesoKg || 0) }}</span>
                    </div>
                   
                   <div class="info-item">
@@ -195,15 +206,15 @@
                     <span>Ver Detalle</span>
                   </ion-button>
                   
-                  <ion-button fill="clear" (click)="editarEntrega(entrega)" class="action-btn edit">
+                  <!-- <ion-button fill="clear" (click)="editarEntrega(entrega)" class="action-btn edit">
                     <ion-icon name="create-outline"></ion-icon>
                     <span>Editar</span>
-                  </ion-button>
+                  </ion-button> -->
                   
-                  <ion-button fill="clear" color="danger" (click)="eliminarEntrega(entrega)" class="action-btn delete">
+                  <!-- <ion-button fill="clear" color="danger" (click)="eliminarEntrega(entrega)" class="action-btn delete">
                     <ion-icon name="trash-outline"></ion-icon>
                     <span>Eliminar</span>
-                  </ion-button>
+                  </ion-button> -->
                 </div>
               </ion-card-content>
             </ion-card>
@@ -214,101 +225,240 @@
 
     <!-- Pestana de Estadísticas -->
     <div *ngIf="pestanaActiva === 'estadisticas'" class="estadisticas-tab">
-      <!-- Resumen general -->
-      <ion-card class="summary-card">
-        <ion-card-header class="summary-header">
-          <ion-card-title style="color: white;">
-            <ion-icon name="analytics-outline"></ion-icon>
-            Resumen General
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <div class="summary-grid">
-            <div class="summary-item">
-              <div class="summary-icon">
-                <ion-icon name="leaf-outline"></ion-icon>
+      <!-- Header con botón de refresh -->
+      <div class="estadisticas-header">
+        <ion-button (click)="refrescarEstadisticas()" fill="clear" color="primary" class="refresh-btn" [disabled]="loading">
+          <ion-icon name="refresh-outline"></ion-icon>
+          {{ loading ? 'Actualizando...' : 'Actualizar Estadísticas' }}
+        </ion-button>
+      </div>
+      
+      <!-- Loading state -->
+      <div *ngIf="loading" class="loading-state">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Cargando estadísticas...</p>
+      </div>
+      
+      <!-- Contenido cuando no está cargando -->
+      <div *ngIf="!loading">
+        <!-- Resumen general -->
+        <ion-card class="summary-card">
+          <ion-card-header class="summary-header">
+            <ion-card-title style="color: white;">
+              <ion-icon name="analytics-outline"></ion-icon>
+              Resumen General
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div *ngIf="historialFiltrado.length === 0" class="no-data-message">
+              <ion-icon name="information-circle-outline"></ion-icon>
+              <p>No hay datos disponibles. Carga el historial primero o aplica filtros diferentes.</p>
+            </div>
+            <div *ngIf="historialFiltrado.length > 0" class="summary-grid">
+              <div class="summary-item">
+                <div class="summary-icon">
+                  <ion-icon name="leaf-outline"></ion-icon>
+                </div>
+                <div class="summary-content">
+                  <div class="summary-value">{{ getKilosTotalesFormateados() }}</div>
+                  <div class="summary-label">KG Total Reciclados</div>
+                </div>
               </div>
-              <div class="summary-content">
-                <div class="summary-value">{{ getKilosTotales() }}</div>
-                <div class="summary-label">KG Total Reciclados</div>
+              
+              <div class="summary-item">
+                <div class="summary-icon">
+                  <ion-icon name="people-outline"></ion-icon>
+                </div>
+                <div class="summary-content">
+                  <div class="summary-value">{{ getUsuariosUnicos() }}</div>
+                  <div class="summary-label">Usuarios Activos</div>
+                </div>
+              </div>
+              
+              <div class="summary-item">
+                <div class="summary-icon">
+                  <ion-icon name="location-outline"></ion-icon>
+                </div>
+                <div class="summary-content">
+                  <div class="summary-value">{{ getEcopuntosUnicos() }}</div>
+                  <div class="summary-label">Ecopuntos Utilizados</div>
+                </div>
+              </div>
+              
+              <div class="summary-item">
+                <div class="summary-icon">
+                  <ion-icon name="checkmark-circle-outline"></ion-icon>
+                </div>
+                <div class="summary-content">
+                  <div class="summary-value">{{ getEntregasCompletadas() }}</div>
+                  <div class="summary-label">Entregas Completadas</div>
+                </div>
               </div>
             </div>
-            
-            <div class="summary-item">
-              <div class="summary-icon">
-                <ion-icon name="people-outline"></ion-icon>
-              </div>
-              <div class="summary-content">
-                <div class="summary-value">{{ getUsuariosUnicos() }}</div>
-                <div class="summary-label">Usuarios Activos</div>
-              </div>
-            </div>
-            
-            <div class="summary-item">
-              <div class="summary-icon">
-                <ion-icon name="location-outline"></ion-icon>
-              </div>
-              <div class="summary-content">
-                <div class="summary-value">{{ getEcopuntosUnicos() }}</div>
-                <div class="summary-label">Ecopuntos Utilizados</div>
-              </div>
-            </div>
-            
-            <div class="summary-item">
-              <div class="summary-icon">
-                <ion-icon name="checkmark-circle-outline"></ion-icon>
-              </div>
-              <div class="summary-content">
-                <div class="summary-value">{{ getEntregasCompletadas() }}</div>
-                <div class="summary-label">Entregas Completadas</div>
-              </div>
-            </div>
-          </div>
-        </ion-card-content>
-      </ion-card>
+          </ion-card-content>
+        </ion-card>
 
-      <!-- Gráfico de evolución temporal -->
-      <ion-card class="chart-card">
-        <ion-card-header class="chart-header">
-          <ion-card-title style="color: white;">
-            <ion-icon name="trending-up-outline"></ion-icon>
-            Evolución Temporal
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <div class="chart-container">
-            <canvas baseChart
-              [data]="lineChartData"
-              [type]="lineChartType"
-              [options]="lineChartOptions">
-            </canvas>
-          </div>
-        </ion-card-content>
-      </ion-card>
+        <!-- Gráfico de evolución temporal -->
+        <ion-card class="chart-card">
+          <ion-card-header class="chart-header">
+            <ion-card-title style="color: white;">
+              <ion-icon name="trending-up-outline"></ion-icon>
+              Evolución Temporal
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="chart-container">
+              <canvas baseChart
+                [data]="lineChartData"
+                [type]="lineChartType"
+                [options]="lineChartOptions">
+              </canvas>
+            </div>
+          </ion-card-content>
+        </ion-card>
 
-      <!-- Top usuarios -->
-      <ion-card class="top-users-card">
-        <ion-card-header class="top-header">
-          <ion-card-title style="color: white;">
-            <ion-icon name="trophy-outline"></ion-icon>
-            Top Usuarios
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <div class="top-users-list">
-            <div *ngFor="let usuario of getTopUsuarios(); let i = index" class="top-user-item">
-              <div class="user-rank">
-                <ion-icon [name]="getRankIcon(i + 1)"></ion-icon>
-                <span class="rank-number">{{ i + 1 }}</span>
-              </div>
-              <div class="user-info">
-                <span class="user-name">{{ usuario.nombre }}</span>
-                <span class="user-kilos">{{ usuario.totalKilos }} kg</span>
+        <!-- Top usuarios -->
+        <ion-card class="top-users-card">
+          <ion-card-header class="top-header">
+            <ion-card-title style="color: white;">
+              <ion-icon name="trophy-outline"></ion-icon>
+              Top Usuarios
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div *ngIf="historialFiltrado.length === 0" class="no-data-message">
+              <ion-icon name="information-circle-outline"></ion-icon>
+              <p>No hay datos disponibles para mostrar el ranking de usuarios.</p>
+            </div>
+            <div *ngIf="historialFiltrado.length > 0" class="top-users-list">
+              <div *ngFor="let usuario of getTopUsuarios(); let i = index" class="top-user-item">
+                <div class="user-rank">
+                  <ion-icon [name]="getRankIcon(i + 1)"></ion-icon>
+                  <span class="rank-number">{{ i + 1 }}</span>
+                </div>
+                <div class="user-info">
+                  <span class="user-name">{{ usuario.nombre }}</span>
+                  <span class="user-kilos">{{ formatearPesoConDecimales(usuario.totalKilos) }}</span>
+                </div>
               </div>
             </div>
-          </div>
-        </ion-card-content>
-      </ion-card>
+          </ion-card-content>
+        </ion-card>
+      </div>
     </div>
   </div>
 </ion-content>
+
+<!-- Modal de Detalle de Entrega -->
+<ion-modal [isOpen]="showDetalleModal" (didDismiss)="cerrarDetalleModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Detalle de Entrega</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarDetalleModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding" *ngIf="entregaSeleccionada">
+      <div class="detalle-entrega">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Información General</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="hash-outline"></ion-icon>
+              <span><strong>ID:</strong> {{ entregaSeleccionada._id }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span><strong>Fecha:</strong> {{ formatearFecha(entregaSeleccionada.fecha) }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+              <span><strong>Estado:</strong> 
+                <ion-badge [color]="getEstadoColor(entregaSeleccionada.estado)">
+                  {{ getEstadoTexto(entregaSeleccionada.estado) }}
+                </ion-badge>
+              </span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Usuario</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="person-outline"></ion-icon>
+              <span><strong>Nombre:</strong> {{ entregaSeleccionada.usuario?.nombre }} {{ entregaSeleccionada.usuario?.apellido }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="mail-outline"></ion-icon>
+              <span><strong>Email:</strong> {{ entregaSeleccionada.usuario?.email }}</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Ecopunto</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="location-outline"></ion-icon>
+              <span><strong>Nombre:</strong> {{ entregaSeleccionada.ecopunto?.nombre }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="navigate-outline"></ion-icon>
+              <span><strong>Dirección:</strong> {{ entregaSeleccionada.ecopunto?.direccion }}</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Residuo</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="leaf-outline"></ion-icon>
+              <span><strong>Tipo:</strong> {{ entregaSeleccionada.tipoResiduo?.nombre }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="scale-outline"></ion-icon>
+              <span><strong>Peso:</strong> {{ formatearPeso(entregaSeleccionada.pesoKg) }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="card-outline"></ion-icon>
+              <span><strong>Cupones Generados:</strong> {{ entregaSeleccionada.cuponesGenerados }}</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card *ngIf="entregaSeleccionada.observaciones">
+          <ion-card-header>
+            <ion-card-title>Observaciones</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <p>{{ entregaSeleccionada.observaciones }}</p>
+          </ion-card-content>
+        </ion-card>
+
+        <div class="modal-actions">
+          <!-- <ion-button (click)="editarEntrega(entregaSeleccionada)" fill="outline" expand="block">
+            <ion-icon name="create-outline"></ion-icon>
+            Editar
+          </ion-button> -->
+          <ion-button (click)="cerrarDetalleModal()" fill="clear" expand="block">
+            Cerrar
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

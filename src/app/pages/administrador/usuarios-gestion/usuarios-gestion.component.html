@@ -5,25 +5,7 @@
     </ion-buttons>
     <ion-title>Gestión de Usuarios</ion-title>
     <ion-buttons slot="end">
-      <ion-button id="crearUsuarioBtn" expand="block" class="create-button" fill="solid">
-        <ion-icon name="person-add-outline"></ion-icon>
-        <span class="button-text">Crear Usuario</span>
-        <span class="button-text-mobile">Crear</span>
-      </ion-button>
-      <ion-popover trigger="crearUsuarioBtn" triggerAction="click" alignment="end">
-        <ng-template>
-          <ion-list class="popover-list">
-            <ion-item button (click)="crearUsuario('vecino')" class="popover-item">
-              <ion-icon name="person-outline" slot="start"></ion-icon>
-              Crear Vecino
-            </ion-item>
-            <ion-item button (click)="crearUsuario('encargado')" class="popover-item">
-              <ion-icon name="person-circle-outline" slot="start"></ion-icon>
-              Crear Encargado
-            </ion-item>
-          </ion-list>
-        </ng-template>
-      </ion-popover>
+      <!-- Botón removido - reemplazado por botón flotante -->
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -124,6 +106,29 @@
       </ion-card-content>
     </ion-card>
 
+    <!-- Card de navegación al módulo de usuarios -->
+    <!-- <ion-card class="navigation-card">
+      <ion-card-content>
+        <div class="navigation-content">
+          <div class="navigation-icon">
+            <ion-icon name="settings-outline" color="primary"></ion-icon>
+          </div>
+          <div class="navigation-text">
+            <h3>Gestión Avanzada de Usuarios</h3>
+            <p>Accede a funcionalidades avanzadas como edición, historial detallado y gestión completa de usuarios</p>
+          </div>
+          <ion-button 
+            (click)="irAModuloUsuarios()" 
+            fill="solid" 
+            color="primary" 
+            class="navigation-btn">
+            <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+            Ir al Módulo de Usuarios
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card> -->
+
     <!-- Card de estadísticas -->
     <!-- <ion-card class="stats-card">
       <ion-card-header>
@@ -212,11 +217,11 @@
             </div>
             <h3>No hay usuarios</h3>
             <p *ngIf="filtroNombre || filtroRol || filtroEstado">No se encontraron resultados con los filtros aplicados</p>
-            <p *ngIf="!filtroNombre && !filtroRol && !filtroEstado">Crea el primer usuario para comenzar</p>
+            <!-- <p *ngIf="!filtroNombre && !filtroRol && !filtroEstado">Crea el primer usuario para comenzar</p>
             <ion-button (click)="crearUsuario('vecino')" class="create-first-btn">
               <ion-icon name="person-add-outline"></ion-icon>
               Crear Primer Usuario
-            </ion-button>
+            </ion-button> -->
           </div>
         </div>
 
@@ -259,7 +264,7 @@
                     (click)="verHistorial(usuario)" 
                     title="Ver historial completo"
                     class="action-btn history-btn">
-                    <ion-icon name="time-outline"></ion-icon>
+                    <i class="bi bi-clock-history"></i>
                   </ion-button>
                   
                   <ion-button 
@@ -268,7 +273,7 @@
                     (click)="editarUsuario(usuario)" 
                     title="Editar usuario"
                     class="action-btn edit-btn">
-                    <ion-icon name="create-outline"></ion-icon>
+                    <i class="bi bi-pencil-fill"></i>
                   </ion-button>
                   
                   <ion-button 
@@ -277,7 +282,7 @@
                     (click)="eliminarUsuario(usuario)" 
                     title="Eliminar usuario"
                     class="action-btn delete-btn">
-                    <ion-icon name="trash-outline"></ion-icon>
+                    <i class="bi bi-trash-fill"></i>
                   </ion-button>
                 </div>
               </div>
@@ -291,7 +296,7 @@
                 
                 <div class="stat-item tokens-stat">
                   <ion-icon name="gift-outline"></ion-icon>
-                  <span class="stat-value">{{ usuario.tokens || 0 }}</span>
+                  <span class="stat-value">{{ usuario.tokensAcumulados || 0 }}</span>
                   <span class="stat-label">tokens</span>
                 </div>
                 
@@ -338,6 +343,11 @@
       </ion-button>
     </div>
   </div>
+
+  <!-- Botón flotante para crear usuario -->
+  <button class="floating-action-button" (click)="crearUsuario('vecino')" title="Crear Usuario">
+    <i class="bi bi-plus"></i>
+  </button>
 </ion-content>
 
 <!-- Modal para crear encargado -->

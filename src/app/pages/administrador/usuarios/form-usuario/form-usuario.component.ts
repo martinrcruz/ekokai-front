@@ -1,13 +1,15 @@
 
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { NavController, ToastController } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { IonicModule, NavController, ToastController } from '@ionic/angular';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-form-usuario',
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, IonicModule, ReactiveFormsModule],
   templateUrl: './form-usuario.component.html',
   styleUrls: ['./form-usuario.component.scss']
 })
@@ -21,7 +23,7 @@ export class FormUsuarioComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private navCtrl: NavController,
+    private router: Router,
     private _user: UserService,
     private toastController: ToastController
   ) { }
@@ -123,7 +125,7 @@ export class FormUsuarioComponent implements OnInit {
             this.isEdit ? 'Usuario actualizado exitosamente' : 'Vecino creado exitosamente',
             'success'
           );
-          this.navCtrl.navigateRoot('/home');
+          this.router.navigate(['/administrador/usuarios/lista']);
         } else {
           this.showToast(message || 'Error al guardar el usuario', 'danger');
         }
@@ -137,7 +139,7 @@ export class FormUsuarioComponent implements OnInit {
   }
 
   cancelar() {
-    this.navCtrl.navigateBack('/home');
+    this.router.navigate(['/administrador/usuarios/lista']);
   }
 
   async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {

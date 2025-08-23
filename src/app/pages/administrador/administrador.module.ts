@@ -7,7 +7,7 @@ import { NgChartsModule } from 'ng2-charts';
 
 import { AdministradorRoutingModule } from './administrador-routing.module';
 
-// Declaraciones (componentes del área Administrador)
+// Declaraciones (componentes del área Administrador)E
 import { ConfiguracionComponent } from './configuracion/configuracion.component';
 import { PremiosGestionComponent } from './premios-gestion/premios-gestion.component';
 import { HistorialReciclajeComponent } from './historial-reciclaje/historial-reciclaje.component';

@@ -116,6 +116,7 @@
         <ion-card-content>
           <div class="chart-container">
             <canvas baseChart 
+              #barChartCanvas
               [data]="barChartData" 
               [options]="barChartOptions" 
               [type]="barChartType" 
@@ -152,6 +153,7 @@
               </div>
             </div>
             <canvas baseChart 
+              #doughnutChartCanvas
               [data]="doughnutChartData" 
               [options]="doughnutChartOptions" 
               [type]="doughnutChartType">

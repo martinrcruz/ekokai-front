@@ -382,7 +382,7 @@
 
               ion-icon {
                 margin-right: 6px;
-                font-size: 16px;
+                font-size: 56px;
               }
 
               &.enrolar {
@@ -1586,6 +1586,280 @@
       .stat-label {
         font-size: 8px !important;
       }
+    }
+  }
+}
+
+// Estilos para iconos Bootstrap
+.bi {
+  font-size: 1.2em;
+  vertical-align: middle;
+}
+
+// Header icon
+.header-icon {
+  .bi {
+    font-size: 2.5rem;
+    color: var(--ekokai-primary);
+  }
+}
+
+// Filter icons
+.filter-icon {
+  font-size: 1.5rem !important;
+  color: var(--ekokai-primary);
+}
+
+// Card header icons
+.filters-header,
+.list-header {
+  ion-card-title {
+    .bi {
+      margin-right: 8px;
+      font-size: 1.3rem;
+    }
+  }
+}
+
+// Ecopunto card icons
+.ecopunto-card {
+  .ecopunto-header {
+    .ecopunto-title {
+      .ecopunto-icon {
+        font-size: 1.5rem;
+        color: var(--ekokai-primary);
+        margin-right: 8px;
+      }
+    }
+    
+    .status-badge {
+      .bi {
+        font-size: 1rem;
+        margin-right: 4px;
+      }
+    }
+  }
+  
+  .ecopunto-content {
+    .ecopunto-info {
+      .info-item {
+        .bi {
+          font-size: 1.2rem;
+          color: var(--ekokai-primary);
+          margin-right: 8px;
+        }
+      }
+    }
+    
+    .ecopunto-stats {
+      .stat-card {
+        .stat-icon {
+          .bi {
+            font-size: 2rem;
+            color: var(--ekokai-primary);
+          }
+        }
+      }
+    }
+    
+    .encargado-info {
+      .encargado-icon {
+        font-size: 1.5rem;
+        color: var(--ekokai-primary);
+        margin-right: 8px;
+      }
+    }
+    
+    .ecopunto-actions {
+      gap: 12px;
+
+      .action-btn {
+        --border-radius: var(--border-radius-sm);
+        height: 40px;
+        font-size: 12px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+
+        .bi {
+          margin-right: 6px;
+          font-size: 1.2rem;
+        }
+
+        &.enrolar {
+          --color: var(--color-success);
+
+          &:hover {
+            --background: var(--color-success);
+            --color: white;
+          }
+        }
+
+        &.stats {
+          --color: var(--color-info);
+
+          &:hover {
+            --background: var(--color-info);
+            --color: white;
+          }
+        }
+
+        &.metas {
+          --color: var(--color-warning);
+
+          &:hover {
+            --background: var(--color-warning);
+            --color: white;
+          }
+        }
+
+        &.edit {
+          --color: var(--ekokai-primary);
+
+          &:hover {
+            --background: var(--ekokai-primary);
+            --color: white;
+          }
+        }
+
+        &.delete {
+          --color: var(--color-danger);
+
+          &:hover {
+            --background: var(--color-danger);
+            --color: white;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Botón de crear en el toolbar
+.create-button {
+  --background: var(--ekokai-primary);
+  --color: white;
+  --border-radius: var(--border-radius-sm);
+  --padding-start: 16px;
+  --padding-end: 16px;
+  font-weight: 600;
+
+  .bi {
+    margin-right: 6px;
+    font-size: 1.3rem;
+  }
+
+  .button-text {
+    display: inline;
+  }
+}
+
+// Estilos para badges y botones
+.status-badge {
+  .badge-text {
+    display: inline;
+  }
+}
+
+.action-btn {
+  .button-text {
+    display: inline;
+  }
+}
+
+.clear-filters-btn {
+  .bi {
+    margin-right: 6px;
+    font-size: 1.2rem;
+  }
+  
+  .button-text {
+    display: inline;
+  }
+}
+
+// Modal icons
+.modal-actions {
+  .cancel-btn,
+  .save-btn,
+  .delete-btn {
+    .bi {
+      margin-right: 6px;
+      font-size: 1.2rem;
+    }
+  }
+}
+
+// Form section icons
+.form-section {
+  .section-title {
+    .bi {
+      margin-right: 8px;
+      font-size: 1.3rem;
+      color: var(--ekokai-primary);
+    }
+  }
+  
+  .form-item {
+    ion-label {
+      .bi {
+        margin-right: 6px;
+        font-size: 1.1rem;
+        color: var(--ekokai-primary);
+      }
+    }
+  }
+}
+
+// Detail grid icons
+.detail-grid {
+  .detail-item {
+    .bi {
+      font-size: 1.3rem;
+      color: var(--ekokai-primary);
+      margin-right: 8px;
+    }
+  }
+}
+
+// Meta progress icons
+.meta-header-card {
+  ion-card-title {
+    .bi {
+      margin-right: 8px;
+      font-size: 1.3rem;
+      color: var(--ekokai-primary);
+    }
+  }
+}
+
+// Chart card icons
+.chart-card {
+  ion-card-title {
+    .bi {
+      margin-right: 8px;
+      font-size: 1.3rem;
+      color: var(--ekokai-primary);
+    }
+  }
+}
+
+// Botón flotante para crear ecopunto
+@import '../shared/floating-button.scss';
+
+// Entregas card icons
+.entregas-card {
+  ion-card-title {
+    .bi {
+      margin-right: 8px;
+      font-size: 1.3rem;
+      color: var(--ekokai-primary);
+    }
+  }
+  
+  .entrega-item {
+    .entrega-icon {
+      font-size: 1.2rem;
+      color: var(--ekokai-primary);
     }
   }
 }

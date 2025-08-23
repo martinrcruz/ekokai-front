@@ -4,15 +4,13 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title class="header-title">
-      <ion-icon name="storefront-outline"></ion-icon>
+      <i class="bi bi-shop"></i>
       Marketplace
     </ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="selectedTab === 'cupones' ? crearCupon() : crearProducto()" class="action-btn">
-        <ion-icon name="add-outline"></ion-icon>
-      </ion-button>
+      <!-- Botón removido - reemplazado por botón flotante -->
       <ion-button (click)="cargarDatos()" class="action-btn">
-        <ion-icon name="refresh-outline"></ion-icon>
+        <i class="bi bi-arrow-clockwise"></i>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -31,7 +29,7 @@
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon">
-            <ion-icon name="ticket-outline"></ion-icon>
+            <i class="bi bi-ticket-perforated"></i>
           </div>
           <div class="stat-content">
             <h3>{{ estadisticas.totalCupones }}</h3>
@@ -42,7 +40,7 @@
 
         <div class="stat-card">
           <div class="stat-icon">
-            <ion-icon name="cube-outline"></ion-icon>
+            <i class="bi bi-box"></i>
           </div>
           <div class="stat-content">
             <h3>{{ productos.length }}</h3>
@@ -53,7 +51,7 @@
 
         <div class="stat-card">
           <div class="stat-icon">
-            <ion-icon name="trending-up-outline"></ion-icon>
+            <i class="bi bi-graph-up"></i>
           </div>
           <div class="stat-content">
             <h3>{{ estadisticas.totalUsos }}</h3>
@@ -64,7 +62,7 @@
 
         <div class="stat-card">
           <div class="stat-icon">
-            <ion-icon name="bag-outline"></ion-icon>
+            <i class="bi bi-bag"></i>
           </div>
           <div class="stat-content">
             <h3>{{ estadisticas.totalVentas }}</h3>
@@ -79,13 +77,13 @@
     <div class="search-section">
       <div class="search-container">
         <ion-item class="search-item">
-          <ion-icon name="search-outline" slot="start"></ion-icon>
+          <i class="bi bi-search" slot="start"></i>
           <ion-input [(ngModel)]="filtroBusqueda" placeholder="Buscar productos, cupones..." clearInput></ion-input>
         </ion-item>
         
         <div class="filters-row">
           <ion-item class="filter-item">
-            <ion-icon name="pricetag-outline" slot="start"></ion-icon>
+            <i class="bi bi-tag" slot="start"></i>
             <ion-select [(ngModel)]="filtroCategoria" placeholder="Categoría">
               <ion-select-option value="">Todas las categorías</ion-select-option>
               <ion-select-option *ngFor="let categoria of categorias" [value]="categoria">
@@ -95,7 +93,7 @@
           </ion-item>
 
           <ion-item class="filter-item">
-            <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+            <i class="bi bi-check-circle" slot="start"></i>
             <ion-select [(ngModel)]="filtroEstado" placeholder="Estado">
               <ion-select-option value="">Todos los estados</ion-select-option>
               <ion-select-option *ngFor="let estado of estados" [value]="estado">
@@ -105,7 +103,7 @@
           </ion-item>
 
           <ion-button fill="clear" class="clear-btn" (click)="limpiarFiltros()">
-            <ion-icon name="close-circle-outline"></ion-icon>
+            <i class="bi bi-x-circle"></i>
             Limpiar filtros
           </ion-button>
         </div>
@@ -116,11 +114,11 @@
     <div class="tabs-section">
       <ion-segment [(ngModel)]="selectedTab" class="ecommerce-tabs">
         <ion-segment-button value="cupones">
-          <ion-icon name="ticket-outline"></ion-icon>
+          <i class="bi bi-ticket-perforated"></i>
           <ion-label>Cupones ({{ cuponesFiltrados.length }})</ion-label>
         </ion-segment-button>
         <ion-segment-button value="productos">
-          <ion-icon name="bag-outline"></ion-icon>
+          <i class="bi bi-bag"></i>
           <ion-label>Productos ({{ productosFiltrados.length }})</ion-label>
         </ion-segment-button>
       </ion-segment>
@@ -131,7 +129,7 @@
       <div class="section-header">
         <h2>Gestión de Cupones</h2>
         <ion-button (click)="crearCupon()" class="add-btn">
-          <ion-icon name="add-outline"></ion-icon>
+          <i class="bi bi-plus-lg"></i>
           Crear Cupón
         </ion-button>
       </div>
@@ -144,17 +142,17 @@
             </div>
             <div class="card-actions">
               <div class="action-icon edit-icon" (click)="editarCupon(cupon)" title="Editar cupón">
-                <ion-icon name="create-outline"></ion-icon>
+                <i class="bi bi-pencil"></i>
               </div>
               <div class="action-icon delete-icon" (click)="eliminarCupon(cupon)" title="Eliminar cupón">
-                <ion-icon name="trash-outline"></ion-icon>
+                <i class="bi bi-trash"></i>
               </div>
             </div>
           </div>
           
           <div class="card-content">
             <div class="product-image cupon-image">
-              <ion-icon name="pricetag-outline"></ion-icon>
+              <i class="bi bi-tag"></i>
             </div>
             
             <div class="product-info">
@@ -166,26 +164,26 @@
               
               <div class="product-stats">
                 <div class="stat-item">
-                  <ion-icon name="people-outline"></ion-icon>
+                  <i class="bi bi-people"></i>
                   <span>{{ cupon.usos }}/{{ cupon.maxUsos }} usos</span>
                 </div>
                 <div class="stat-item">
-                  <ion-icon name="calendar-outline"></ion-icon>
+                  <i class="bi bi-calendar"></i>
                   <span>{{ cupon.fechaExpiracion }}</span>
                 </div>
                 <div class="stat-item">
-                  <ion-icon name="pricetag-outline"></ion-icon>
+                  <i class="bi bi-tag"></i>
                   <span>{{ cupon.categoria }}</span>
                 </div>
                 <div class="stat-item">
-                  <ion-icon name="checkmark-circle-outline"></ion-icon>
+                  <i class="bi bi-check-circle"></i>
                   <span>{{ cupon.activo ? 'Disponible' : 'No disponible' }}</span>
                 </div>
               </div>
               
               <div class="card-footer">
                 <ion-button fill="outline" (click)="editarCupon(cupon)" class="edit-action-btn">
-                  <ion-icon name="create-outline"></ion-icon>
+                  <i class="bi bi-pencil"></i>
                   Editar Cupón
                 </ion-button>
               </div>
@@ -199,10 +197,7 @@
     <div *ngIf="selectedTab === 'productos'" class="products-grid">
       <div class="section-header">
         <h2>Gestión de Productos</h2>
-        <ion-button (click)="crearProducto()" class="add-btn">
-          <ion-icon name="add-outline"></ion-icon>
-          Crear Producto
-        </ion-button>
+        <!-- Botón removido - reemplazado por botón flotante -->
       </div>
       
       <div class="grid-container">
@@ -213,17 +208,17 @@
             </div>
             <div class="card-actions">
               <div class="action-icon edit-icon" (click)="editarProducto(producto)" title="Editar producto">
-                <ion-icon name="create-outline"></ion-icon>
+                <i class="bi bi-pencil"></i>
               </div>
               <div class="action-icon delete-icon" (click)="eliminarProducto(producto)" title="Eliminar producto">
-                <ion-icon name="trash-outline"></ion-icon>
+                <i class="bi bi-trash"></i>
               </div>
             </div>
           </div>
           
           <div class="card-content">
             <div class="product-image producto-image">
-              <ion-icon name="cube-outline"></ion-icon>
+              <i class="bi bi-box"></i>
             </div>
             
             <div class="product-info">
@@ -236,26 +231,26 @@
               
               <div class="product-stats">
                 <div class="stat-item">
-                  <ion-icon name="cube-outline"></ion-icon>
+                  <i class="bi bi-box"></i>
                   <span>Stock: {{ producto.stock }}</span>
                 </div>
                 <div class="stat-item">
-                  <ion-icon name="trending-up-outline"></ion-icon>
+                  <i class="bi bi-graph-up"></i>
                   <span>Vendidos: {{ producto.vendidos }}</span>
                 </div>
                 <div class="stat-item">
-                  <ion-icon name="barcode-outline"></ion-icon>
+                  <i class="bi bi-barcode"></i>
                   <span>{{ producto.codigo || 'Sin código' }}</span>
                 </div>
                 <div class="stat-item">
-                  <ion-icon name="folder-outline"></ion-icon>
+                  <i class="bi bi-folder"></i>
                   <span>{{ producto.familia || 'Sin familia' }}</span>
                 </div>
               </div>
               
               <div class="card-footer">
                 <ion-button fill="outline" (click)="editarProducto(producto)" class="edit-action-btn">
-                  <ion-icon name="create-outline"></ion-icon>
+                  <i class="bi bi-pencil"></i>
                   Editar Producto
                 </ion-button>
               </div>
@@ -267,13 +262,10 @@
 
     <!-- Empty State -->
     <div *ngIf="(selectedTab === 'cupones' && cuponesFiltrados.length === 0) || (selectedTab === 'productos' && productosFiltrados.length === 0)" class="empty-state">
-      <ion-icon name="search-outline"></ion-icon>
+      <i class="bi bi-search"></i>
       <h3>No se encontraron resultados</h3>
       <p>Intenta ajustar los filtros o crear un nuevo {{ selectedTab === 'cupones' ? 'cupón' : 'producto' }}</p>
-      <ion-button (click)="selectedTab === 'cupones' ? crearCupon() : crearProducto()" class="add-btn" style="margin-top: 16px;">
-        <ion-icon name="add-outline"></ion-icon>
-        Crear {{ selectedTab === 'cupones' ? 'Cupón' : 'Producto' }}
-      </ion-button>
+      <!-- Botón removido - reemplazado por botón flotante -->
     </div>
 
     <!-- Loading State -->
@@ -282,4 +274,9 @@
       <p>Cargando datos...</p>
     </div>
   </div>
+
+  <!-- Botón flotante para crear cupón o producto -->
+  <button class="floating-action-button" (click)="selectedTab === 'cupones' ? crearCupon() : crearProducto()" title="Crear {{ selectedTab === 'cupones' ? 'Cupón' : 'Producto' }}">
+    <i class="bi bi-plus"></i>
+  </button>
 </ion-content> 

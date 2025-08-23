@@ -1934,3 +1934,61 @@ ion-modal {
     }
   }
 } 
+
+// Botón flotante para crear usuario
+@import '../shared/floating-button.scss';
+
+.navigation-card {
+  margin-bottom: 24px;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, var(--ion-color-primary-tint) 0%, var(--ion-color-primary) 100%);
+  color: white;
+
+  .navigation-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+
+    .navigation-icon {
+      font-size: 32px;
+      opacity: 0.9;
+    }
+
+    .navigation-text {
+      flex: 1;
+      min-width: 200px;
+
+      h3 {
+        margin: 0 0 8px 0;
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+    }
+
+    .navigation-btn {
+      --background: rgba(255, 255, 255, 0.2);
+      --color: white;
+      --border-color: rgba(255, 255, 255, 0.3);
+      --border-width: 1px;
+      --border-style: solid;
+      --border-radius: 8px;
+      height: 44px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+
+      &:hover {
+        --background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+      }
+    }
+  }
+} 

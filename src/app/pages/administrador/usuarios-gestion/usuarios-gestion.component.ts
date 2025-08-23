@@ -164,6 +164,11 @@ export class UsuariosGestionComponent implements OnInit {
     }
   }
 
+  // ✅ Navegar al módulo de usuarios para gestión avanzada
+  irAModuloUsuarios() {
+    this.router.navigate(['/administrador/usuarios']);
+  }
+
   cerrarCrearEncargadoModal() {
     this.showCrearEncargadoModal = false;
     this.encargadoForm = {
@@ -389,7 +394,7 @@ export class UsuariosGestionComponent implements OnInit {
     const total = this.usuarios.length;
     const activos = this.usuarios.filter(u => u.activo).length;
     const totalKilos = this.usuarios.reduce((sum, u) => sum + (u.kilosTotal || 0), 0);
-    const totalTokens = this.usuarios.reduce((sum, u) => sum + (u.tokens || 0), 0);
+            const totalTokens = this.usuarios.reduce((sum, u) => sum + (u.tokensAcumulados || 0), 0);
     return { total, activos, totalKilos, totalTokens };
   }
 
@@ -464,7 +469,7 @@ paginaAnterior() {
   }
 
   getTotalTokens(): number {
-    return this.usuarios.reduce((total, usuario) => total + (usuario.tokens || 0), 0);
+    return this.usuarios.reduce((total, usuario) => total + (usuario.tokensAcumulados || 0), 0);
   }
 
   getAvatarClass(rol: string): string {

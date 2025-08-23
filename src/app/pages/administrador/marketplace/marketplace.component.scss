@@ -657,6 +657,9 @@
   }
 }
 
+// Botón flotante para crear cupón o producto
+@import '../shared/floating-button.scss';
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
   .hero-section .hero-title {

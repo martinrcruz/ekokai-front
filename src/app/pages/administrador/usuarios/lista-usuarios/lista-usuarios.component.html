@@ -1,0 +1,172 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="volverAUsuariosGestion()">
+        <i class="bi bi-arrow-left"></i>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Lista de Usuarios</ion-title>
+    <ion-buttons slot="end">
+      <!-- Botón removido - reemplazado por botón flotante -->
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="usuarios-container" *ngIf="!loading; else loadingTpl">
+    
+    <!-- Header de la página -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-icon">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <div class="header-text">
+          <h1>Lista de Usuarios</h1>
+          <p>Gestiona todos los usuarios del sistema Ekokai</p>
+        </div>
+        <div class="header-stats">
+          <div class="stat-item">
+            <div class="stat-number">{{ usuariosFiltrados.length }}</div>
+            <div class="stat-label">Total</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ getUsuariosActivos() }}</div>
+            <div class="stat-label">Activos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card de filtros -->
+    <ion-card class="filters-card">
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="12" size-md="4">
+              <ion-item>
+                <ion-label position="stacked">Buscar por nombre</ion-label>
+                <ion-input 
+                  [(ngModel)]="filtroNombre" 
+                  placeholder="Nombre o apellido"
+                  clearInput="true">
+                </ion-input>
+              </ion-item>
+            </ion-col>
+            <ion-col size="12" size-md="4">
+              <ion-item>
+                <ion-label position="stacked">Filtrar por rol</ion-label>
+                <ion-select [(ngModel)]="filtroRol" placeholder="Todos los roles">
+                  <ion-select-option value="">Todos los roles</ion-select-option>
+                  <ion-select-option *ngFor="let rol of roles" [value]="rol">
+                    {{ obtenerRolDisplay(rol) }}
+                  </ion-select-option>
+                </ion-select>
+              </ion-item>
+            </ion-col>
+            <ion-col size="12" size-md="4">
+              <ion-item>
+                <ion-label position="stacked">Filtrar por estado</ion-label>
+                <ion-select [(ngModel)]="filtroEstado" placeholder="Todos los estados">
+                  <ion-select-option value="">Todos los estados</ion-select-option>
+                  <ion-select-option *ngFor="let estado of estados" [value]="estado">
+                    {{ estado }}
+                  </ion-select-option>
+                </ion-select>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Lista de usuarios -->
+    <ion-card *ngIf="usuariosFiltrados.length > 0; else noUsuariosTpl">
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let usuario of usuariosFiltrados" class="usuario-item">
+            <ion-avatar slot="start">
+              <i class="bi bi-person" size="large" color="primary"></i>
+            </ion-avatar>
+            
+            <ion-label class="usuario-info">
+              <h2>{{ usuario.nombre }} {{ usuario.apellido }}</h2>
+              <p>
+                <i class="bi bi-envelope"></i> {{ usuario.email }}
+                <span *ngIf="usuario.telefono">
+                  • <i class="bi bi-telephone"></i> {{ usuario.telefono }}
+                </span>
+              </p>
+              <p>
+                <ion-badge [color]="usuario.activo ? 'success' : 'danger'">
+                  {{ usuario.activo ? 'Activo' : 'Inactivo' }}
+                </ion-badge>
+                <ion-badge color="primary">{{ obtenerRolDisplay(usuario.rol) }}</ion-badge>
+                <span class="fecha-registro">
+                  • Registrado: {{ formatearFecha(usuario.fechaRegistro) }}
+                </span>
+              </p>
+            </ion-label>
+
+            <ion-buttons slot="end">
+              <ion-button fill="clear" (click)="verHistorial(usuario)" color="primary">
+                <i class="bi bi-clock-history"></i>
+                <span class="button-text">Historial</span>
+              </ion-button>
+              
+              <ion-button fill="clear" (click)="editarUsuario(usuario)" color="secondary">
+                <i class="bi bi-pencil-fill"></i>
+                <span class="button-text">Editar</span>
+              </ion-button>
+              
+              <ion-button 
+                fill="clear" 
+                (click)="cambiarEstadoUsuario(usuario)" 
+                [color]="usuario.activo ? 'warning' : 'success'">
+                <i class="bi" [class]="usuario.activo ? 'bi-pause-fill' : 'bi-play-fill'"></i>
+                <span class="button-text">{{ usuario.activo ? 'Desactivar' : 'Activar' }}</span>
+              </ion-button>
+              
+              <ion-button fill="clear" (click)="eliminarUsuario(usuario)" color="danger">
+                <i class="bi bi-trash-fill"></i>
+                <span class="button-text">Eliminar</span>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+
+  <!-- Loading template -->
+  <ng-template #loadingTpl>
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando usuarios...</p>
+    </div>
+  </ng-template>
+
+  <!-- No usuarios template -->
+  <ng-template #noUsuariosTpl>
+    <div class="empty-state">
+      <i class="bi bi-people-fill" size="large" color="medium"></i>
+      <h3>No hay usuarios</h3>
+      <p *ngIf="filtroNombre || filtroRol || filtroEstado">
+        No se encontraron usuarios con los filtros aplicados
+      </p>
+      <p *ngIf="!filtroNombre && !filtroRol && !filtroEstado">
+        Aún no hay usuarios registrados en el sistema
+      </p>
+      <!-- <ion-button (click)="crearUsuario()" fill="solid" color="primary">
+        <i class="bi bi-person-add-fill" slot="start"></i>
+        Crear primer usuario
+      </ion-button> -->
+    </div>
+  </ng-template>
+
+  <!-- Botón flotante para crear usuario -->
+  <button class="floating-action-button" (click)="crearUsuario()" title="Crear Usuario">
+    <i class="bi bi-plus"></i>
+  </button>
+</ion-content>

@@ -1,18 +1,17 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-      <ion-back-button defaultHref="/home"></ion-back-button>
+      <ion-back-button defaultHref="/administrador/usuarios/lista"></ion-back-button>
     </ion-buttons>
-    <ion-title>Crear Vecino</ion-title>
+    <ion-title>{{ isEdit ? 'Editar Usuario' : 'Crear Vecino' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <div class="form-container">
     <div class="form-header">
-      <h2>Registrar Nuevo Vecino</h2>
-      <p>Completa la información para crear una nueva cuenta de vecino</p>
+      <h2>{{ isEdit ? 'Editar Usuario' : 'Registrar Nuevo Vecino' }}</h2>
+      <p>{{ isEdit ? 'Modifica la información del usuario' : 'Completa la información para crear una nueva cuenta de vecino' }}</p>
     </div>
 
     <form [formGroup]="usuarioForm" (ngSubmit)="guardar()">
@@ -26,11 +25,13 @@
             <ion-label position="stacked">Nombre Completo *</ion-label>
             <ion-input formControlName="name" type="text" placeholder="Ingresa el nombre completo"></ion-input>
           </ion-item>
+          <div class="error-message" *ngIf="nameError">{{ nameError }}</div>
 
           <ion-item class="form-item">
             <ion-label position="stacked">Email *</ion-label>
             <ion-input formControlName="email" type="email" placeholder="ejemplo@email.com"></ion-input>
           </ion-item>
+          <div class="error-message" *ngIf="emailError">{{ emailError }}</div>
 
           <ion-item class="form-item">
             <ion-label position="stacked">Teléfono</ion-label>
@@ -59,15 +60,19 @@
             </ion-segment>
           </div>
 
-          <ion-item class="form-item">
+          <ion-item class="form-item" *ngIf="!isEdit">
             <ion-label position="stacked">Contraseña *</ion-label>
             <ion-input formControlName="password" type="password" placeholder="Contraseña segura (mínimo 6 caracteres)"></ion-input>
           </ion-item>
+          <div class="error-message" *ngIf="!isEdit && passwordError">{{ passwordError }}</div>
 
-          <ion-item class="form-item">
+          <ion-item class="form-item" *ngIf="!isEdit">
             <ion-label position="stacked">Confirmar Contraseña *</ion-label>
             <ion-input formControlName="confirmPassword" type="password" placeholder="Repite la contraseña"></ion-input>
           </ion-item>
+          <div class="error-message" *ngIf="!isEdit && confirmPasswordError">{{ confirmPasswordError }}</div>
+
+          <div class="error-message" *ngIf="!isEdit && passwordMismatchError">Las contraseñas no coinciden</div>
 
           <ion-item class="form-item">
             <ion-label>Usuario Activo</ion-label>
@@ -80,7 +85,7 @@
       <div class="form-actions">
         <ion-button type="submit" [disabled]="usuarioForm.invalid || loading" class="save-btn">
           <ion-icon name="save-outline" slot="start"></ion-icon>
-          {{ loading ? 'Guardando...' : 'Crear Vecino' }}
+          {{ loading ? 'Guardando...' : (isEdit ? 'Actualizar Usuario' : 'Crear Vecino') }}
         </ion-button>
         <ion-button fill="outline" (click)="cancelar()" class="cancel-btn">
           <ion-icon name="close-outline" slot="start"></ion-icon>

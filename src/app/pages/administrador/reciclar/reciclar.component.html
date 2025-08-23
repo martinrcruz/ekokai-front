@@ -6,7 +6,7 @@
     <ion-title>Centro de Reciclaje</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="conectarBalanza()" [disabled]="conectando" fill="clear" class="balance-btn">
-        <ion-icon [name]="conectando ? 'sync-outline' : 'hardware-chip-outline'"></ion-icon>
+        <i class="bi" [class]="conectando ? 'bi-arrow-clockwise' : 'bi-cpu'"></i>
         {{ conectando ? 'Conectando...' : 'Balanza' }}
       </ion-button>
     </ion-buttons>
@@ -19,7 +19,7 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-icon">
-          <ion-icon name="reload-circle-outline"></ion-icon>
+          <i class="bi bi-recycle"></i>
         </div>
         <div class="header-text">
           <h1>Centro de Reciclaje</h1>
@@ -44,7 +44,7 @@
         <div class="welcome-container">
           <div class="welcome-info">
             <div class="welcome-icon">
-              <ion-icon name="person-circle-outline"></ion-icon>
+              <i class="bi bi-person-circle"></i>
             </div>
             <div class="welcome-text">
               <h2>¡Hola, {{ getNombreUsuarioLogueado() }}!</h2>
@@ -80,7 +80,7 @@
       <ion-card-header>
         <div class="card-header-content">
           <div class="header-icon">
-            <ion-icon name="search-outline"></ion-icon>
+            <i class="bi bi-search"></i>
           </div>
           <div class="header-text">
             <ion-card-title>Identificar Vecino</ion-card-title>
@@ -94,7 +94,7 @@
           <div class="form-grid">
             <div class="form-item dni-field">
               <ion-label position="stacked">
-                <ion-icon name="card-outline"></ion-icon>
+                <i class="bi bi-card-text"></i>
                 DNI *
               </ion-label>
               <ion-input 
@@ -107,7 +107,7 @@
 
             <div class="form-item phone-field">
               <ion-label position="stacked">
-                <ion-icon name="call-outline"></ion-icon>
+                <i class="bi bi-telephone"></i>
                 Teléfono *
               </ion-label>
               <ion-input 
@@ -120,7 +120,7 @@
 
             <div class="form-item name-field">
               <ion-label position="stacked">
-                <ion-icon name="person-outline"></ion-icon>
+                <i class="bi bi-person"></i>
                 Nombre (opcional)
               </ion-label>
               <ion-input 
@@ -136,24 +136,31 @@
               (click)="buscarVecino()" 
               [disabled]="buscando || (!formId.value.dni && !formId.value.telefono)"
               class="search-btn">
-              <ion-icon name="search-outline" slot="start"></ion-icon>
+              <i class="bi bi-search" slot="start"></i>
               {{ buscando ? 'Buscando...' : 'Buscar Vecino' }}
             </ion-button>
 
-            <ion-button 
-              (click)="registrarVecinoExpress()" 
-              [disabled]="!formId.value.dni || !formId.value.telefono || !formId.value.nombre"
+            <!-- <ion-button 
+              (click)="abrirModalRegistro()" 
               class="register-btn" 
               fill="outline">
-              <ion-icon name="person-add-outline" slot="start"></ion-icon>
-              Registro Express
+              <i class="bi bi-person-add" slot="start"></i>
+              Generar Registro
             </ion-button>
+            
+
+            <ion-button 
+              (click)="testModal()" 
+              color="warning" 
+              fill="clear">
+              Test Modal
+            </ion-button> -->
 
             <ion-button 
               (click)="limpiarBusqueda()" 
               class="clear-btn" 
               fill="clear">
-              <ion-icon name="refresh-outline" slot="start"></ion-icon>
+              <i class="bi bi-arrow-clockwise" slot="start"></i>
               Limpiar
             </ion-button>
           </div>
@@ -162,7 +169,7 @@
           <div class="search-result success" *ngIf="vecinoSeleccionado">
             <div class="result-content">
               <div class="result-icon">
-                <ion-icon name="checkmark-circle"></ion-icon>
+                <i class="bi bi-check-circle"></i>
               </div>
               <div class="result-info">
                 <h4>Vecino encontrado</h4>
@@ -176,7 +183,7 @@
           <div class="search-result warning" *ngIf="busquedaFallida && !vecinoSeleccionado">
             <div class="result-content">
               <div class="result-icon">
-                <ion-icon name="alert-circle"></ion-icon>
+                <i class="bi bi-exclamation-triangle"></i>
               </div>
               <div class="result-info">
                 <h4>No se encontró el vecino</h4>
@@ -189,7 +196,7 @@
           <div class="search-result error" *ngIf="error">
             <div class="result-content">
               <div class="result-icon">
-                <ion-icon name="close-circle"></ion-icon>
+                <i class="bi bi-x-circle"></i>
               </div>
               <div class="result-info">
                 <h4>Error</h4>
@@ -206,7 +213,7 @@
       <ion-card-header>
         <div class="card-header-content">
           <div class="header-icon">
-            <ion-icon name="leaf-outline"></ion-icon>
+            <i class="bi bi-leaf"></i>
           </div>
           <div class="header-text">
             <ion-card-title>Detalles del Reciclaje</ion-card-title>
@@ -220,7 +227,7 @@
         <!-- Overlay de bloqueo -->
         <div class="lock-overlay" *ngIf="!vecinoSeleccionado">
           <div class="lock-content">
-            <ion-icon name="lock-closed-outline"></ion-icon>
+            <i class="bi bi-lock-fill"></i>
             <span>Valida al vecino para continuar</span>
           </div>
         </div>
@@ -229,7 +236,7 @@
           <div class="form-grid">
             <div class="form-item type-field">
               <ion-label position="stacked">
-                <ion-icon name="trash-outline"></ion-icon>
+                <i class="bi bi-trash"></i>
                 Tipo de Residuo *
               </ion-label>
               <ion-select 
@@ -246,7 +253,7 @@
 
             <div class="form-item weight-field">
               <ion-label position="stacked">
-                <ion-icon name="scale-outline"></ion-icon>
+                <i class="bi bi-scale"></i>
                 Peso (kg) *
               </ion-label>
               <div class="weight-input-container">
@@ -260,7 +267,7 @@
                   (click)="conectarBalanza()" 
                   [disabled]="!vecinoSeleccionado || conectando"
                   class="balance-btn-inline">
-                  <ion-icon [name]="conectando ? 'sync-outline' : 'hardware-chip-outline'" slot="start"></ion-icon>
+                  <i class="bi" [class]="conectando ? 'bi-arrow-clockwise' : 'bi-cpu'" slot="start"></i>
                   {{ conectando ? 'Conectando...' : 'Obtener Peso' }}
                 </ion-button>
               </div>
@@ -271,15 +278,15 @@
           <div class="additional-info">
             <div class="info-badges">
               <ion-badge color="medium" *ngIf="!vecinoSeleccionado" class="info-badge">
-                <ion-icon name="time-outline"></ion-icon>
+                <i class="bi bi-clock"></i>
                 Fecha se asignará al guardar
               </ion-badge>
               <ion-badge color="success" *ngIf="vecinoSeleccionado" class="info-badge">
-                <ion-icon name="calendar-outline"></ion-icon>
+                <i class="bi bi-calendar"></i>
                 Se guardará con fecha: {{ now | date:'short' }}
               </ion-badge>
               <ion-badge color="tertiary" *ngIf="formReciclaje.value.pesoKg" class="info-badge">
-                <ion-icon name="gift-outline"></ion-icon>
+                <i class="bi bi-gift"></i>
                 Cupones estimados: {{ tokensEstimados() }}
               </ion-badge>
             </div>
@@ -293,11 +300,74 @@
             (click)="generarCanje()"
             [disabled]="!vecinoSeleccionado || formReciclaje.invalid || canjeando"
             class="save-btn">
-            <ion-icon name="save-outline" slot="start"></ion-icon>
+            <i class="bi bi-save" slot="start"></i>
             {{ canjeando ? 'Guardando...' : 'Guardar Reciclaje' }}
           </ion-button>
         </div>
       </ion-card-content>
     </ion-card>
   </div>
+
+  <!-- Modal para registro de vecino -->
+  <ion-modal [isOpen]="showRegistroModal" (didDismiss)="cerrarModalRegistro()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="cerrarModalRegistro()" fill="clear" class="close-btn">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          <ion-title>Registrar Nuevo Vecino</ion-title>
+          <ion-buttons slot="end">
+            <ion-button 
+              (click)="guardarVecino()" 
+              [disabled]="guardandoVecino || !formRegistroVecino.valid"
+              color="primary">
+              <ion-icon name="save-outline" slot="start" *ngIf="!guardandoVecino"></ion-icon>
+              <ion-spinner name="crescent" *ngIf="guardandoVecino"></ion-spinner>
+              {{ guardandoVecino ? 'Guardando...' : 'Guardar' }}
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      
+      <ion-content class="ion-padding">
+        <h2>Registrar Nuevo Vecino</h2>
+        <p>Completa la información para crear un nuevo vecino</p>
+        
+        <form [formGroup]="formRegistroVecino">
+          <ion-item>
+            <ion-label position="stacked">Nombre *</ion-label>
+            <ion-input formControlName="nombre" placeholder="Ingresa el nombre"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Apellido *</ion-label>
+            <ion-input formControlName="apellido" placeholder="Ingresa el apellido"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">DNI *</ion-label>
+            <ion-input formControlName="dni" placeholder="Ingresa el DNI" type="number"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Email *</ion-label>
+            <ion-input formControlName="email" type="email" placeholder="ejemplo@email.com"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Teléfono *</ion-label>
+            <ion-input formControlName="telefono" placeholder="Ingresa el teléfono" type="tel"></ion-input>
+          </ion-item>
+        </form>
+        
+        <!-- Botón de prueba para cerrar -->
+        <ion-button expand="block" (click)="cerrarModalRegistro()" color="medium" class="ion-margin-top">
+          Cerrar Modal
+        </ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

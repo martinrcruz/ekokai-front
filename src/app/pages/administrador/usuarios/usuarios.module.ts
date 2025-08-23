@@ -3,11 +3,10 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UsuariosRoutingModule } from './usuarios-routing.module';
-import { FormUsuarioComponent } from './form-usuario/form-usuario.component';
 
 @NgModule({
   declarations: [
-    FormUsuarioComponent
+    // FormUsuarioComponent is now standalone, no need to declare it here
   ],
   imports: [
     CommonModule,

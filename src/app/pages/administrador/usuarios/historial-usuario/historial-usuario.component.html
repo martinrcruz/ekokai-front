@@ -13,17 +13,17 @@
   <div class="historial-container" *ngIf="!loading; else loadingTpl">
     
     <!-- Información del usuario -->
-    <ion-card *ngIf="usuario.nombre">
+    <ion-card *ngIf="usuario.name || usuario.nombre">
       <ion-card-header>
         <ion-card-title>
           <ion-icon name="person" color="primary"></ion-icon>
-          {{ usuario.nombre }} {{ usuario.apellido }}
+          {{ usuario.name || usuario.nombre }} {{ usuario.apellido || '' }}
         </ion-card-title>
         <ion-card-subtitle>
-          <ion-badge [color]="usuario.activo ? 'success' : 'danger'">
-            {{ usuario.activo ? 'Activo' : 'Inactivo' }}
+          <ion-badge [color]="usuario.active || usuario.activo ? 'success' : 'danger'">
+            {{ usuario.active || usuario.activo ? 'Activo' : 'Inactivo' }}
           </ion-badge>
-          <span class="rol-badge">{{ usuario.rol }}</span>
+          <span class="rol-badge">{{ usuario.role || usuario.rol }}</span>
         </ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
@@ -31,11 +31,11 @@
           <ion-row>
             <ion-col size="6">
               <p><ion-icon name="mail"></ion-icon> {{ usuario.email }}</p>
-              <p><ion-icon name="call"></ion-icon> {{ usuario.telefono || 'No especificado' }}</p>
+              <p><ion-icon name="call"></ion-icon> {{ usuario.phone || usuario.telefono || 'No especificado' }}</p>
             </ion-col>
             <ion-col size="6">
-              <p><ion-icon name="location"></ion-icon> {{ usuario.zona || 'No especificada' }}</p>
-              <p><ion-icon name="calendar"></ion-icon> {{ usuario.fechaCreacion | date:'short' }}</p>
+              <p><ion-icon name="location"></ion-icon> {{ usuario.address || usuario.zona || 'No especificada' }}</p>
+              <p><ion-icon name="calendar"></ion-icon> {{ formatearFecha(usuario.createdAt || usuario.fechaCreacion) }}</p>
             </ion-col>
           </ion-row>
         </ion-grid>

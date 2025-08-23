@@ -822,3 +822,55 @@
     }
   }
 } 
+
+// Botón flotante para crear premio
+@import '../shared/floating-button.scss';
+
+// Estilos para modales
+.modal-actions {
+  margin-top: 20px;
+  padding: 0 16px;
+}
+
+ion-modal {
+  --height: 80%;
+  --width: 90%;
+  --max-width: 500px;
+}
+
+ion-modal ion-content {
+  --padding-start: 16px;
+  --padding-end: 16px;
+}
+
+ion-modal ion-item {
+  --padding-start: 0;
+  --padding-end: 0;
+  margin-bottom: 16px;
+}
+
+ion-modal ion-label {
+  font-weight: 500;
+  color: var(--ion-color-dark);
+}
+
+ion-modal ion-input,
+ion-modal ion-textarea {
+  --padding-start: 12px;
+  --padding-end: 12px;
+  border: 1px solid var(--ion-color-medium);
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+ion-modal ion-checkbox {
+  margin-right: 12px;
+}
+
+// Responsive para modales
+@media (max-width: 768px) {
+  ion-modal {
+    --width: 95%;
+    --height: 90%;
+  }
+} 

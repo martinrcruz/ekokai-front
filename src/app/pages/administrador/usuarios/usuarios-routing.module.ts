@@ -5,11 +5,19 @@ import { FormUsuarioComponent } from './form-usuario/form-usuario.component';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'crear',
+    redirectTo: 'lista',
     pathMatch: 'full'
   },
   {
+    path: 'lista',
+    loadComponent: () => import('./lista-usuarios/lista-usuarios.component').then(m => m.ListaUsuariosComponent)
+  },
+  {
     path: 'crear',
+    component: FormUsuarioComponent
+  },
+  {
+    path: 'editar/:id',
     component: FormUsuarioComponent
   },
   {

@@ -103,8 +103,36 @@
     }
   }
 
-  // Pestana de historial
+  // Pestana de Historial
   .historial-tab {
+    // Error card
+    .error-card {
+      margin-bottom: 16px;
+      border-left: 4px solid var(--ion-color-danger);
+      
+      .error-content {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        
+        ion-icon {
+          font-size: 24px;
+          flex-shrink: 0;
+        }
+        
+        p {
+          margin: 0;
+          flex: 1;
+          color: var(--color-text);
+        }
+        
+        ion-button {
+          flex-shrink: 0;
+        }
+      }
+    }
+    
     // Card de filtros
     .filters-card {
       border-radius: var(--border-radius-lg);
@@ -387,10 +415,71 @@
         }
       }
     }
+
+    // Loading state
+    .loading-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--color-text-light);
+      
+      ion-spinner {
+        margin-bottom: 16px;
+        --color: var(--ekokai-primary);
+      }
+      
+      p {
+        margin: 0;
+        font-size: 16px;
+        opacity: 0.8;
+      }
+    }
+
+    // Mensaje cuando no hay datos
+    .no-data-message {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--color-text-light);
+      
+      ion-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+      }
+      
+      p {
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+    }
   }
 
-  // Pestana de estadísticas
+  // Pestana de Estadísticas
   .estadisticas-tab {
+    .estadisticas-header {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 16px;
+      
+      .refresh-btn {
+        --color: var(--ekokai-primary);
+        --color-hover: var(--ekokai-primary-dark);
+        font-weight: 600;
+        border-radius: var(--border-radius-md);
+        transition: all 0.2s ease;
+        
+        ion-icon {
+          margin-right: 8px;
+          font-size: 18px;
+        }
+        
+        &:hover {
+          --background: var(--ekokai-primary-light);
+          transform: translateY(-1px);
+        }
+      }
+    }
+    
     // Card de resumen
     .summary-card {
       border-radius: var(--border-radius-lg);
@@ -754,6 +843,56 @@
         }
       }
     }
+  }
+}
+
+// Estilos para modales
+.modal-actions {
+  margin-top: 20px;
+  padding: 0 16px;
+}
+
+ion-modal {
+  --height: 80%;
+  --width: 90%;
+  --max-width: 600px;
+}
+
+ion-modal ion-content {
+  --padding-start: 16px;
+  --padding-end: 16px;
+}
+
+.detalle-entrega {
+  padding: 16px 0;
+}
+
+.detalle-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.detalle-item ion-icon {
+  color: var(--ion-color-primary);
+  font-size: 18px;
+  min-width: 20px;
+}
+
+.detalle-item span {
+  flex: 1;
+}
+
+.detalle-item strong {
+  color: var(--ion-color-dark);
+}
+
+// Responsive para modales
+@media (max-width: 768px) {
+  ion-modal {
+    --width: 95%;
+    --height: 90%;
   }
 }
 

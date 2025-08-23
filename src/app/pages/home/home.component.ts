@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
 import { EcopuntosService } from 'src/app/services/ecopuntos.service';
 import { UsuariosService } from 'src/app/services/usuarios.service';
 import { ResiduosService } from 'src/app/services/residuos.service';
@@ -11,7 +11,11 @@ import { ChartOptions, ChartType, ChartData } from 'chart.js';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
+  // Referencias a los canvas de los gráficos
+  @ViewChild('barChartCanvas') barChartCanvas!: ElementRef;
+  @ViewChild('doughnutChartCanvas') doughnutChartCanvas!: ElementRef;
+
   // Tarjetas superiores
   totalKilos = 0;
   totalUsuarios = 0;
@@ -28,6 +32,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   // Gráfico de barras (distribución mensual)
   barChartOptions: ChartOptions<'bar'> = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
       title: { display: false }
@@ -49,6 +54,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   // Gráfico doughnut (meta mensual)
   doughnutChartOptions: ChartOptions<'doughnut'> = {
     responsive: true,
+    maintainAspectRatio: false,
     cutout: '70%',
     plugins: {
       legend: { display: false },
@@ -82,6 +88,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   filtroUsuario: string = '';
   usuariosRecientesFiltrados: any[] = [];
 
+  // Flag para controlar si los datos ya fueron cargados
+  private datosCargados = false;
+
   constructor(
     private ecopuntosService: EcopuntosService,
     private usuariosService: UsuariosService,
@@ -90,23 +99,62 @@ export class HomeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.cargarDashboard();
+    // Solo cargar datos si no han sido cargados previamente
+    if (!this.datosCargados) {
+      this.cargarDashboard();
+    }
+  }
+
+  ngAfterViewInit() {
+    // Los gráficos se crean automáticamente por ng2-charts
+    console.log('[HomeComponent] ngAfterViewInit - Vista inicializada');
   }
 
   ionViewWillEnter() {
+    console.log('[HomeComponent] ionViewWillEnter - Inicializando vista');
+    // Siempre cargar datos cuando se entra a la vista
     this.cargarDashboard();
   }
 
+  ionViewDidEnter() {
+    console.log('[HomeComponent] ionViewDidEnter - Vista completamente cargada');
+    // Forzar actualización de los gráficos
+    this.actualizarGraficos();
+  }
+
+  ionViewWillLeave() {
+    console.log('[HomeComponent] ionViewWillLeave - Saliendo de la vista');
+    // Limpiar estado si es necesario
+  }
+
   ngOnDestroy() {
-    // Cleanup if needed
+    console.log('[HomeComponent] ngOnDestroy - Limpiando recursos');
+    this.datosCargados = false;
+  }
+
+  private actualizarGraficos() {
+    // Forzar actualización de los gráficos usando ng2-charts
+    // Como no tenemos acceso directo a las instancias, usamos un enfoque diferente
+    // Los gráficos se actualizarán automáticamente cuando cambien los datos
+    console.log('[HomeComponent] Actualizando gráficos...');
+    
+    // Forzar detección de cambios
+    setTimeout(() => {
+      // Los gráficos de ng2-charts se actualizan automáticamente
+      // cuando cambian las propiedades de datos
+      console.log('[HomeComponent] Gráficos actualizados');
+    }, 100);
   }
 
   cargarDashboard() {
+    console.log('[HomeComponent] Cargando dashboard...');
+    
     // Total kilos reciclados
     this.estadisticasService.getTotalKilos().subscribe(data => {
       console.log('[Estadisticas] Total kilos recibidos:', data);
       this.totalKilos = data.totalKg || 0;
     });
+    
     // Mejor sucursal
     this.estadisticasService.getSucursalTop().subscribe(data => {
       console.log('[Estadisticas] Mejor sucursal recibida:', data);
@@ -115,6 +163,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         kilosMes: data.totalKg || 0
       };
     });
+    
     // Usuarios
     this.usuariosService.getUsuarios().subscribe(usuarios => {
       console.log('[Ecopard] Usuarios recibidos:', usuarios);
@@ -148,14 +197,25 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.chartData = kilosPorMes;
       this.barChartData.labels = this.chartLabels;
       this.barChartData.datasets[0].data = this.chartData;
+      
+      // Crear una nueva referencia para forzar la actualización
+      this.barChartData = { ...this.barChartData };
+      console.log('[HomeComponent] Datos del gráfico de barras actualizados');
     });
+    
     // Meta mensual
     this.estadisticasService.getMetaMensual().subscribe(data => {
       console.log('[Estadisticas] Meta mensual recibida:', data);
       this.metaPorcentaje = Math.round((data.porcentaje || 0) * 100);
       // Actualizar datos del gráfico doughnut
       this.doughnutChartData.datasets[0].data = [this.metaPorcentaje, 100 - this.metaPorcentaje];
+      
+      // Crear una nueva referencia para forzar la actualización
+      this.doughnutChartData = { ...this.doughnutChartData };
+      console.log('[HomeComponent] Datos del gráfico doughnut actualizados');
     });
+
+    this.datosCargados = true;
   }
 
   aplicarFiltros() {

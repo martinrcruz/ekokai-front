@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
+import { BaseService } from './base.service';
+import { AuthService } from './auth.service';
 
 export interface EntregaResiduo {
   _id: string;
@@ -55,10 +57,12 @@ export interface EstadisticasResponse {
 @Injectable({
   providedIn: 'root'
 })
-export class EntregaResiduoService {
+export class EntregaResiduoService extends BaseService {
   private readonly endpoint = '/entregas';
 
-  constructor(private http: HttpClient) {}
+  constructor(protected override http: HttpClient, protected override authService: AuthService) {
+    super(http, authService);
+  }
 
   // Obtener historial completo con filtros
   obtenerHistorialCompleto(filtros: any = {}): Observable<HistorialResponse> {
@@ -71,20 +75,21 @@ export class EntregaResiduoService {
     if (filtros.fechaDesde) params.append('fechaDesde', filtros.fechaDesde);
     if (filtros.fechaHasta) params.append('fechaHasta', filtros.fechaHasta);
 
-    const url = `${environment.apiUrl}${this.endpoint}/historial?${params.toString()}`;
-    return this.http.get<HistorialResponse>(url);
+    const url = `${this.endpoint}/historial?${params.toString()}`;
+    return this.get<HistorialResponse>(url);
   }
 
   // Obtener estadísticas
   obtenerEstadisticas(): Observable<EstadisticasResponse> {
-    const url = `${environment.apiUrl}${this.endpoint}/estadisticas`;
-    return this.http.get<EstadisticasResponse>(url);
+    const url = `${this.endpoint}/estadisticas`;
+    return this.get<EstadisticasResponse>(url);
   }
 
   // Obtener historial de un usuario específico
   obtenerHistorialUsuario(usuarioId: string): Observable<EntregaResiduo[]> {
-    const url = `${environment.apiUrl}${this.endpoint}/usuario/${usuarioId}`;
-    return this.http.get<EntregaResiduo[]>(url);
+    const url = `${this.endpoint}/usuario/${usuarioId}`;
+    return this.get<EntregaResiduo[]>(url);
   }
 }
+
 

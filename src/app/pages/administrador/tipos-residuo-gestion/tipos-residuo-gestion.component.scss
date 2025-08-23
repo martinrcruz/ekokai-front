@@ -1438,6 +1438,9 @@ ion-modal {
     }
   }
   
+// Botón flotante para crear tipo de residuo
+@import '../shared/floating-button.scss';
+
   .create-button {
     font-size: 12px;
     

@@ -24,6 +24,10 @@ export class ReciclarComponent implements OnInit {
   canjeando = false;
   error = '';
   busquedaFallida = false;
+  
+  // Modal de registro
+  showRegistroModal = false;
+  guardandoVecino = false;
 
   // Datos
   vecinos: any[] = [];
@@ -42,6 +46,7 @@ export class ReciclarComponent implements OnInit {
   // Formularios
   formId!: FormGroup;
   formReciclaje!: FormGroup;
+  formRegistroVecino!: FormGroup;
 
   now = new Date();
 
@@ -132,6 +137,15 @@ export class ReciclarComponent implements OnInit {
       tipoResiduo: ['', [Validators.required]],
       pesoKg: ['', [Validators.required, Validators.min(0.01)]],
       descripcion: ['']
+    });
+
+    // Form registro vecino
+    this.formRegistroVecino = this.fb.group({
+      nombre: ['', [Validators.required, Validators.minLength(2)]],
+      apellido: ['', [Validators.required, Validators.minLength(2)]],
+      dni: ['', [Validators.required, Validators.minLength(7)]],
+      email: ['', [Validators.required, Validators.email]],
+      telefono: ['', [Validators.required, Validators.minLength(10)]]
     });
 
     // Bloquear campos hasta validar vecino
@@ -340,5 +354,67 @@ export class ReciclarComponent implements OnInit {
     const nombre = this.usuarioLogueado.nombre || '';
     const apellido = this.usuarioLogueado.apellido || '';
     return `${nombre} ${apellido}`.trim() || this.usuarioLogueado.email || 'Usuario';
+  }
+
+  // ---- MÉTODOS DEL MODAL DE REGISTRO ----
+
+  abrirModalRegistro(): void {
+    console.log('Abriendo modal de registro...');
+    this.showRegistroModal = true;
+    this.formRegistroVecino.reset();
+    console.log('Estado del modal:', this.showRegistroModal);
+  }
+
+  testModal(): void {
+    console.log('Test modal...');
+    this.showRegistroModal = true;
+    console.log('Estado del modal:', this.showRegistroModal);
+  }
+
+  cerrarModalRegistro(): void {
+    this.showRegistroModal = false;
+    this.formRegistroVecino.reset();
+  }
+
+  async guardarVecino(): Promise<void> {
+    if (this.formRegistroVecino.invalid) {
+      this.formRegistroVecino.markAllAsTouched();
+      this.toast('Completa todos los campos requeridos', 'warning');
+      return;
+    }
+
+    this.guardandoVecino = true;
+    
+    try {
+      const datosVecino = {
+        ...this.formRegistroVecino.value,
+        dni: this.formRegistroVecino.value.dni.toString(),
+        telefono: this.formRegistroVecino.value.telefono.toString()
+      };
+
+      const nuevoVecino = await this.usuariosService.registrarVecino(datosVecino).toPromise();
+      
+      // Cerrar modal
+      this.cerrarModalRegistro();
+      
+      // Seleccionar automáticamente el vecino creado
+      this.vecinoSeleccionado = nuevoVecino;
+      this.bloquearDetalle(false);
+      
+      // Actualizar el formulario de identificación con los datos del nuevo vecino
+      this.formId.patchValue({
+        dni: nuevoVecino.dni,
+        telefono: nuevoVecino.telefono,
+        nombre: `${nuevoVecino.nombre} ${nuevoVecino.apellido}`
+      });
+      
+      this.toast(`Vecino registrado exitosamente: ${nuevoVecino.nombre} ${nuevoVecino.apellido}`, 'success');
+      
+    } catch (e: any) {
+      console.error('Error registrando vecino:', e);
+      this.toast('Error al registrar vecino: ' + (e.error?.message || e.message || 'Error desconocido'), 'danger');
+    } finally {
+      this.guardandoVecino = false;
+    }
   }
 }
