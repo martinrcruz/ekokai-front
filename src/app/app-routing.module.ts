@@ -19,14 +19,6 @@ const routes: Routes = [
       import('./pages/catalogo-premios/catalogo-premios.module').then(m => m.CatalogoPremiosModule),
     data: { standalone: true }
   },
-
-  // Área Encargado (lazy)
-  {
-    path: 'encargado',
-    loadChildren: () =>
-      import('./pages/encargado/encargado.module').then(m => m.EncargadoModule)
-  },
-
   // Área Administrador (lazy)
   {
     path: 'administrador',
