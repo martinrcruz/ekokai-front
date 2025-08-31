@@ -75,6 +75,7 @@
         }
       }
     }
+  
   }
 
   // Segmento principal
@@ -721,12 +722,12 @@
         gap: 16px;
         
         .header-icon {
-          width: 50px;
-          height: 50px;
+          // width: 50px;
+          // height: 50px;
           
-          ion-icon {
-            font-size: 28px;
-          }
+          // ion-icon {
+          //   font-size: 28px;
+          // }
         }
         
         .header-text {
@@ -874,3 +875,10 @@ ion-modal ion-checkbox {
     --height: 90%;
   }
 } 
+
+.header-icon {
+  .bi {
+    font-size: 2.5rem;
+    color: var(--ekokai-primary);
+  }
+}

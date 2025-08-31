@@ -2,7 +2,6 @@
  * Variables de color principal
  **********************************************************/
  :root {
-
   --ion-color-primary: #28b463 ;
   --ion-color-primary-rgb: 189,30,30;
   --ion-color-primary-contrast: #ffffff;
@@ -13,7 +12,7 @@
 
 /* Para la mayoría de los botones (no los de editar/eliminar) */
 ion-button:not(.edit-btn):not(.delete-btn):not(.cerrar-sesion-btn) {
-  background: var(--ion-color-primary) !important;
+  background:#28b463 !important;
   color: #fff !important;
   border-radius: 6px;
 }
@@ -24,194 +23,549 @@ ion-button:not(.edit-btn):not(.delete-btn):not(.cerrar-sesion-btn) {
 }
 
 /**********************************************************
- * Menú Lateral
+ * Layout principal - DESKTOP
  **********************************************************/
-/* Forzar fondo verde en TODOS los elementos del menú lateral */
-ion-menu,
-ion-menu ion-header,
-ion-menu ion-footer,
-ion-menu ion-toolbar,
-ion-menu ion-title {
+.desktop-layout {
+  ion-split-pane {
+    --side-width: 250px;
+  }
+
+  /* Contenido principal se adapta al sidebar */
+  #main-content {
+    margin-left: 0;
+    transition: margin-left 0.3s ease;
+  }
+
+  /* Desktop: contenido se adapta al sidebar */
+  @media (min-width: 769px) {
+    /* Cuando sidebar está cerrado, contenido ocupa todo el ancho */
+    .sidebar-closed {
+      margin-left: 21%;
+    }
+  }
+
+  /* Mobile: contenido sin margen */
+  @media (max-width: 768px) {
+    .sidebar-closed {
+      margin-left: 21%;
+    }
+  }
+}
+
+/**********************************************************
+ * Header principal - DESKTOP
+ **********************************************************/
+.desktop-header {
+  background: #28b463;
+  --background: #28b463;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  transition: width 0.3s ease, margin-left 0.3s ease;
+}
+
+/* Mobile: header ocupa todo el ancho */
+@media (max-width: 768px) {
+  .desktop-header {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+.desktop-header ion-toolbar {
+  --background: #28b463;
+  --color: #ffffff;
+  --border-color: transparent;
+}
+
+.menu-toggle-btn {
+  --color: white;
+  --background: transparent;
+  font-size: 24px;
+  padding: 8px;
+}
+
+.menu-toggle-btn:hover {
+  --background: rgba(40, 180, 99, 0.1);
+}
+
+.desktop-header ion-title {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+/**********************************************************
+ * Sidebar estilo AdminLTE - DESKTOP
+ **********************************************************/
+.desktop-layout ion-menu {
+  --width: 250px;
+  width: 250px;
+  max-width: 250px;
+  background: #2c3e50 !important;
+  --background: #2c3e50 !important;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+
+/* Header del sidebar */
+.sidebar-header {
   background: #28b463 !important;
-  color: #fff !important;
+  --background: #28b463 !important;
+  border-bottom: 3px solid #1e8449;
 }
 
-/* Elimino fondo y altura en los internos para no tapar el footer */
-div.menu-inner,
-ion-menu .menu-inner,
-ion-menu .content-inner,
-ion-menu ion-content,
-ion-menu ion-content .inner-scroll,
-ion-menu ion-content .scroll-content,
-ion-menu ion-content .ion-content-scroll-host {
-  background: none !important;
-  /* height: auto; */
-  /* min-height: auto; */
-  /* --background: none !important; */
-}
-
-ion-menu ion-item, ion-menu ion-item ion-label, ion-menu ion-item ion-icon {
-  color: #fff !important;
-}
-
-ion-menu ion-item {
+.sidebar-toolbar {
   --background: transparent;
   --color: #fff;
-  font-weight: 500;
-  border-radius: 8px;
-  margin: 4px 8px;
-  transition: background 0.2s;
-  --padding-start: 16px;
-  --padding-end: 16px;
-  --inner-padding-end: 0;
-  min-height: 48px;
+  padding: 0;
+}
+
+.brand-container {
   display: flex;
   align-items: center;
-}
-ion-menu ion-item.selected, ion-menu ion-item:focus, ion-menu ion-item:hover {
-  --background: #097f3a !important;
-  --color: #fff !important;
-  color: #fff !important;
-}
-ion-menu ion-item.selected ion-icon, ion-menu ion-item:focus ion-icon, ion-menu ion-item:hover ion-icon {
-  color: #fff !important;
+  padding: 20px 16px;
+  gap: 12px;
 }
 
-.cerrar-sesion-btn {
-  background: #097f3a !important;
-  color: #fff !important;
-  border-radius: 10px;
-  font-weight: 600;
-
-  margin: 15 10px;
-  box-shadow: 0 2px 8px rgba(68,186,68,0.08);
-  border: 2px solid #fff;
-  width: 100%;
+.brand-logo {
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
-}
-.cerrar-sesion-btn:hover, .cerrar-sesion-btn:focus {
-  background: #369a36 !important;
-  color: #fff !important;
 }
 
-ion-menu ion-toolbar.footer-toolbar {
-  background: #28b463 !important;
-  color: #fff !important;
-  border: none;
+.brand-logo i {
+  font-size: 24px;
+  color: #fff;
 }
 
-ion-menu ion-list-header {
-  display: none !important;
-}
-
-ion-menu {
-  --width: 200px !important;
-  width: 200px !important;
-  max-width: 220px !important;
-  background: #28b463 !important;
-  box-shadow: 2px 0 16px rgba(0,0,0,0.07);
-  height: 100vh !important;
-  --background: #28b463 !important;
-}
-ion-menu .menu-inner,
-ion-menu .content-inner {
-  /* min-height: 100vh; */
-  /* height: 100vh; */
-}
-ion-menu ion-content {
-  /* height: 100%; */
-  /* min-height: 100vh; */
-}
-/* Forzar fondo verde en el overlay del menú */
-ion-menu.overlay-visible {
-  background: #28b463 !important;
-  --background: #28b463 !important;
-}
-ion-menu.overlay-visible .menu-inner {
-  background: #28b463 !important;
-  --background: #28b463 !important;
-}
-ion-menu ion-header {
-  background: #28b463 !important;
-  border-radius: 0;
-  border-bottom: none;
-  padding: 24px 0 0 0;
-}
-ion-menu ion-title {
+.brand-title {
   color: #fff !important;
-  font-size: 1.4rem;
+  font-size: 20px;
   font-weight: 700;
-  letter-spacing: 1px;
-  margin-left: 12px;
+  margin: 0;
 }
-ion-menu ion-list {
-  background: transparent;
-  margin-top: 24px;
+
+/* Contenido del sidebar */
+.sidebar-content {
+  --background: #2c3e50;
+  background: #2c3e50;
+  padding: 0;
 }
-ion-menu ion-list-header {
-  display: none !important;
-}
-ion-menu ion-item {
-  --background: transparent;
-  --color: #fff;
-  font-weight: 500;
-  border-radius: 8px;
-  margin: 4px 8px;
-  transition: background 0.2s;
-  --padding-start: 16px;
-  --padding-end: 16px;
-  --inner-padding-end: 0;
-  min-height: 48px;
+
+/* Información del usuario */
+.user-info {
+  background: #34495e;
+  padding: 20px 16px;
+  border-bottom: 1px solid #465c71;
   display: flex;
   align-items: center;
+  gap: 12px;
 }
-ion-menu ion-item.selected, ion-menu ion-item:focus, ion-menu ion-item:hover {
-  --background: #369a36;
-  --color: #fff;
-  color: #fff !important;
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  background: #28b463;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-ion-menu ion-item.selected ion-icon, ion-menu ion-item:focus ion-icon, ion-menu ion-item:hover ion-icon {
-  color: #fff !important;
-}
-ion-menu ion-item ion-icon {
-  font-size: 1.2rem;
-  margin-right: 12px;
+
+.user-avatar i {
+  font-size: 24px;
   color: #fff;
-  transition: color 0.2s;
-  flex-shrink: 0;
+}
+
+.user-details {
+  flex: 1;
+}
+
+.user-name {
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.user-role {
+  color: #bdc3c7;
+  font-size: 14px;
+}
+
+/* Sección de navegación */
+.nav-section {
+  padding: 16px 0;
+}
+
+.nav-header {
+  color: #95a5a6;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0 20px 12px;
+  border-bottom: 1px solid #465c71;
+  margin-bottom: 16px;
+}
+
+.nav-list {
+  background: transparent;
+  padding: 0;
+}
+
+.nav-item {
+  --background: transparent;
+  --color: #ecf0f1;
+  --border-color: transparent;
+  --padding-start: 20px;
+  --padding-end: 20px;
+  --inner-padding-end: 0;
+  margin: 0;
+  border-radius: 0;
+  min-height: 50px;
+  --ripple-color: rgba(40, 180, 99, 0.2);
+}
+
+.nav-item:hover {
+  --background: #34495e;
+  --color: #fff;
+}
+
+.nav-item-active {
+  --background: #28b463 !important;
+  --color: #fff !important;
+  border-right: 4px solid #fff;
+}
+
+.nav-item-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+}
+
+.nav-icon {
+  font-size: 18px;
   width: 20px;
   text-align: center;
+  color: inherit;
 }
-ion-menu ion-footer {
-  background: #28b463 !important;
-  border-top: none;
-  padding: 0 0 18px 0;
+
+.nav-text {
+  font-size: 15px;
+  font-weight: 500;
+  flex: 1;
 }
-@media (max-width: 900px) {
+
+.nav-arrow {
+  font-size: 14px;
+  color: #95a5a6;
+  transition: transform 0.2s;
+}
+
+/* Items con subpáginas */
+.nav-item-parent {
+  --background: #34495e;
+  --color: #ecf0f1;
+}
+
+.nav-item-parent:hover {
+  --background: #3d566e;
+}
+
+.nav-item-parent .nav-arrow {
+  transition: transform 0.2s;
+}
+
+.nav-item-parent.expanded .nav-arrow {
+  transform: rotate(180deg);
+}
+
+/* Submenú */
+.nav-submenu {
+  background: #243342;
+  border-left: 3px solid #28b463;
+  margin-left: 20px;
+}
+
+.nav-item-child {
+  --padding-start: 40px;
+  min-height: 45px;
+  --background: transparent;
+  --color: #bdc3c7;
+}
+
+.nav-item-child:hover {
+  --background: #2c3e50;
+  --color: #fff;
+}
+
+.nav-item-child.nav-item-active {
+  --background: #28b463 !important;
+  --color: #fff !important;
+}
+
+/* Botón de cerrar sesión */
+.logout-section {
+  padding: 20px;
+  border-top: 1px solid #465c71;
+  margin-top: auto;
+}
+
+.logout-button {
+  --background: #e74c3c;
+  --background-hover: #c0392b;
+  --color: #fff;
+  --border-radius: 8px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  height: 45px;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+}
+
+.logout-button:hover {
+  --background: #c0392b;
+}
+
+.logout-button i {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+/**********************************************************
+ * MOBILE LAYOUT - Header nativo de Ionic
+ **********************************************************/
+.mobile-layout {
+  .mobile-header {
+    --background: #28b463;
+    --color: #ffffff;
+    --border-color: transparent;
+    
+    ion-toolbar {
+      --background: #28b463;
+      --color: #ffffff;
+      --border-color: transparent;
+    }
+    
+    ion-title {
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 18px;
+    }
+    
+    ion-menu-button {
+      --color: #ffffff;
+      font-size: 24px;
+    }
+  }
+  
+  /* Menú nativo de Ionic para mobile */
   ion-menu {
-    --width: 100vw !important;
-    min-width: 100vw !important;
-    max-width: 100vw !important;
-    border-radius: 0;
-    background: #28b463 !important;
-    --background: #28b463 !important;
+    --width: 100%;
+    --background: #2c3e50;
+    background: #2c3e50;
+    
+    /* Asegurar que el menú sea visible en mobile */
+    &::part(container) {
+      background: #2c3e50 !important;
+      width: 100% !important;
+    }
+    
+    &::part(overlay) {
+      background: rgba(0, 0, 0, 0.5) !important;
+    }
   }
-  ion-menu .menu-inner {
-    border-radius: 0;
+  
+  /* Aplicar estilos del sidebar al menú nativo */
+  .sidebar-header {
     background: #28b463 !important;
     --background: #28b463 !important;
+    border-bottom: 3px solid #1e8449;
   }
-  /* Asegurar que el overlay en móvil también sea verde */
-  ion-menu.overlay-visible {
-    background: #28b463 !important;
-    --background: #28b463 !important;
+  
+  .sidebar-content {
+    --background: #2c3e50;
+    background: #2c3e50;
+    padding: 0;
   }
-  ion-menu.overlay-visible .menu-inner {
-    background: #28b463 !important;
-    --background: #28b463 !important;
+  
+  /* Ajustes específicos para mobile */
+  .brand-container {
+    padding: 16px;
+  }
+  
+  .user-info {
+    padding: 16px;
+  }
+  
+  .nav-item {
+    --padding-start: 16px;
+    --padding-end: 16px;
+  }
+  
+  .nav-item-child {
+    --padding-start: 32px;
+  }
+  
+  .logout-section {
+    padding: 16px;
+  }
+  
+  /* Asegurar que el contenido principal no interfiera */
+  #mobile-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+}
+
+/**********************************************************
+ * Responsive - Solo para desktop (mantener compatibilidad)
+ **********************************************************/
+@media (max-width: 768px) {
+  .desktop-layout {
+    ion-menu {
+      --width: 100vw;
+      width: 100vw;
+      max-width: 100vw;
+      z-index: 9999 !important;
+      --z-index: 9999 !important;
+      background: #2c3e50 !important;
+      --background: #2c3e50 !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      height: 100vh !important;
+      --height: 100vh !important;
+    }
+    
+    /* Asegurar que el sidebar sea visible en mobile */
+    ion-menu::part(container) {
+      z-index: 9999 !important;
+      background: #2c3e50 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+    }
+    
+    /* Asegurar que el overlay del menú sea visible */
+    ion-menu::part(overlay) {
+      z-index: 9998 !important;
+      background: rgba(0, 0, 0, 0.5) !important;
+    }
+    
+    /* Asegurar que el contenido del menú sea visible */
+    ion-menu ion-content {
+      z-index: 9999 !important;
+      --z-index: 9999 !important;
+      background: #2c3e50 !important;
+      --background: #2c3e50 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+    }
+    
+    /* Asegurar que el header del sidebar sea visible en mobile */
+    ion-menu ion-header {
+      z-index: 9999 !important;
+      background: #28b463 !important;
+      --background: #28b463 !important;
+      width: 100vw !important;
+    }
+    
+    .brand-container {
+      padding: 16px;
+    }
+    
+    .user-info {
+      padding: 16px;
+    }
+    
+    .nav-item {
+      --padding-start: 16px;
+      --padding-end: 16px;
+    }
+    
+    .nav-item-child {
+      --padding-start: 32px;
+    }
+    
+    .logout-section {
+      padding: 16px;
+    }
+    
+    /* Asegurar que el contenido principal no interfiera con el sidebar en mobile */
+    #main-content {
+      margin-left: 0 !important;
+      width: 100% !important;
+    }
+    
+    /* Asegurar que el header principal esté por encima del sidebar */
+    .main-header {
+      z-index: 10000 !important;
+    }
+    
+    /* Asegurar que el botón de menú sea visible en mobile */
+    .menu-toggle-btn {
+      z-index: 10001 !important;
+    }
+    
+    /* Asegurar que el sidebar esté visible cuando esté abierto en mobile */
+    ion-menu.menu-enabled {
+      transform: translateX(0) !important;
+      --transform: translateX(0) !important;
+    }
+    
+    /* Asegurar que el sidebar esté visible cuando esté abierto en mobile */
+    ion-menu.menu-enabled::part(container) {
+      transform: translateX(0) !important;
+      --transform: translateX(0) !important;
+    }
+    
+    /* Asegurar que el sidebar esté visible cuando esté abierto en mobile */
+    ion-menu.menu-enabled ion-content {
+      transform: translateX(0) !important;
+      --transform: translateX(0) !important;
+    }
+    
+    /* Asegurar que el sidebar esté visible cuando esté abierto en mobile */
+    ion-menu.menu-enabled ion-header {
+      transform: translateX(0) !important;
+      --transform: translateX(0) !important;
+    }
+    
+    /* Asegurar que el sidebar esté visible cuando esté abierto en mobile */
+    ion-menu.menu-enabled .brand-container {
+      transform: translateX(0) !important;
+      --transform: translateX(0) !important;
+    }
+    
+    /* Asegurar que el sidebar esté visible cuando esté abierto en mobile */
+    ion-menu.menu-enabled .user-info {
+      transform: translateX(0) !important;
+      --transform: translateX(0) !important;
+    }
+    
+    /* Asegurar que el sidebar esté visible cuando esté abierto en mobile */
+    ion-menu.menu-enabled .nav-section {
+      transform: translateX(0) !important;
+      --transform: translateX(0) !important;
+    }
+    
+    /* Asegurar que el sidebar esté visible cuando esté abierto en mobile */
+    ion-menu.menu-enabled .logout-section {
+      transform: translateX(0) !important;
+      --transform: translateX(0) !important;
+    }
   }
 }
 
@@ -262,143 +616,4 @@ ion-menu ion-footer {
 .tag-visit { background-color: #28a745; }
 .tag-other { background-color: #6c757d; }
 
-/* Refuerzo para eliminar cualquier fondo blanco en el sidebar menu */
-ion-menu,
-ion-menu .menu-inner,
-ion-menu .content-inner,
-ion-menu ion-content,
-ion-menu ion-content .inner-scroll,
-ion-menu ion-content .scroll-content,
-ion-menu ion-content .ion-content-scroll-host,
-ion-menu .ion-page,
-ion-menu .ion-page .ion-page,
-ion-menu .ion-page .ion-page .ion-page {
-  background: #28b463 !important;
-  --background: #28b463 !important;
-}
-
-ion-menu ion-content {
-  --background: #28b463 !important;
-  background: #28b463 !important;
-  height: 100%;
-  min-height: 100vh;
-}
-ion-menu .menu-inner,
-ion-menu .content-inner {
-  /* min-height: 100vh; */
-  /* height: 100vh; */
-}
-ion-menu .inner-scroll,
-ion-menu .scroll-content,
-ion-menu .ion-content-scroll-host {
-  background: #28b463 !important;
-  --background: #28b463 !important;
-}
-
-/* Ítem de cerrar sesión como opción del menú, con separación y padding igual a los otros ítems */
-ion-menu .cerrar-sesion-item {
-  margin-top: 48px;
-  margin-bottom: 8px;
-  padding-left: 16px;
-  padding-right: 16px;
-  min-height: 48px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  background: #28b463 !important;
-  color: #fff !important;
-  font-weight: 600;
-  transition: background 0.2s;
-}
-ion-menu .cerrar-sesion-item:hover,
-ion-menu .cerrar-sesion-item:focus {
-  background: #369a36 !important;
-  color: #fff !important;
-}
-
-.menu-flex-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 100vh;
-}
-.menu-flex-container ion-list {
-  flex: 1 1 auto;
-}
-.menu-flex-container .cerrar-sesion-item {
-  flex-shrink: 0;
-  margin-top: auto;
-  margin-bottom: 8px;
-  padding-left: 16px;
-  padding-right: 16px;
-  min-height: 48px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  background: #28b463 !important;
-  color: #fff !important;
-  font-weight: 600;
-  transition: background 0.2s;
-}
-.menu-flex-container .cerrar-sesion-item:hover,
-.menu-flex-container .cerrar-sesion-item:focus {
-  background: #369a36 !important;
-  color: #fff !important;
-}
-
-ion-content.sidebar-content-flex {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  min-height: 100vh;
-  position: relative;
-}
-
-ion-content.sidebar-content-flex ion-list {
-  flex: 1 1 auto;
-}
-
-.sidebar-logout-btn-container {
-  margin-top: auto;
-  padding: 0;
-  width: 100%;
-  display: flex;
-  z-index: 10;
-  position: static;
-}
-.sidebar-logout-btn {
-  width: 100%;
-  border-radius: 10px;
-  font-weight: 600;
-  background: #28b463 !important;
-  color: #fff !important;
-  border: 2px solid #fff;
-  box-shadow: 0 2px 8px rgba(68,186,68,0.08);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-}
-.sidebar-logout-btn:hover, .sidebar-logout-btn:focus {
-  background: #369a36 !important;
-  color: #fff !important;
-}
-
-.logout-button {
-  --background: #0e9345 !important;
-  --background-hover: #229954 !important;
-  --color: #fff !important;
-  width: 100%;
-  border-radius: 0 0 10px 10px;
-  /* Elimina margen lateral */
-  margin: 0;
-}
-
-
 /* Configuración de tema oscuro manejada en global.scss */
-
-ion-menu ion-item.selected {
-  --background: #369a36;
-  --color: #fff;
-  font-weight: 600;
-}

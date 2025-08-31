@@ -4,6 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { PremioService } from 'src/app/services/premio.service';
 import { Premio } from 'src/app/services/premio.service';
+import { FiltrosEstandarizadosComponent, FiltroConfig } from '../../../shared/components/global-filter/filtros-estandarizados.component';
 
 @Component({
   selector: 'app-premios-gestion',
@@ -24,11 +25,43 @@ export class PremiosGestionComponent implements OnInit {
   estadisticas: any = {};
   pestanaActiva = 'premios'; // 'premios' | 'estadisticas'
 
+  // Configuración de filtros estandarizados
+  filtrosConfig: FiltroConfig[] = [
+    {
+      tipo: 'texto',
+      icono: 'bi-search',
+      titulo: 'Buscar por nombre',
+      placeholder: 'Buscar premio...',
+      valor: '',
+      nombre: 'nombre'
+    },
+    {
+      tipo: 'select',
+      icono: 'bi-tag',
+      titulo: 'Filtrar por categoría',
+      placeholder: 'Todas las categorías',
+      opciones: [],
+      valor: '',
+      nombre: 'categoria'
+    }
+  ];
+
   constructor(private premioService: PremioService) {}
 
   ngOnInit() {
     this.cargarPremios();
     this.cargarEstadisticas();
+
+    // Actualizar las opciones de categorías en la configuración de filtros
+    if (this.estadisticas?.categorias) {
+      const filtroCategoria = this.filtrosConfig.find((f: FiltroConfig) => f.nombre === 'categoria');
+      if (filtroCategoria) {
+        filtroCategoria.opciones = this.estadisticas.categorias.map((cat: string) => ({
+          valor: cat,
+          etiqueta: cat
+        }));
+      }
+    }
   }
 
   cargarPremios() {
@@ -123,12 +156,7 @@ export class PremiosGestionComponent implements OnInit {
     });
   }
 
-  get premiosFiltrados() {
-    return this.premios.filter(p =>
-      (!this.filtroNombre || p.nombre?.toLowerCase().includes(this.filtroNombre.toLowerCase())) &&
-      (!this.filtroCategoria || p.categoria === this.filtroCategoria)
-    );
-  }
+
 
   getCategoriaColor(categoria: string): string {
     const colores: { [key: string]: string } = {
@@ -276,6 +304,36 @@ export class PremiosGestionComponent implements OnInit {
   limpiarFiltros() {
     this.filtroNombre = '';
     this.filtroCategoria = '';
+  }
+
+  onFiltroChange(evento: any) {
+    switch (evento.nombre) {
+      case 'nombre':
+        this.filtroNombre = evento.valor;
+        break;
+      case 'categoria':
+        this.filtroCategoria = evento.valor;
+        break;
+    }
+    this.aplicarFiltros();
+  }
+
+  onLimpiarFiltros() {
+    this.limpiarFiltros();
+  }
+
+  aplicarFiltros() {
+    // Los filtros se aplican automáticamente a través del getter premiosFiltrados
+  }
+
+  get premiosFiltrados() {
+    return this.premios.filter(premio => {
+      const nombreMatch = !this.filtroNombre ||
+        premio.nombre.toLowerCase().includes(this.filtroNombre.toLowerCase());
+      const categoriaMatch = !this.filtroCategoria ||
+        premio.categoria === this.filtroCategoria;
+      return nombreMatch && categoriaMatch;
+    });
   }
 
   // Métodos para estadísticas

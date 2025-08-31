@@ -1,12 +1,11 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="start">
+    <!-- <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Gestión de Ecopuntos</ion-title>
     <ion-buttons slot="end">
-      <!-- Botón removido - reemplazado por botón flotante -->
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-toolbar>
 </ion-header>
 
@@ -16,7 +15,7 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-icon">
-          <i class="bi bi-geo-alt-fill"></i>
+          <i class="bi bi-geo-alt" style="color: #fff"></i>
         </div>
         <div class="header-text">
           <h1>Gestión de Ecopuntos</h1>
@@ -35,47 +34,14 @@
       </div>
     </div>
 
-    <!-- Filtros mejorados -->
-    <ion-card class="filters-card">
-      <ion-card-header class="filters-header">
-        <ion-card-title style="color: white;">
-          <i class="bi bi-funnel-fill"></i>
-          Filtros de Búsqueda
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <div class="filters-grid">
-          <ion-item class="filter-item">
-            <i class="bi bi-search" slot="start" class="filter-icon"></i>
-            <ion-input [(ngModel)]="filtroNombre" placeholder="Buscar ecopunto..." clearInput class="filter-input"></ion-input>
-          </ion-item>
-
-          <ion-item class="filter-item">
-            <i class="bi bi-map" slot="start" class="filter-icon"></i>
-            <ion-select [(ngModel)]="filtroZona" placeholder="Filtrar por zona" class="filter-select">
-              <ion-select-option value="">Todas las zonas</ion-select-option>
-              <ion-select-option *ngFor="let zona of zonas" [value]="zona">
-                {{ zona }}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
-
-          <ion-item class="filter-item">
-            <i class="bi bi-check-circle-fill" slot="start" class="filter-icon"></i>
-            <ion-select [(ngModel)]="filtroEstado" placeholder="Filtrar por estado" class="filter-select">
-              <ion-select-option value="">Todos los estados</ion-select-option>
-              <ion-select-option value="activo">Activos</ion-select-option>
-              <ion-select-option value="inactivo">Inactivos</ion-select-option>
-            </ion-select>
-          </ion-item>
-
-          <ion-button fill="clear" color="medium" class="clear-filters-btn" (click)="limpiarFiltros()">
-            <i class="bi bi-arrow-clockwise"></i>
-            <span class="button-text">Limpiar</span>
-          </ion-button>
-        </div>
-      </ion-card-content>
-    </ion-card>
+    <!-- Filtros estandarizados -->
+    <app-filtros-estandarizados
+      [filtros]="filtrosConfig"
+      titulo="Filtros de Búsqueda"
+      subtitulo="Refina los resultados según tus criterios"
+      (filtroCambiado)="onFiltroChange($event)"
+      (limpiarFiltros)="onLimpiarFiltros()">
+    </app-filtros-estandarizados>
 
     <!-- Lista de ecopuntos -->
     <ion-card class="ecopuntos-list-card">

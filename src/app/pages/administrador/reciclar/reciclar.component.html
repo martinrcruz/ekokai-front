@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="start">
+    <!-- <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Centro de Reciclaje</ion-title>
@@ -9,7 +9,7 @@
         <i class="bi" [class]="conectando ? 'bi-arrow-clockwise' : 'bi-cpu'"></i>
         {{ conectando ? 'Conectando...' : 'Balanza' }}
       </ion-button>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-toolbar>
 </ion-header>
 
@@ -19,7 +19,7 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-icon">
-          <i class="bi bi-recycle"></i>
+          <i class="bi bi-recycle" style="color: #fff"></i>
         </div>
         <div class="header-text">
           <h1>Centro de Reciclaje</h1>
@@ -44,7 +44,7 @@
         <div class="welcome-container">
           <div class="welcome-info">
             <div class="welcome-icon">
-              <i class="bi bi-person-circle"></i>
+              <i class="bi bi-person-circle" style="color: #fff"></i>
             </div>
             <div class="welcome-text">
               <h2>¡Hola, {{ getNombreUsuarioLogueado() }}!</h2>
@@ -80,7 +80,7 @@
       <ion-card-header>
         <div class="card-header-content">
           <div class="header-icon">
-            <i class="bi bi-search"></i>
+            <i class="bi bi-search" style="color: #fff"></i>
           </div>
           <div class="header-text">
             <ion-card-title>Identificar Vecino</ion-card-title>
@@ -213,7 +213,7 @@
       <ion-card-header>
         <div class="card-header-content">
           <div class="header-icon">
-            <i class="bi bi-leaf"></i>
+            <i class="bi bi-leaf" style="color: #fff"></i>
           </div>
           <div class="header-text">
             <ion-card-title>Detalles del Reciclaje</ion-card-title>

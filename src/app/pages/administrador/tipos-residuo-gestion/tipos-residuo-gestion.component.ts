@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { ResiduosService } from 'src/app/services/residuos.service';
+import { FiltrosEstandarizadosComponent, FiltroConfig } from '../../../shared/components/global-filter/filtros-estandarizados.component';
 
 @Component({
   selector: 'app-tipos-residuo-gestion',
@@ -28,6 +29,31 @@ export class TiposResiduoGestionComponent implements OnInit {
   // Estadísticas
   promedioTokens = 0;
   maxTokens = 0;
+
+  // Configuración de filtros estandarizados
+  filtrosConfig: FiltroConfig[] = [
+    {
+      tipo: 'texto',
+      icono: 'bi-search',
+      titulo: 'Buscar por nombre',
+      placeholder: 'Buscar tipo de residuo...',
+      valor: '',
+      nombre: 'nombre'
+    },
+    {
+      tipo: 'select',
+      icono: 'bi-coin',
+      titulo: 'Filtrar por tokens',
+      placeholder: 'Todos los rangos',
+      opciones: [
+        { valor: 'bajo', etiqueta: 'Bajo (0-10)' },
+        { valor: 'medio', etiqueta: 'Medio (11-20)' },
+        { valor: 'alto', etiqueta: 'Alto (21+)' }
+      ],
+      valor: '',
+      nombre: 'tokens'
+    }
+  ];
 
   constructor(private residuosService: ResiduosService) {}
 
@@ -100,6 +126,14 @@ export class TiposResiduoGestionComponent implements OnInit {
   limpiarFiltros() {
     this.filtroNombre = '';
     this.filtroTokens = '';
+    
+    // Resetear valores en la configuración de filtros
+    if (this.filtrosConfig) {
+      this.filtrosConfig.forEach(filtro => {
+        filtro.valor = '';
+      });
+    }
+    
     this.aplicarFiltros();
   }
 
@@ -260,4 +294,24 @@ export class TiposResiduoGestionComponent implements OnInit {
       }
     });
   }
+
+  onFiltroChange(evento: any) {
+    switch (evento.nombre) {
+      case 'nombre':
+        this.filtroNombre = evento.valor;
+        break;
+      case 'tokens':
+        this.filtroTokens = evento.valor;
+        break;
+    }
+    this.aplicarFiltros();
+  }
+
+  onLimpiarFiltros() {
+    this.limpiarFiltros();
+  }
+
+  // aplicarFiltros() {
+  //   // Los filtros se aplican automáticamente a través del método aplicarFiltros existente
+  // }
 }

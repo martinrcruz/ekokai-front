@@ -1,0 +1,100 @@
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>
+      <ion-icon name="funnel" style="color: #0d7438"></ion-icon>
+      {{ titulo }}
+    </ion-card-title>
+    <ion-card-subtitle *ngIf="subtitulo">{{ subtitulo }}</ion-card-subtitle>
+  </ion-card-header>
+  
+  <ion-card-content>
+    <ion-grid>
+      <ion-row>
+        <ion-col 
+          *ngFor="let filtro of filtros" 
+          size="12" 
+          size-md="6" 
+          size-lg="4">
+          
+          <ion-item>
+            <ion-label position="stacked">
+              <!-- Icono de Bootstrap -->
+              <i *ngIf="isBootstrapIcon(filtro.icono)" [class]="getIconClass(filtro.icono)" class="filter-icon bootstrap-icon"></i>
+              <!-- Icono de Ionic -->
+              <ion-icon *ngIf="!isBootstrapIcon(filtro.icono)" [name]="filtro.icono" class="filter-icon bootstrap-icon"></ion-icon>
+              {{ filtro.titulo }}
+            </ion-label>
+            
+            <!-- Filtro de texto -->
+            <ion-input 
+              *ngIf="filtro.tipo === 'texto'"
+              [(ngModel)]="filtro.valor" 
+              [placeholder]="filtro.placeholder || 'Buscar...'"
+              (ionInput)="onFiltroChange(filtro.nombre, filtro.valor)"
+              clearInput>
+            </ion-input>
+            
+            <!-- Filtro de select -->
+            <ion-select 
+              *ngIf="filtro.tipo === 'select'"
+              [(ngModel)]="filtro.valor" 
+              [placeholder]="filtro.placeholder || 'Seleccionar...'"
+              (ionChange)="onFiltroChange(filtro.nombre, filtro.valor)">
+              <ion-select-option value="">{{ filtro.placeholder || 'Todos' }}</ion-select-option>
+              <ion-select-option 
+                *ngFor="let opcion of filtro.opciones" 
+                [value]="opcion.valor">
+                {{ opcion.etiqueta }}
+              </ion-select-option>
+            </ion-select>
+            
+            <!-- Filtro de fecha -->
+            <ion-datetime 
+              *ngIf="filtro.tipo === 'fecha'"
+              [(ngModel)]="filtro.valor"
+              (ionChange)="onFiltroChange(filtro.nombre, filtro.valor)"
+              presentation="date">
+            </ion-datetime>
+            
+            <!-- Filtro de rango -->
+            <div *ngIf="filtro.tipo === 'rango'" class="ion-padding-horizontal">
+              <ion-row>
+                <ion-col size="6">
+                  <ion-input 
+                    [(ngModel)]="filtro.valor.min" 
+                    placeholder="Mínimo"
+                    type="number"
+                    (ionInput)="onFiltroChange(filtro.nombre, filtro.valor)">
+                  </ion-input>
+                </ion-col>
+                <ion-col size="6">
+                  <ion-input 
+                    [(ngModel)]="filtro.valor.max" 
+                    placeholder="Máximo"
+                    type="number"
+                    (ionInput)="onFiltroChange(filtro.nombre, filtro.valor)">
+                  </ion-input>
+                </ion-col>
+              </ion-row>
+            </div>
+          </ion-item>
+        </ion-col>
+        
+        <!-- Botón limpiar filtros -->
+        <ion-col 
+          *ngIf="mostrarBotonLimpiar" 
+          size="12" 
+          size-md="6" 
+          size-lg="4">
+          <ion-button 
+            expand="block" 
+            fill="outline"
+            (click)="onLimpiarFiltros()">
+            <ion-icon name="refresh" slot="start"></ion-icon>
+            Limpiar Filtros
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-card-content>
+</ion-card>

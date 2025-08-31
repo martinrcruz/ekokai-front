@@ -1,0 +1,25 @@
+// Estilos globales para filtros estandarizados
+// Este archivo contiene estilos mínimos para el componente de filtros
+
+// Asegurar que el componente de filtros tenga el espaciado correcto
+app-filtros-estandarizados {
+  display: block;
+  width: 100%;
+}
+
+// Estilos responsivos globales
+@media (max-width: 768px) {
+  app-filtros-estandarizados {
+    ion-card {
+      margin: 8px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  app-filtros-estandarizados {
+    ion-card {
+      margin: 4px;
+    }
+  }
+}

@@ -7,6 +7,7 @@ import { UsuariosService } from 'src/app/services/usuarios.service';
 import { ChartOptions, ChartType, ChartData } from 'chart.js';
 import { Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
+import { FiltrosEstandarizadosComponent, FiltroConfig } from '../../../shared/components/global-filter/filtros-estandarizados.component';
 
 @Component({
   selector: 'app-usuarios-gestion',
@@ -117,6 +118,36 @@ export class UsuariosGestionComponent implements OnInit {
     ]
   };
 
+  // Configuración de filtros estandarizados
+  filtrosConfig: FiltroConfig[] = [
+    {
+      tipo: 'texto',
+      icono: 'bi-search',
+      titulo: 'Buscar por nombre o email',
+      placeholder: 'Buscar usuarios...',
+      valor: '',
+      nombre: 'busqueda'
+    },
+    {
+      tipo: 'select',
+      icono: 'bi-people',
+      titulo: 'Filtrar por rol',
+      placeholder: 'Todos los roles',
+      opciones: [],
+      valor: '',
+      nombre: 'rol'
+    },
+    {
+      tipo: 'select',
+      icono: 'bi-check-circle',
+      titulo: 'Filtrar por estado',
+      placeholder: 'Todos los estados',
+      opciones: [],
+      valor: '',
+      nombre: 'estado'
+    }
+  ];
+
   constructor(
     private usuariosService: UsuariosService, 
     private router: Router,
@@ -128,6 +159,9 @@ export class UsuariosGestionComponent implements OnInit {
 
   ngOnInit() {
     this.cargarUsuarios();
+    
+    // Actualizar las opciones de filtros
+    this.actualizarOpcionesFiltros();
   }
 
   cargarUsuarios() {
@@ -376,6 +410,13 @@ export class UsuariosGestionComponent implements OnInit {
     this.filtroNombre = '';
     this.filtroRol = '';
     this.filtroEstado = '';
+    
+    // Resetear valores en la configuración de filtros
+    if (this.filtrosConfig) {
+      this.filtrosConfig.forEach(filtro => {
+        filtro.valor = '';
+      });
+    }
   }
 
   get usuariosFiltrados() {
@@ -502,6 +543,49 @@ paginaAnterior() {
       default:
         return 'rol-default';
     }
+  }
+
+  private actualizarOpcionesFiltros() {
+    // Actualizar opciones de roles
+    const filtroRol = this.filtrosConfig.find((f: FiltroConfig) => f.nombre === 'rol');
+    if (filtroRol) {
+      filtroRol.opciones = this.roles.map(rol => ({
+        valor: rol,
+        etiqueta: rol
+      }));
+    }
+
+    // Actualizar opciones de estados
+    const filtroEstado = this.filtrosConfig.find((f: FiltroConfig) => f.nombre === 'estado');
+    if (filtroEstado) {
+      filtroEstado.opciones = this.estados.map(estado => ({
+        valor: estado,
+        etiqueta: estado
+      }));
+    }
+  }
+
+  onFiltroChange(evento: any) {
+    switch (evento.nombre) {
+      case 'busqueda':
+        this.filtroNombre = evento.valor;
+        break;
+      case 'rol':
+        this.filtroRol = evento.valor;
+        break;
+      case 'estado':
+        this.filtroEstado = evento.valor;
+        break;
+    }
+    this.aplicarFiltros();
+  }
+
+  onLimpiarFiltros() {
+    this.limpiarFiltros();
+  }
+
+  aplicarFiltros() {
+    // Los filtros se aplican automáticamente a través del getter usuariosFiltrados
   }
 
 }

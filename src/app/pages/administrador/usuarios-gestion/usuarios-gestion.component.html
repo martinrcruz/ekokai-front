@@ -1,12 +1,11 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="start">
+    <!-- <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Gestión de Usuarios</ion-title>
     <ion-buttons slot="end">
-      <!-- Botón removido - reemplazado por botón flotante -->
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-toolbar>
 </ion-header>
 
@@ -35,76 +34,14 @@
       </div>
     </div>
 
-    <!-- Card de filtros -->
-    <ion-card class="filters-card">
-      <ion-card-header>
-        <div class="card-header-content">
-          <div class="header-icon">
-            <ion-icon name="filter-outline"></ion-icon>
-          </div>
-          <div class="header-text">
-            <ion-card-title>Filtros de Búsqueda</ion-card-title>
-            <ion-card-subtitle>Refina los resultados según tus criterios</ion-card-subtitle>
-          </div>
-        </div>
-      </ion-card-header>
-      
-      <ion-card-content>
-        <div class="filters-grid">
-          <div class="filter-item search-filter">
-            <ion-label position="stacked">
-              <ion-icon name="search-outline"></ion-icon>
-              <span class="filter-label-text">Buscar por nombre o email</span>
-            </ion-label>
-            <ion-input 
-              [(ngModel)]="filtroNombre" 
-              placeholder="Buscar usuarios..." 
-              clearInput
-              class="search-input">
-            </ion-input>
-          </div>
-
-          <div class="filter-item role-filter">
-            <ion-label position="stacked">
-              <ion-icon name="people-outline"></ion-icon>
-              <span class="filter-label-text">Filtrar por rol</span>
-            </ion-label>
-            <ion-select 
-              [(ngModel)]="filtroRol" 
-              placeholder="Seleccionar rol"
-              class="role-select">
-              <ion-select-option value="">Todos los roles</ion-select-option>
-              <ion-select-option *ngFor="let rol of roles" [value]="rol">{{ rol }}</ion-select-option>
-            </ion-select>
-          </div>
-
-          <div class="filter-item status-filter">
-            <ion-label position="stacked">
-              <ion-icon name="checkmark-circle-outline"></ion-icon>
-              <span class="filter-label-text">Filtrar por estado</span>
-            </ion-label>
-            <ion-select 
-              [(ngModel)]="filtroEstado" 
-              placeholder="Seleccionar estado"
-              class="status-select">
-              <ion-select-option value="">Todos los estados</ion-select-option>
-              <ion-select-option *ngFor="let estado of estados" [value]="estado">{{ estado }}</ion-select-option>
-            </ion-select>
-          </div>
-
-          <div class="filter-item clear-filter">
-            <ion-button 
-              fill="clear" 
-              color="medium" 
-              class="clear-filters-btn" 
-              (click)="limpiarFiltros()">
-              <ion-icon name="refresh-outline"></ion-icon>
-              <span class="button-text">Limpiar Filtros</span>
-            </ion-button>
-          </div>
-        </div>
-      </ion-card-content>
-    </ion-card>
+    <!-- Filtros estandarizados -->
+    <app-filtros-estandarizados
+      [filtros]="filtrosConfig"
+      titulo="Filtros de Búsqueda"
+      subtitulo="Refina los resultados según tus criterios"
+      (filtroCambiado)="onFiltroChange($event)"
+      (limpiarFiltros)="onLimpiarFiltros()">
+    </app-filtros-estandarizados>
 
     <!-- Card de navegación al módulo de usuarios -->
     <!-- <ion-card class="navigation-card">

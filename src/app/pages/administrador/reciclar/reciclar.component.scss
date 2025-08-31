@@ -601,9 +601,9 @@ ion-button:disabled {
         margin-bottom: 24px;
 
         .form-item {
-          --padding-start: 0;
-          --padding-end: 0;
-          --inner-padding-end: 0;
+          // --padding-start: 0;
+          // --padding-end: 0;
+          // --inner-padding-end: 0;
           border-radius: var(--border-radius-md);
           border: 2px solid var(--color-border-light);
           background: var(--color-white);
@@ -626,11 +626,11 @@ ion-button:disabled {
             gap: 8px;
             font-weight: 600;
             color: var(--ekokai-primary);
-            padding: 16px 16px 8px 16px;
+            padding: 2px 16px 8px 16px;
             margin: 0;
 
             ion-icon {
-              font-size: 18px;
+              font-size: 22px;
             }
           }
 
@@ -885,9 +885,9 @@ ion-button:disabled {
         margin-bottom: 24px;
 
         .form-item {
-          --padding-start: 0;
-          --padding-end: 0;
-          --inner-padding-end: 0;
+          // --padding-start: 0;
+          // --padding-end: 0;
+          // --inner-padding-end: 0;
           border-radius: var(--border-radius-md);
           border: 2px solid var(--color-border-light);
           background: var(--color-white);
@@ -1203,5 +1203,12 @@ ion-modal {
 @media (max-width: 768px) {
   ion-modal {
     --height: 100vh;
+  }
+}
+
+.header-icon {
+  .bi {
+    font-size: 2.5rem;
+    color: var(--ekokai-primary);
   }
 }

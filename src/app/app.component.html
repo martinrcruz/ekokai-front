@@ -1,74 +1,223 @@
 <ion-app>
-  <!-- Menú lateral, solo visible si showMenu === true -->
-  <ion-split-pane *ngIf="showMenu" contentId="main-content">
-    <ion-menu contentId="main-content" type="overlay">
-      <ion-header>
-        <ion-toolbar>
-          <ion-title>
-            <i class="bi bi-menu-button-wide"></i> Menú
-          </ion-title>
+  <!-- DESKTOP LAYOUT: Header y sidebar personalizados -->
+  <div class="desktop-layout" *ngIf="!isMobile && showMenu">
+    <!-- Header principal para desktop -->
+    <ion-header class="main-header desktop-header" [class.sidebar-closed]="sidebarOpen">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button 
+            (click)="toggleSidebar()" 
+            class="menu-toggle-btn"
+            [attr.aria-label]="'Toggle menu'"
+            [attr.aria-expanded]="sidebarOpen">
+            <i class="bi bi-list"></i>
+          </ion-button>
+        </ion-buttons>
+        <ion-title>Gestión de plataforma EKOKAI</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <!-- Menú lateral para desktop -->
+    <ion-split-pane contentId="main-content">
+      <ion-menu 
+        menuId="mainMenu"
+        contentId="main-content" 
+        type="overlay"
+        [disabled]="!sidebarOpen"
+        (ionWillOpen)="onMenuWillOpen()"
+        (ionWillClose)="onMenuWillClose()">
+        <!-- Header del sidebar estilo AdminLTE -->
+        <ion-header class="sidebar-header">
+          <ion-toolbar class="sidebar-toolbar">
+            <div class="brand-container">
+              <div class="brand-logo">
+                <i class="bi bi-recycle"></i>
+              </div>
+              <ion-title class="brand-title">EkoKai</ion-title>
+            </div>
+          </ion-toolbar>
+        </ion-header>
+
+        <!-- Contenido del sidebar con scroll -->
+        <ion-content class="sidebar-content">
+          <!-- Información del usuario -->
+          <div class="user-info">
+            <div class="user-avatar">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <div class="user-details">
+              <div class="user-name">{{ userRole | titlecase }}</div>
+              <div class="user-role">{{ userRole | titlecase }}</div>
+            </div>
+          </div>
+
+          <!-- Navegación principal -->
+          <div class="nav-section">
+            <div class="nav-header">Navegación Principal</div>
+            <ion-list class="nav-list">
+              <ng-container *ngFor="let p of appPages">
+                <!-- Item simple sin subpáginas -->
+                <ion-menu-toggle auto-hide="false" *ngIf="!p.subpages">
+                  <ion-item
+                    [routerLink]="[p.url]"
+                    routerDirection="root"
+                    class="nav-item"
+                    [routerLinkActive]="['nav-item-active']"
+                    (click)="closeSidebarOnMobile()">
+                    <div class="nav-item-content">
+                      <i [class]="p.icon" class="nav-icon"></i>
+                      <span class="nav-text">{{ p.title }}</span>
+                    </div>
+                  </ion-item>
+                </ion-menu-toggle>
+                
+                <!-- Item con subpáginas -->
+                <div *ngIf="p.subpages" class="nav-item-group">
+                  <ion-item class="nav-item nav-item-parent" (click)="toggleSubMenu(p)">
+                    <div class="nav-item-content">
+                      <i [class]="p.icon" class="nav-icon"></i>
+                      <span class="nav-text">{{ p.title }}</span>
+                      <i class="bi nav-arrow" [class]="p.expanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                    </div>
+                  </ion-item>
+                  
+                  <!-- Subpáginas -->
+                  <div class="nav-submenu" *ngIf="p.expanded">
+                    <ion-menu-toggle auto-hide="false" *ngFor="let sp of p.subpages">
+                      <ion-item
+                        [routerLink]="[sp.url]"
+                        routerDirection="root"
+                        class="nav-item nav-item-child"
+                        [routerLinkActive]="['nav-item-active']"
+                        (click)="closeSidebarOnMobile()">
+                        <div class="nav-item-content">
+                          <i [class]="sp.icon" class="nav-icon"></i>
+                          <span class="nav-text">{{ sp.title }}</span>
+                        </div>
+                      </ion-item>
+                    </ion-menu-toggle>
+                  </div>
+                </div>
+              </ng-container>
+            </ion-list>
+          </div>
+
+          <!-- Botón de cerrar sesión -->
+          <div class="logout-section">
+            <ion-button expand="full" (click)="logout()" class="logout-button">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Cerrar Sesión</span>
+            </ion-button>
+          </div>
+        </ion-content>
+      </ion-menu>
+
+      <!-- Contenido principal para desktop -->
+      <ion-router-outlet id="main-content" [class.sidebar-closed]="!sidebarOpen"></ion-router-outlet>
+    </ion-split-pane>
+  </div>
+
+  <!-- MOBILE LAYOUT: Header nativo de Ionic con menú hamburguesa -->
+  <div class="mobile-layout" *ngIf="isMobile && showMenu">
+    <!-- Header nativo de Ionic para mobile -->
+    <ion-header class="mobile-header">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <ion-title>Gestión de plataforma EKOKAI</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <!-- Menú nativo de Ionic para mobile -->
+    <ion-menu menuId="mobileMenu" contentId="mobile-content" type="overlay">
+      <!-- Header del sidebar estilo AdminLTE -->
+      <ion-header class="sidebar-header">
+        <ion-toolbar class="sidebar-toolbar">
+          <div class="brand-container">
+            <div class="brand-logo">
+              <i class="bi bi-recycle"></i>
+            </div>
+            <ion-title class="brand-title">EKOKAI</ion-title>
+          </div>
         </ion-toolbar>
       </ion-header>
 
-      <ion-content class="sidebar-content-flex">
-        <ion-list>
-          <!-- <ion-list-header>Secciones</ion-list-header> -->
-          <!-- Recorremos appPages -->
-          <ng-container *ngFor="let p of appPages">
-            <!-- Si NO tiene subpages, es un item normal -->
-            <ion-menu-toggle auto-hide="false" *ngIf="!p.subpages">
-              <ion-item
-                [routerLink]="[p.url]"
-                routerDirection="root"
-                lines="none"
-                detail="false"
-                [routerLinkActive]="['selected']">
-                <i [class]="p.icon" style="margin-right:8px;"></i>
-                <ion-label>{{ p.title }}</ion-label>
-              </ion-item>
-            </ion-menu-toggle>
-            <!-- Si TIENE subpages, es un menú desplegable -->
-            <div *ngIf="p.subpages">
-              <!-- Item principal del submenú -->
-              <ion-item lines="none" detail="false" (click)="toggleSubMenu(p)">
-                <i [class]="p.icon" style="margin-right:8px;"></i>
-                <ion-label>{{ p.title }}</ion-label>
-                <!-- Icono que cambia según expandido o no -->
-                <ion-icon
-                  [name]="p.expanded ? 'chevron-up-outline' : 'chevron-down-outline'"
-                  slot="end">
-                </ion-icon>
-              </ion-item>
-              <!-- Sub-items, visibles si expanded = true -->
-              <ion-list *ngIf="p.expanded">
-                <ion-menu-toggle auto-hide="false" *ngFor="let sp of p.subpages">
-                  <ion-item
-                    [routerLink]="[sp.url]"
-                    routerDirection="root"
-                    lines="none"
-                    detail="false"
-                    style="padding-left: 36px;"
-                  >
-                    <i [class]="sp.icon" style="margin-right:8px;"></i>
-                    <ion-label>{{ sp.title }}</ion-label>
-                  </ion-item>
-                </ion-menu-toggle>
-              </ion-list>
-            </div>
-          </ng-container>
-        </ion-list>
-        <div class="sidebar-logout-btn-container">
+      <!-- Contenido del sidebar con scroll -->
+      <ion-content class="sidebar-content">
+        <!-- Información del usuario -->
+        <div class="user-info">
+          <div class="user-avatar">
+            <i class="bi bi-person-circle"></i>
+          </div>
+          <div class="user-details">
+            <div class="user-name">{{ userRole | titlecase }}</div>
+            <div class="user-role">{{ userRole | titlecase }}</div>
+          </div>
+        </div>
+
+        <!-- Navegación principal -->
+        <div class="nav-section">
+          <div class="nav-header">Navegación Principal</div>
+          <ion-list class="nav-list">
+            <ng-container *ngFor="let p of appPages">
+              <!-- Item simple sin subpáginas -->
+              <ion-menu-toggle auto-hide="true" *ngIf="!p.subpages">
+                <ion-item
+                  [routerLink]="[p.url]"
+                  routerDirection="root"
+                  class="nav-item"
+                  [routerLinkActive]="['nav-item-active']">
+                  <div class="nav-item-content">
+                    <i [class]="p.icon" class="nav-icon"></i>
+                    <span class="nav-text">{{ p.title }}</span>
+                  </div>
+                </ion-item>
+              </ion-menu-toggle>
+              
+              <!-- Item con subpáginas -->
+              <div *ngIf="p.subpages" class="nav-item-group">
+                <ion-item class="nav-item nav-item-parent" (click)="toggleSubMenu(p)">
+                  <div class="nav-item-content">
+                    <i [class]="p.icon" class="nav-icon"></i>
+                    <span class="nav-text">{{ p.title }}</span>
+                    <i class="bi nav-arrow" [class]="p.expanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                  </div>
+                </ion-item>
+                
+                <!-- Subpáginas -->
+                <div class="nav-submenu" *ngIf="p.expanded">
+                  <ion-menu-toggle auto-hide="true" *ngFor="let sp of p.subpages">
+                    <ion-item
+                      [routerLink]="[sp.url]"
+                      routerDirection="root"
+                      class="nav-item nav-item-child"
+                      [routerLinkActive]="['nav-item-active']">
+                      <div class="nav-item-content">
+                        <i [class]="sp.icon" class="nav-icon"></i>
+                        <span class="nav-text">{{ sp.title }}</span>
+                      </div>
+                    </ion-item>
+                  </ion-menu-toggle>
+                </div>
+              </div>
+            </ng-container>
+          </ion-list>
+        </div>
+
+        <!-- Botón de cerrar sesión -->
+        <div class="logout-section">
           <ion-button expand="full" (click)="logout()" class="logout-button">
-            <i class="bi bi-box-arrow-right icon-logout"></i>
-           Cerrar sesión
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Cerrar Sesión</span>
           </ion-button>
         </div>
       </ion-content>
     </ion-menu>
 
-    <!-- Contenido principal -->
-    <ion-router-outlet id="main-content"></ion-router-outlet>
-  </ion-split-pane>
+    <!-- Contenido principal para mobile -->
+    <ion-router-outlet id="mobile-content"></ion-router-outlet>
+  </div>
 
   <!-- Si showMenu === false, igual se muestra la pantalla de login
        mediante <ion-router-outlet>, pero sin el menú. -->

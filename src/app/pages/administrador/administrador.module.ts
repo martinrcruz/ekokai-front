@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgChartsModule } from 'ng2-charts';
 
 import { AdministradorRoutingModule } from './administrador-routing.module';
+import { SharedModule } from '../../shared/shared.module';
 
 // Declaraciones (componentes del área Administrador)E
 import { ConfiguracionComponent } from './configuracion/configuracion.component';
@@ -41,7 +42,8 @@ import { AdminGuard } from '../../guards/admin.guard';
     NgChartsModule,
     AdministradorRoutingModule,
     UsuariosModule,
-    HomeAdminModule
+    HomeAdminModule,
+    SharedModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [AdminGuard]

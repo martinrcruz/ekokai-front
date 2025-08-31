@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { EcopuntosService } from 'src/app/services/ecopuntos.service';
 import { UsuariosService } from 'src/app/services/usuarios.service';
 import { ChartConfiguration } from 'chart.js';
+import { FiltrosEstandarizadosComponent, FiltroConfig } from '../../../shared/components/global-filter/filtros-estandarizados.component';
 
 @Component({
   selector: 'app-ecopuntos',
@@ -67,6 +68,39 @@ export class EcopuntosComponent {
   estadisticasData: any = {};
   cargandoEstadisticas = false;
 
+  // Configuración de filtros estandarizados
+  filtrosConfig: FiltroConfig[] = [
+    {
+      tipo: 'texto',
+      icono: 'bi-search',
+      titulo: 'Buscar ecopunto',
+      placeholder: 'Buscar ecopunto...',
+      valor: '',
+      nombre: 'nombre'
+    },
+    {
+      tipo: 'select',
+      icono: 'bi-map',
+      titulo: 'Filtrar por zona',
+      placeholder: 'Todas las zonas',
+      opciones: [],
+      valor: '',
+      nombre: 'zona'
+    },
+    {
+      tipo: 'select',
+      icono: 'bi-check-circle',
+      titulo: 'Filtrar por estado',
+      placeholder: 'Todos los estados',
+      opciones: [
+        { valor: 'activo', etiqueta: 'Activos' },
+        { valor: 'inactivo', etiqueta: 'Inactivos' }
+      ],
+      valor: '',
+      nombre: 'estado'
+    }
+  ];
+
   constructor(private ecopuntosService: EcopuntosService, private usuariosService: UsuariosService) {
     this.cargarEcopuntos();
     this.cargarUsuarios();
@@ -77,6 +111,7 @@ export class EcopuntosComponent {
       next: (list) => {
         this.ecopuntos = Array.isArray(list) ? list : [];
         this.zonas = Array.from(new Set(this.ecopuntos.map(e => e?.zona).filter(Boolean))).sort();
+        this.actualizarOpcionesFiltros();
         this.actualizarChart();
       }
     });
@@ -339,6 +374,42 @@ export class EcopuntosComponent {
 
   getAnioActual(): number {
     return new Date().getFullYear();
+  }
+
+  private actualizarOpcionesFiltros() {
+    // Actualizar opciones de zonas
+    const filtroZona = this.filtrosConfig.find((f: FiltroConfig) => f.nombre === 'zona');
+    if (filtroZona && this.zonas) {
+      filtroZona.opciones = this.zonas.map(zona => ({
+        valor: zona,
+        etiqueta: zona
+      }));
+    }
+  }
+
+  onFiltroChange(evento: any) {
+    switch (evento.nombre) {
+      case 'nombre':
+        this.filtroNombre = evento.valor;
+        break;
+      case 'zona':
+        this.filtroZona = evento.valor;
+        break;
+      case 'estado':
+        this.filtroEstado = evento.valor;
+        break;
+    }
+    this.aplicarFiltros();
+  }
+
+  onLimpiarFiltros() {
+    this.limpiarFiltros();
+  }
+
+  aplicarFiltros() {
+    // Los filtros se aplican automáticamente a través del getter ecopuntosFiltrados
+    // Solo necesitamos actualizar el gráfico
+    this.actualizarChart();
   }
 }
 

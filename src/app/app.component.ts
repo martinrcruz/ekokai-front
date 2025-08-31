@@ -6,6 +6,7 @@ import { filter } from 'rxjs';
 import { AuthService } from './services/auth.service';
 import { ThemeService } from './services/theme.service';
 import localeEs from '@angular/common/locales/es';
+import { MenuController, Platform } from '@ionic/angular';
 
 interface AppPage {
   title: string;
@@ -25,6 +26,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   public showMenu = false;  // Controla si se muestra o no el menú
   public userRole: string = '';  // almacenar el rol
+  public sidebarOpen = false;  // Controla si el sidebar está abierto (solo para desktop)
+  public isMobile = false;  // Detecta si estamos en móvil
 
   // Definimos un conjunto completo de opciones
   private fullAppPages: AppPage[] = [
@@ -59,19 +62,37 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private menuController: MenuController,
+    private platform: Platform
   ) {
+    // Detectar si estamos en móvil y configurar el sidebar inicial
+    this.detectMobileAndConfigure();
+    
+    // Escuchar cambios de tamaño de ventana
+    window.addEventListener('resize', () => {
+      this.detectMobileAndConfigure();
+    });
+    
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {
+        const currentUrl = event.url || event.urlAfterRedirects;
+        console.log('[AppComponent] NavigationEnd - URL:', currentUrl);
+        
         // Ocultar menú si la ruta es /login (o /auth/login) o /catalogo
-        if (event.url === '/login' || event.urlAfterRedirects === '/login' ||
-            event.url === '/auth/login' || event.urlAfterRedirects === '/auth/login' ||
-            event.url === '/catalogo' || event.urlAfterRedirects === '/catalogo' ||
-            event.url.startsWith('/catalogo/') || event.urlAfterRedirects.startsWith('/catalogo/')) {
+        if (currentUrl === '/login' || currentUrl === '/auth/login' ||
+            currentUrl === '/catalogo' || currentUrl.startsWith('/catalogo/')) {
+          console.log('[AppComponent] Ocultando menú para URL:', currentUrl);
           this.showMenu = false;
+          this.closeSidebar();
         } else {
+          console.log('[AppComponent] Mostrando menú para URL:', currentUrl);
           this.showMenu = true;
+          // Restaurar estado del sidebar según el dispositivo (solo para desktop)
+          if (!this.isMobile) {
+            this.sidebarOpen = true;
+          }
         }
       });
 
@@ -79,13 +100,25 @@ export class AppComponent implements OnInit, OnDestroy {
 
     // Suscribirse a un observable del AuthService que retorne la info del usuario
     this.authService.user$.subscribe(async user => {
+      // Verificar la URL actual antes de procesar cualquier lógica
+      const currentUrl = this.router.url;
+      
+      // Si estamos en el catálogo, NO procesar redirecciones
+      if (currentUrl.startsWith('/catalogo')) {
+        console.log('[AppComponent] En catálogo, saltando lógica de redirección');
+        if (user && user.rol) {
+          this.userRole = user.rol;
+          this.updateMenuByRole();
+        }
+        return;
+      }
+      
       if (!user) {
         await this.authService.ensureUserFromToken();
       }
       const refreshedUser = this.authService.getUser();
       if (refreshedUser && refreshedUser.rol) {
         this.userRole = refreshedUser.rol;
-        const currentUrl = this.router.url;
         console.log('[AppComponent] Usuario logueado con rol:', this.userRole, 'en ruta:', currentUrl);
         
         // Redirigir según el rol, pero solo si se permite
@@ -102,7 +135,8 @@ export class AppComponent implements OnInit, OnDestroy {
               this.router.navigate(['/encargado/home']);
             }
           } else if (this.userRole === 'admin' || this.userRole === 'administrador') {
-            if (!currentUrl.startsWith('/administrador')) {
+            // Solo redirigir si no está en ninguna ruta válida para admin
+            if (!currentUrl.includes('worker-dashboard') && !currentUrl.startsWith('/encargado') && !currentUrl.startsWith('/administrador')) {
               console.log('[AppComponent] Redirigiendo admin a home');
               this.router.navigate(['/administrador/home']);
             }
@@ -117,8 +151,37 @@ export class AppComponent implements OnInit, OnDestroy {
       this.updateMenuByRole();
     });
 
-    // Verificar el rol al iniciar la aplicación
-    this.checkInitialRole();
+    // Verificar el rol al iniciar la aplicación, pero solo si no estamos en el catálogo
+    const initialUrl = this.router.url;
+    if (!initialUrl.startsWith('/catalogo')) {
+      this.checkInitialRole();
+    } else {
+      console.log('[AppComponent] Constructor - En catálogo, saltando checkInitialRole');
+      // Asegurar que el menú esté oculto en el catálogo
+      this.showMenu = false;
+      this.closeSidebar();
+    }
+  }
+
+  /**
+   * Detecta si estamos en mobile y configura el comportamiento inicial
+   */
+  private detectMobileAndConfigure() {
+    const widthIsMobile = window.matchMedia('(max-width: 768px)').matches;
+    const wasMobile = this.isMobile;
+    this.isMobile = this.platform.is('ios') || this.platform.is('android') || this.platform.is('mobileweb') || widthIsMobile;
+  
+    if (wasMobile && !this.isMobile) {
+      // Cambió de mobile a desktop
+      console.log('[AppComponent] Cambio de mobile a desktop');
+      this.sidebarOpen = true;
+      this.closeSidebar(); // Cerrar menú nativo si estaba abierto
+    } else if (!wasMobile && this.isMobile) {
+      // Cambió de desktop a mobile
+      console.log('[AppComponent] Cambio de desktop a mobile');
+      this.sidebarOpen = false;
+      this.closeSidebar(); // Cerrar sidebar personalizado
+    }
   }
 
   /**
@@ -137,6 +200,24 @@ export class AppComponent implements OnInit, OnDestroy {
       return false;
     }
     
+    // NO permitir redirección si está en worker-dashboard
+    if (url.includes('worker-dashboard')) {
+      console.log('[AppComponent] shouldAllowRedirect - En worker-dashboard, NO se permite redirección');
+      return false;
+    }
+    
+    // NO permitir redirección si está en encargado
+    if (url.startsWith('/encargado')) {
+      console.log('[AppComponent] shouldAllowRedirect - En encargado, NO se permite redirección');
+      return false;
+    }
+    
+    // NO permitir redirección si está en administrador
+    if (url.startsWith('/administrador')) {
+      console.log('[AppComponent] shouldAllowRedirect - En administrador, NO se permite redirección');
+      return false;
+    }
+    
     console.log('[AppComponent] shouldAllowRedirect - Redirección permitida para URL:', url);
     return true;
   }
@@ -145,11 +226,19 @@ export class AppComponent implements OnInit, OnDestroy {
    * Verifica el rol al iniciar la aplicación y redirige si es necesario
    */
   private async checkInitialRole() {
+    // Verificar la URL actual antes de procesar cualquier lógica
+    const currentUrl = this.router.url;
+    
+    // Si estamos en el catálogo, NO procesar redirecciones
+    if (currentUrl.startsWith('/catalogo')) {
+      console.log('[AppComponent] checkInitialRole - En catálogo, saltando lógica de redirección');
+      return;
+    }
+    
     await this.authService.ensureUserFromToken();
     const user = this.authService.getUser();
     if (!user) return;
     
-    const currentUrl = this.router.url;
     console.log('[AppComponent] checkInitialRole - Usuario:', user.rol, 'en ruta:', currentUrl);
     
     // NO redirigir si no se debe permitir
@@ -171,7 +260,8 @@ export class AppComponent implements OnInit, OnDestroy {
         this.router.navigate(['/encargado/home']);
       }
     } else if (user.rol === 'admin' || user.rol === 'administrador') {
-      if (!currentUrl.startsWith('/administrador')) {
+      // Solo redirigir si no está en ninguna ruta válida para admin
+      if (!currentUrl.includes('worker-dashboard') && !currentUrl.startsWith('/encargado') && !currentUrl.startsWith('/administrador')) {
         console.log('[AppComponent] checkInitialRole - Redirigiendo admin a home');
         this.router.navigate(['/administrador/home']);
       }
@@ -194,14 +284,83 @@ export class AppComponent implements OnInit, OnDestroy {
     this.appPages = this.fullAppPages;
   }
 
-  
-
   /**
    * Toggle para expandir/colapsar submenús
    */
   toggleSubMenu(page: AppPage) {
     if (page.subpages) {
       page.expanded = !page.expanded;
+    }
+  }
+
+  /**
+   * Controla la apertura/cierre del sidebar (solo para desktop)
+   */
+  toggleSidebar() {
+    if (this.isMobile) {
+      console.log('[AppComponent] toggleSidebar llamado en mobile, usando menú nativo');
+      return;
+    }
+    
+    if (this.sidebarOpen) {
+      this.closeSidebar();
+    } else {
+      this.openSidebar();
+    }
+  }
+
+  /**
+   * Abre el sidebar (solo para desktop)
+   */
+  async openSidebar() {
+    if (this.isMobile) {
+      console.log('[AppComponent] openSidebar llamado en mobile, usando menú nativo');
+      return;
+    }
+    
+    this.sidebarOpen = true;
+    await this.menuController.open('mainMenu');
+  }
+
+  /**
+   * Cierra el sidebar (solo para desktop)
+   */
+  async closeSidebar() {
+    if (this.isMobile) {
+      console.log('[AppComponent] closeSidebar llamado en mobile, cerrando menú nativo');
+      await this.menuController.close('mobileMenu');
+      return;
+    }
+    
+    this.sidebarOpen = false;
+    await this.menuController.close('mainMenu');
+  }
+
+  /**
+   * Cierra el sidebar en móvil después de navegar
+   */
+  closeSidebarOnMobile() {
+    if (this.isMobile) {
+      console.log('[AppComponent] Cerrando sidebar en mobile después de navegación');
+      this.menuController.close('mobileMenu');
+    }
+  }
+
+  /**
+   * Evento antes de abrir el menú (solo para desktop)
+   */
+  onMenuWillOpen() {
+    if (!this.isMobile) {
+      this.sidebarOpen = true;
+    }
+  }
+
+  /**
+   * Evento antes de cerrar el menú (solo para desktop)
+   */
+  onMenuWillClose() {
+    if (!this.isMobile) {
+      this.sidebarOpen = false;
     }
   }
 

@@ -111,11 +111,11 @@
       padding: 20px;
 
       .filter-item {
-        --padding-start: 0;
-        --padding-end: 0;
-        --inner-padding-end: 0;
-        border-radius: var(--border-radius-md);
-        border: 2px solid var(--color-border-light);
+        // --padding-start: 0;
+        // --padding-end: 0;
+        // --inner-padding-end: 0;
+        // border-radius: var(--border-radius-md);
+        // border: 2px solid var(--color-border-light);
         background: var(--color-white);
         transition: all 0.2s ease;
 
@@ -1844,7 +1844,7 @@
 }
 
 // Botón flotante para crear ecopunto
-@import '../shared/floating-button.scss';
+// @import '../shared/floating-button.scss';
 
 // Entregas card icons
 .entregas-card {

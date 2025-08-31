@@ -1,12 +1,11 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="start">
+    <!-- <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title class="page-title">Gestión de Tipos de Residuo</ion-title>
     <ion-buttons slot="end">
-      <!-- Botón removido - reemplazado por botón flotante -->
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-toolbar>
 </ion-header>
 
@@ -16,7 +15,7 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-icon">
-          <i class="bi bi-leaf-fill"></i>
+          <i class="bi bi-leaf" style="color: #fff"></i>
         </div>
         <div class="header-text">
           <h1>Gestión de Tipos de Residuo</h1>
@@ -35,66 +34,14 @@
       </div>
     </div>
 
-    <!-- Card de filtros -->
-    <ion-card class="filters-card">
-      <ion-card-header>
-        <div class="card-header-content">
-          <div class="header-icon">
-            <i class="bi bi-funnel"></i>
-          </div>
-          <div class="header-text">
-            <ion-card-title>Filtros de Búsqueda</ion-card-title>
-            <ion-card-subtitle>Refina los resultados según tus criterios</ion-card-subtitle>
-          </div>
-        </div>
-      </ion-card-header>
-      
-      <ion-card-content>
-        <div class="filters-grid">
-          <div class="filter-item search-filter">
-            <ion-label position="stacked">
-              <i class="bi bi-search"></i>
-              <span class="label-text">Buscar por nombre</span>
-            </ion-label>
-            <ion-input 
-              [(ngModel)]="filtroNombre" 
-              (ionInput)="onFiltroNombreChange()"
-              placeholder="Buscar tipo de residuo..." 
-              clearInput
-              class="search-input">
-            </ion-input>
-          </div>
-
-          <div class="filter-item tokens-filter">
-            <ion-label position="stacked">
-              <i class="bi bi-trending-up"></i>
-              <span class="label-text">Rango de tokens</span>
-            </ion-label>
-            <ion-select 
-              [(ngModel)]="filtroTokens" 
-              (ionChange)="onFiltroTokensChange()" 
-              placeholder="Seleccionar rango"
-              class="tokens-select">
-              <ion-select-option value="">Todos los tokens</ion-select-option>
-              <ion-select-option value="bajo">0-10 tokens</ion-select-option>
-              <ion-select-option value="medio">11-20 tokens</ion-select-option>
-              <ion-select-option value="alto">21+ tokens</ion-select-option>
-            </ion-select>
-          </div>
-
-          <div class="filter-item clear-filter">
-            <ion-button 
-              fill="clear" 
-              color="medium" 
-              class="clear-filters-btn" 
-              (click)="limpiarFiltros()">
-              <i class="bi bi-arrow-clockwise"></i>
-              <span class="button-text">Limpiar Filtros</span>
-            </ion-button>
-          </div>
-        </div>
-      </ion-card-content>
-    </ion-card>
+    <!-- Filtros estandarizados -->
+    <app-filtros-estandarizados
+      [filtros]="filtrosConfig"
+      titulo="Filtros de Búsqueda"
+      subtitulo="Refina los resultados según tus criterios"
+      (filtroCambiado)="onFiltroChange($event)"
+      (limpiarFiltros)="onLimpiarFiltros()">
+    </app-filtros-estandarizados>
 
     <!-- Card de estadísticas -->
     <!-- <ion-card class="stats-card">
@@ -160,7 +107,7 @@
       <ion-card-header>
         <div class="card-header-content">
           <div class="header-icon">
-            <i class="bi bi-list"></i>
+            <i class="bi bi-list" style="color: #fff"></i>
           </div>
           <div class="header-text">
             <ion-card-title>Tipos de Residuo</ion-card-title>

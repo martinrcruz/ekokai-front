@@ -1,10 +1,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="start">
+    <!-- <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Historial de Reciclaje</ion-title>
-    <ion-buttons slot="end">
+    <ion-buttons slot="end"> -->
       <!-- <ion-button (click)="showFiltros = !showFiltros" fill="clear" class="filter-toggle-btn">
         <ion-icon name="filter-outline"></ion-icon>
         {{ showFiltros ? 'Ocultar' : 'Mostrar' }} Filtros
@@ -13,7 +13,7 @@
         <ion-icon name="download-outline"></ion-icon>
         Exportar
       </ion-button> -->
-    </ion-buttons>
+    <!-- </ion-buttons> -->
   </ion-toolbar>
 </ion-header>
 
@@ -67,82 +67,15 @@
         </ion-card-content>
       </ion-card>
       
-      <!-- Filtros -->
-      <ion-card *ngIf="showFiltros" class="filters-card">
-        <ion-card-header class="filters-header">
-          <ion-card-title>
-            <ion-icon name="filter-outline"></ion-icon>
-            Filtros de Búsqueda
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <div class="filters-grid">
-            <ion-item class="filter-item">
-              <ion-label position="stacked">
-                <ion-icon name="person-outline"></ion-icon>
-                Usuario
-              </ion-label>
-              <ion-input [(ngModel)]="filtroUsuario" placeholder="ID o nombre del usuario" class="filter-input"></ion-input>
-            </ion-item>
-            
-            <ion-item class="filter-item">
-              <ion-label position="stacked">
-                <ion-icon name="location-outline"></ion-icon>
-                Ecopunto
-              </ion-label>
-              <ion-input [(ngModel)]="filtroEcopunto" placeholder="ID o nombre del ecopunto" class="filter-input"></ion-input>
-            </ion-item>
-            
-            <ion-item class="filter-item">
-              <ion-label position="stacked">
-                <ion-icon name="leaf-outline"></ion-icon>
-                Tipo de Residuo
-              </ion-label>
-              <ion-input [(ngModel)]="filtroTipoResiduo" placeholder="ID o nombre del tipo" class="filter-input"></ion-input>
-            </ion-item>
-            
-            <ion-item class="filter-item">
-              <ion-label position="stacked">
-                <ion-icon name="checkmark-circle-outline"></ion-icon>
-                Estado
-              </ion-label>
-              <ion-select [(ngModel)]="filtroEstado" class="filter-select">
-                <ion-select-option value="">Todos los estados</ion-select-option>
-                <ion-select-option value="completado">Completado</ion-select-option>
-                <ion-select-option value="pendiente">Pendiente</ion-select-option>
-                <ion-select-option value="rechazado">Rechazado</ion-select-option>
-              </ion-select>
-            </ion-item>
-            
-            <ion-item class="filter-item">
-              <ion-label position="stacked">
-                <ion-icon name="calendar-outline"></ion-icon>
-                Fecha Desde
-              </ion-label>
-              <ion-input type="date" [(ngModel)]="filtroFechaDesde" class="filter-input"></ion-input>
-            </ion-item>
-            
-            <ion-item class="filter-item">
-              <ion-label position="stacked">
-                <ion-icon name="calendar-outline"></ion-icon>
-                Fecha Hasta
-              </ion-label>
-              <ion-input type="date" [(ngModel)]="filtroFechaHasta" class="filter-input"></ion-input>
-            </ion-item>
-          </div>
-          
-          <div class="filter-actions">
-            <ion-button (click)="cargarHistorial()" color="primary" class="apply-filters-btn">
-              <ion-icon name="search-outline"></ion-icon>
-              Aplicar Filtros
-            </ion-button>
-            <ion-button (click)="limpiarFiltros()" fill="outline" color="medium" class="clear-filters-btn">
-              <ion-icon name="refresh-outline"></ion-icon>
-              Limpiar Filtros
-            </ion-button>
-          </div>
-        </ion-card-content>
-      </ion-card>
+      <!-- Filtros estandarizados -->
+      <app-filtros-estandarizados
+        *ngIf="showFiltros"
+        [filtros]="filtrosConfig"
+        titulo="Filtros de Búsqueda"
+        subtitulo="Refina los resultados según tus criterios"
+        (filtroCambiado)="onFiltroChange($event)"
+        (limpiarFiltros)="onLimpiarFiltros()">
+      </app-filtros-estandarizados>
 
       <!-- Lista de historial -->
       <ion-card class="historial-list-card">

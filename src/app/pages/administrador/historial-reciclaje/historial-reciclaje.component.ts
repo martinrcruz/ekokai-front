@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { EntregaResiduo, EntregaResiduoService } from 'src/app/services/entrega-residuo.service';
-
+import { FiltrosEstandarizadosComponent, FiltroConfig } from '../../../shared/components/global-filter/filtros-estandarizados.component';
 
 
 @Component({
@@ -37,11 +37,58 @@ export class HistorialReciclajeComponent implements OnInit {
   showDetalleModal = false;
   entregaSeleccionada: EntregaResiduo | null = null;
 
+  // Configuración de filtros estandarizados
+  filtrosConfig: FiltroConfig[] = [
+    {
+      tipo: 'texto',
+      icono: 'bi-person',
+      titulo: 'Usuario',
+      placeholder: 'ID o nombre del usuario',
+      valor: '',
+      nombre: 'usuario'
+    },
+    {
+      tipo: 'texto',
+      icono: 'bi-location',
+      titulo: 'Ecopunto',
+      placeholder: 'ID o nombre del ecopunto',
+      valor: '',
+      nombre: 'ecopunto'
+    },
+    {
+      tipo: 'texto',
+      icono: 'bi-leaf',
+      titulo: 'Tipo de Residuo',
+      placeholder: 'Tipo de residuo',
+      valor: '',
+      nombre: 'tipoResiduo'
+    },
+    {
+      tipo: 'fecha',
+      icono: 'bi-calendar',
+      titulo: 'Fecha desde',
+      placeholder: 'Seleccionar fecha',
+      valor: '',
+      nombre: 'fechaDesde'
+    },
+    {
+      tipo: 'fecha',
+      icono: 'bi-calendar',
+      titulo: 'Fecha hasta',
+      placeholder: 'Seleccionar fecha',
+      valor: '',
+      nombre: 'fechaHasta'
+    }
+  ];
+
   constructor(private entregaService: EntregaResiduoService) {}
 
   ngOnInit() {
     this.cargarHistorial();
     this.cargarEstadisticas();
+    
+    // Actualizar las opciones de filtros
+    this.actualizarOpcionesFiltros();
   }
 
   async cargarHistorial() {
@@ -138,21 +185,21 @@ export class HistorialReciclajeComponent implements OnInit {
     }
   }
 
-  aplicarFiltros() {
-    this.historialFiltrado = [...this.historial];
-    this.paginaActual = 1;
-    this.error = null; // Clear any previous errors
-  }
+  // aplicarFiltros() {
+  //   this.historialFiltrado = [...this.historial];
+  //   this.paginaActual = 1;
+  //   this.error = null; // Clear any previous errors
+  // }
 
-  limpiarFiltros() {
-    this.filtroUsuario = '';
-    this.filtroEcopunto = '';
-    this.filtroTipoResiduo = '';
-    this.filtroEstado = '';
-    this.filtroFechaDesde = '';
-    this.filtroFechaHasta = '';
-    this.aplicarFiltros();
-  }
+  // limpiarFiltros() {
+  //   this.filtroUsuario = '';
+  //   this.filtroEcopunto = '';
+  //   this.filtroTipoResiduo = '';
+  //   this.filtroEstado = '';
+  //   this.filtroFechaDesde = '';
+  //   this.filtroFechaHasta = '';
+  //   this.aplicarFiltros();
+  // }
 
   get historialPaginado() {
     const inicio = (this.paginaActual - 1) * this.elementosPorPagina;
@@ -354,5 +401,69 @@ export class HistorialReciclajeComponent implements OnInit {
       }
     }
   };
+
+  private actualizarOpcionesFiltros() {
+    // Aquí se pueden agregar más opciones si es necesario
+  }
+
+  onFiltroChange(evento: any) {
+    switch (evento.nombre) {
+      case 'usuario':
+        this.filtroUsuario = evento.valor;
+        break;
+      case 'ecopunto':
+        this.filtroEcopunto = evento.valor;
+        break;
+      case 'tipoResiduo':
+        this.filtroTipoResiduo = evento.valor;
+        break;
+      case 'fechaDesde':
+        this.filtroFechaDesde = evento.valor;
+        break;
+      case 'fechaHasta':
+        this.filtroFechaHasta = evento.valor;
+        break;
+    }
+    this.aplicarFiltros();
+  }
+
+  onLimpiarFiltros() {
+    this.limpiarFiltros();
+  }
+
+  aplicarFiltros() {
+    // Aplicar filtros al historial
+    this.historialFiltrado = this.historial.filter(entrega => {
+      const usuarioMatch = !this.filtroUsuario ||
+        entrega.usuario?.nombre?.toLowerCase().includes(this.filtroUsuario.toLowerCase());
+      const ecopuntoMatch = !this.filtroEcopunto ||
+        entrega.ecopunto?.nombre?.toLowerCase().includes(this.filtroEcopunto.toLowerCase());
+      const tipoResiduoMatch = !this.filtroTipoResiduo ||
+        entrega.tipoResiduo?.nombre?.toLowerCase().includes(this.filtroTipoResiduo.toLowerCase());
+      const fechaDesdeMatch = !this.filtroFechaDesde ||
+        new Date(entrega.fecha) >= new Date(this.filtroFechaDesde);
+      const fechaHastaMatch = !this.filtroFechaHasta ||
+        new Date(entrega.fecha) <= new Date(this.filtroFechaHasta);
+      
+      return usuarioMatch && ecopuntoMatch && tipoResiduoMatch && fechaDesdeMatch && fechaHastaMatch;
+    });
+  }
+
+  limpiarFiltros() {
+    this.filtroUsuario = '';
+    this.filtroEcopunto = '';
+    this.filtroTipoResiduo = '';
+    this.filtroFechaDesde = '';
+    this.filtroFechaHasta = '';
+    
+    // Resetear valores en la configuración de filtros
+    if (this.filtrosConfig) {
+      this.filtrosConfig.forEach(filtro => {
+        filtro.valor = '';
+      });
+    }
+    
+    this.aplicarFiltros();
+  }
 }
 
