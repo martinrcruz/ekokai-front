@@ -6,7 +6,7 @@ export const environment = {
   production: false,
   apiUrl: 'http://localhost:8080',
   version: '1.0.0',
-  whatsappNumber: '+5491112345678' // Número del chatbot de WhatsApp
+  whatsappNumber: '+17017604112' // Número del chatbot de WhatsApp
 };
 
 /*
