@@ -19,7 +19,6 @@
           email
           #emailInput="ngModel"
           [(ngModel)]="email"
-          placeholder="ejemplo@correo.com"
         ></ion-input>
       </ion-item>
       <ion-note *ngIf="emailInput.invalid && emailInput.touched" color="danger" class="error-message">
@@ -36,7 +35,6 @@
           required
           #passwordInput="ngModel"
           [(ngModel)]="password"
-          placeholder="••••••••"
         ></ion-input>
       </ion-item>
       <ion-note *ngIf="passwordInput.invalid && passwordInput.touched" color="danger" class="error-message">
