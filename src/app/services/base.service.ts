@@ -18,11 +18,9 @@ export class BaseService {
   ) {}
 
   protected async getHeaders(): Promise<{ headers: HttpHeaders }> {
-    const token = await this.authService.getToken();
     return {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        'Authorization': token ? `Bearer ${token}` : '',
         'Accept': 'application/json'
       })
     };

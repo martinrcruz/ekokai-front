@@ -1,0 +1,393 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <!-- <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Gestión de Vecinos</ion-title>
+    <ion-buttons slot="end">
+    </ion-buttons> -->
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="usuarios-container">
+    <!-- Header de la página -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-icon">
+          <i class="bi bi-people" style="color: #fff"></i>
+        </div>
+        <div class="header-text">
+          <h1>Gestión de Vecinos</h1>
+          <p>Administra los vecinos registrados en la comunidad</p>
+        </div>
+        <div class="header-stats">
+          <div class="stat-item">
+            <div class="stat-number">{{ estadisticas.total }}</div>
+            <div class="stat-label">Total</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ estadisticas.activos }}</div>
+            <div class="stat-label">Activos</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ estadisticas.inactivos }}</div>
+            <div class="stat-label">Inactivos</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ estadisticas.totalTokens | number }}</div>
+            <div class="stat-label">Tokens</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <!-- Filtros -->
+  <app-filtros-estandarizados
+    [filtros]="filtrosConfig"
+    titulo="Filtros de Vecinos"
+    subtitulo="Busca y filtra los vecinos registrados"
+    [mostrarBotonLimpiar]="true"
+    (filtroCambiado)="onFiltroChange($event)"
+    (limpiarFiltros)="onLimpiarFiltros()">
+  </app-filtros-estandarizados>
+
+    <!-- Lista de vecinos -->
+    <ion-card class="usuarios-list-card">
+      <ion-card-header class="list-header">
+        <ion-card-title style="color: white;">
+          <i class="bi bi-list-ul"></i>
+          Lista de Vecinos
+        </ion-card-title>
+        <ion-card-subtitle>{{ vecinosFiltrados.length }} vecino{{ vecinosFiltrados.length !== 1 ? 's' : '' }} encontrado{{ vecinosFiltrados.length !== 1 ? 's' : '' }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <!-- Loading -->
+        <div *ngIf="loading" class="loading-container">
+          <ion-spinner name="crescent"></ion-spinner>
+          <p>Cargando vecinos...</p>
+        </div>
+
+        <!-- Lista -->
+        <div *ngIf="!loading" class="usuarios-grid">
+          <ion-card *ngFor="let vecino of vecinosFiltrados" class="usuario-card">
+            <ion-card-header class="usuario-header">
+              <div class="usuario-title">
+                <div class="usuario-avatar" [class]="getAvatarClass(vecino.rol)">
+                  {{ getIniciales(vecino.nombre, vecino.apellido) }}
+                </div>
+                <div class="usuario-name-info">
+                  <h3>{{ vecino.nombre }} {{ vecino.apellido }}</h3>
+                  <ion-badge color="success" class="role-badge">
+                    Vecino
+                  </ion-badge>
+                </div>
+              </div>
+              <ion-badge [color]="vecino.activo ? 'success' : 'danger'" class="status-badge">
+                <i class="bi" [class]="vecino.activo ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                <span class="badge-text">{{ vecino.activo ? 'Activo' : 'Inactivo' }}</span>
+              </ion-badge>
+            </ion-card-header>
+            
+            <ion-card-content class="usuario-content">
+              <div class="usuario-info">
+                <div class="info-item">
+                  <i class="bi bi-telephone"></i>
+                  <span>{{ vecino.telefono || 'N/A' }}</span>
+                </div>
+                <div class="info-item">
+                  <i class="bi bi-envelope"></i>
+                  <span>{{ vecino.email || 'N/A' }}</span>
+                </div>
+                <div class="info-item">
+                  <i class="bi bi-geo-alt"></i>
+                  <span>{{ vecino.zona || 'N/A' }}</span>
+                </div>
+              </div>
+
+              <div class="usuario-stats">
+                <div class="stat-card">
+                  <div class="stat-icon">
+                    <i class="bi bi-coin" style="color:white"></i>
+                  </div>
+                  <div class="stat-content">
+                    <div class="stat-value">{{ vecino.tokensAcumulados || 0 }}</div>
+                    <div class="stat-label">Tokens</div>
+                  </div>
+                </div>
+                
+                <div class="stat-card">
+                  <div class="stat-icon">
+                    <i class="bi bi-calendar" style="color:white"></i>
+                  </div>
+                  <div class="stat-content">
+                    <div class="stat-value">{{ formatearFecha(vecino.fechaCreacion) }}</div>
+                    <div class="stat-label">Registro</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="usuario-actions">
+                <ion-button fill="clear" (click)="verHistorial(vecino)" class="action-btn history">
+                  <i class="bi bi-list"></i>
+                  <span class="button-text">Historial</span>
+                </ion-button>
+                
+                <ion-button fill="clear" (click)="editarVecino(vecino)" class="action-btn edit">
+                  <i class="bi bi-pencil-fill"></i>
+                  <span class="button-text">Editar</span>
+                </ion-button>
+                
+                <ion-button fill="clear" (click)="toggleEstado(vecino)" class="action-btn toggle" [color]="vecino.activo ? 'danger' : 'success'">
+                  <i class="bi" [class]="vecino.activo ? 'bi-pause-fill' : 'bi-play-fill'"></i>
+                  <span class="button-text">{{ vecino.activo ? 'Desactivar' : 'Activar' }}</span>
+                </ion-button>
+                
+                <ion-button fill="clear" color="danger" (click)="eliminarVecino(vecino)" class="action-btn delete">
+                  <i class="bi bi-trash-fill"></i>
+                  <span class="button-text">Eliminar</span>
+                </ion-button>
+              </div>
+            </ion-card-content>
+          </ion-card>
+
+          <!-- Mensaje cuando no hay vecinos -->
+          <div *ngIf="vecinosFiltrados.length === 0 && !loading" class="empty-state">
+            <i class="bi bi-people"></i>
+            <h3>No se encontraron vecinos</h3>
+            <p>Ajusta los filtros o crea un nuevo vecino</p>
+            <ion-button (click)="crearVecino()" fill="solid" color="primary">
+              <ion-icon name="add" slot="start"></ion-icon>
+              Crear Vecino
+            </ion-button>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Botón flotante para crear vecino -->
+  <button class="floating-action-button" (click)="crearVecino()" title="Crear Vecino">
+    <i class="bi bi-plus"></i>
+  </button>
+</ion-content>
+
+<!-- Modal para crear vecino -->
+<ion-modal [isOpen]="showCrearVecinoModal" (didDismiss)="cerrarCrearVecinoModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Crear Nuevo Vecino</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarCrearVecinoModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="modal-content">
+      <form (ngSubmit)="guardarVecino()">
+        <ion-list>
+          <ion-item>
+            <ion-label position="stacked">Nombre *</ion-label>
+            <ion-input 
+              [(ngModel)]="vecinoForm.nombre" 
+              name="nombre"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Apellido *</ion-label>
+            <ion-input 
+              [(ngModel)]="vecinoForm.apellido" 
+              name="apellido"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">DNI *</ion-label>
+            <ion-input 
+              [(ngModel)]="vecinoForm.dni" 
+              name="dni"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Teléfono *</ion-label>
+            <ion-input 
+              [(ngModel)]="vecinoForm.telefono" 
+              name="telefono"
+              type="tel"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Email</ion-label>
+            <ion-input 
+              [(ngModel)]="vecinoForm.email" 
+              name="email"
+              type="email">
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Dirección</ion-label>
+            <ion-input 
+              [(ngModel)]="vecinoForm.direccion" 
+              name="direccion">
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Zona</ion-label>
+            <ion-input 
+              [(ngModel)]="vecinoForm.zona" 
+              name="zona">
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">País</ion-label>
+            <ion-input 
+              [(ngModel)]="vecinoForm.pais" 
+              name="pais">
+            </ion-input>
+          </ion-item>
+        </ion-list>
+
+        <div class="modal-actions">
+          <ion-button 
+            type="button" 
+            (click)="cerrarCrearVecinoModal()" 
+            fill="outline">
+            Cancelar
+          </ion-button>
+          <ion-button 
+            type="submit" 
+            [disabled]="creandoVecino"
+            fill="solid" 
+            color="primary">
+            <ion-spinner *ngIf="creandoVecino" name="crescent"></ion-spinner>
+            <span *ngIf="!creandoVecino">Crear Vecino</span>
+            <span *ngIf="creandoVecino">Creando...</span>
+          </ion-button>
+        </div>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Modal para editar vecino -->
+<ion-modal [isOpen]="showEditarVecinoModal" (didDismiss)="cerrarEditarVecinoModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Editar Vecino</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarEditarVecinoModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="modal-content">
+      <form (ngSubmit)="guardarCambiosVecino()">
+        <ion-list>
+          <ion-item>
+            <ion-label position="stacked">Nombre *</ion-label>
+            <ion-input 
+              [(ngModel)]="vecinoEditando.nombre" 
+              name="nombre"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Apellido *</ion-label>
+            <ion-input 
+              [(ngModel)]="vecinoEditando.apellido" 
+              name="apellido"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">DNI *</ion-label>
+            <ion-input 
+              [(ngModel)]="vecinoEditando.dni" 
+              name="dni"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Teléfono *</ion-label>
+            <ion-input 
+              [(ngModel)]="vecinoEditando.telefono" 
+              name="telefono"
+              type="tel"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Email</ion-label>
+            <ion-input 
+              [(ngModel)]="vecinoEditando.email" 
+              name="email"
+              type="email">
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Dirección</ion-label>
+            <ion-input 
+              [(ngModel)]="vecinoEditando.direccion" 
+              name="direccion">
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Zona</ion-label>
+            <ion-input 
+              [(ngModel)]="vecinoEditando.zona" 
+              name="zona">
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">País</ion-label>
+            <ion-input 
+              [(ngModel)]="vecinoEditando.pais" 
+              name="pais">
+            </ion-input>
+          </ion-item>
+        </ion-list>
+
+        <div class="modal-actions">
+          <ion-button 
+            type="button" 
+            (click)="cerrarEditarVecinoModal()" 
+            fill="outline">
+            Cancelar
+          </ion-button>
+          <ion-button 
+            type="submit" 
+            [disabled]="guardandoCambios"
+            fill="solid" 
+            color="primary">
+            <ion-spinner *ngIf="guardandoCambios" name="crescent"></ion-spinner>
+            <span *ngIf="!guardandoCambios">Guardar Cambios</span>
+            <span *ngIf="guardandoCambios">Guardando...</span>
+          </ion-button>
+        </div>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>

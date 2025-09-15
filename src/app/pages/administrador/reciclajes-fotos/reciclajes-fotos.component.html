@@ -1,0 +1,396 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Reciclajes y Fotos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="showFiltros = !showFiltros" fill="clear" class="filter-toggle-btn">
+        <ion-icon name="filter-outline"></ion-icon>
+        {{ showFiltros ? 'Ocultar' : 'Mostrar' }} Filtros
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="reciclajes-container">
+    <!-- Header de la página -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-icon">
+          <ion-icon name="camera-outline"></ion-icon>
+        </div>
+        <div class="header-text">
+          <h1>Reciclajes y Fotos</h1>
+          <p>Visualiza y gestiona los reciclajes con sus fotos asociadas</p>
+        </div>
+        <div class="header-stats">
+          <div class="stat-item">
+            <div class="stat-number">{{ getTotalReciclajes() }}</div>
+            <div class="stat-label">Total Reciclajes</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ getReciclajesConFoto() }}</div>
+            <div class="stat-label">Con Fotos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pestanas principales -->
+    <ion-segment [(ngModel)]="pestanaActiva" (ionChange)="cambiarPestana($event.detail.value?.toString())" class="main-segment">
+      <ion-segment-button value="entregas" class="segment-btn">
+        <ion-icon name="leaf-outline"></ion-icon>
+        <ion-label>Entregas</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="canjes" class="segment-btn">
+        <ion-icon name="swap-horizontal-outline"></ion-icon>
+        <ion-label>Canjes</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="todos" class="segment-btn">
+        <ion-icon name="list-outline"></ion-icon>
+        <ion-label>Todos</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- Mensaje de error -->
+    <ion-card *ngIf="error" class="error-card">
+      <ion-card-content class="error-content">
+        <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+        <p>{{ error }}</p>
+        <ion-button (click)="cargarReciclajes()" fill="outline" color="primary" size="small">
+          Reintentar
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+    
+    <!-- Filtros estandarizados -->
+    <app-filtros-estandarizados
+      *ngIf="showFiltros"
+      [filtros]="filtrosConfig"
+      titulo="Filtros de Búsqueda"
+      subtitulo="Refina los resultados según tus criterios"
+      (filtroCambiado)="onFiltroChange($event)"
+      (limpiarFiltros)="onLimpiarFiltros()">
+    </app-filtros-estandarizados>
+
+    <!-- Estadísticas rápidas -->
+    <ion-card class="stats-card">
+      <ion-card-header class="stats-header">
+        <ion-card-title style="color: white;">
+          <ion-icon name="analytics-outline"></ion-icon>
+          Estadísticas de Reciclaje
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-icon">
+              <ion-icon name="leaf-outline"></ion-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ getTotalReciclajes() }}</div>
+              <div class="stat-label">Total Reciclajes</div>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-icon">
+              <ion-icon name="scale-outline"></ion-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ getTotalKilos().toFixed(3) }}</div>
+              <div class="stat-label">KG Total</div>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-icon">
+              <ion-icon name="diamond-outline"></ion-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ getTotalTokensGenerados() }}</div>
+              <div class="stat-label">Tokens Generados</div>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-icon">
+              <ion-icon name="camera-outline"></ion-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ getReciclajesConFoto() }}</div>
+              <div class="stat-label">Con Fotos</div>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Lista de reciclajes -->
+    <ion-card class="reciclajes-list-card">
+      <ion-card-header class="list-header">
+        <ion-card-title style="color: white;">
+          <ion-icon name="list-outline"></ion-icon>
+          Registros de Reciclaje
+        </ion-card-title>
+        <ion-card-subtitle>{{ reciclajesFiltrados.length }} registro{{ reciclajesFiltrados.length !== 1 ? 's' : '' }} encontrado{{ reciclajesFiltrados.length !== 1 ? 's' : '' }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="reciclajes-grid">
+          <ion-card *ngFor="let reciclaje of reciclajesPaginados" class="reciclaje-card">
+            <ion-card-header class="reciclaje-header">
+              <div class="reciclaje-title">
+                <ion-icon [name]="reciclaje.tipo === 'entrega' ? 'leaf-outline' : 'swap-horizontal-outline'" class="reciclaje-icon"></ion-icon>
+                <h3>{{ reciclaje.tipo === 'entrega' ? 'Entrega' : 'Canje' }} #{{ reciclaje._id?.slice(-6) || 'N/A' }}</h3>
+              </div>
+              <div class="reciclaje-badges">
+                <ion-badge [color]="getEstadoColor(reciclaje.estado)" class="status-badge">
+                  <ion-icon [name]="getEstadoIcon(reciclaje.estado)"></ion-icon>
+                  {{ getEstadoTexto(reciclaje.estado) }}
+                </ion-badge>
+                <ion-badge *ngIf="tieneFoto(reciclaje)" color="primary" class="foto-badge">
+                  <ion-icon name="camera-outline"></ion-icon>
+                  Foto
+                </ion-badge>
+              </div>
+            </ion-card-header>
+            
+            <ion-card-content class="reciclaje-content">
+              <!-- Foto del reciclaje -->
+              <div class="foto-container" *ngIf="tieneFoto(reciclaje)">
+                <img 
+                  [src]="obtenerRutaFoto(reciclaje)" 
+                  [alt]="'Foto del reciclaje ' + reciclaje._id"
+                  class="reciclaje-foto"
+                  (click)="verFoto(obtenerRutaFoto(reciclaje))">
+                <div class="foto-overlay">
+                  <ion-button fill="clear" color="light" (click)="verFoto(obtenerRutaFoto(reciclaje))">
+                    <ion-icon name="expand-outline"></ion-icon>
+                  </ion-button>
+                </div>
+              </div>
+
+              <!-- Información del reciclaje -->
+              <div class="reciclaje-info">
+                <div class="info-item">
+                  <ion-icon name="person-outline"></ion-icon>
+                  <span><strong>Usuario:</strong> {{ reciclaje.usuario?.nombre || 'N/A' }} {{ reciclaje.usuario?.apellido || '' }}</span>
+                </div>
+                
+                <div class="info-item">
+                  <ion-icon name="location-outline"></ion-icon>
+                  <span><strong>Ecopunto:</strong> {{ reciclaje.ecopunto?.nombre || 'N/A' }}</span>
+                </div>
+                
+                <div class="info-item">
+                  <ion-icon name="leaf-outline"></ion-icon>
+                  <span><strong>Tipo:</strong> {{ reciclaje.tipoResiduo?.nombre || 'N/A' }}</span>
+                </div>
+                
+                <div class="info-item">
+                  <ion-icon name="scale-outline"></ion-icon>
+                  <span><strong>Peso:</strong> {{ formatearPeso(reciclaje.pesoKg || 0) }}</span>
+                </div>
+                
+                <div class="info-item">
+                  <ion-icon [name]="reciclaje.tipo === 'entrega' ? 'card-outline' : 'add-circle-outline'"></ion-icon>
+                  <span><strong>{{ reciclaje.tipo === 'entrega' ? 'Cupones Generados' : 'Tokens Generados' }}:</strong> {{ reciclaje.tipo === 'entrega' ? reciclaje.cuponesGenerados : reciclaje.tokensGenerados }}</span>
+                </div>
+                
+                <div class="info-item">
+                  <ion-icon name="calendar-outline"></ion-icon>
+                  <span><strong>Fecha:</strong> {{ formatearFecha(reciclaje.fecha || reciclaje.fechaInicio) }}</span>
+                </div>
+                
+                <div class="info-item" *ngIf="reciclaje.observaciones">
+                  <ion-icon name="document-text-outline"></ion-icon>
+                  <span><strong>Observaciones:</strong> {{ reciclaje.observaciones }}</span>
+                </div>
+              </div>
+
+              <div class="reciclaje-actions">
+                <ion-button fill="clear" (click)="verDetalle(reciclaje)" class="action-btn detail">
+                  <ion-icon name="eye-outline"></ion-icon>
+                  <span>Ver Detalle</span>
+                </ion-button>
+                
+                <ion-button 
+                  *ngIf="tieneFoto(reciclaje)" 
+                  fill="clear" 
+                  (click)="verFoto(obtenerRutaFoto(reciclaje))" 
+                  class="action-btn foto"
+                  color="primary">
+                  <ion-icon name="camera-outline"></ion-icon>
+                  <span>Ver Foto</span>
+                </ion-button>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </div>
+
+        <!-- Paginación -->
+        <ion-item *ngIf="totalPaginas > 1" class="pagination-item">
+          <ion-button 
+            *ngFor="let pagina of [].constructor(totalPaginas); let i = index"
+            [fill]="paginaActual === (i + 1) ? 'solid' : 'clear'"
+            [color]="paginaActual === (i + 1) ? 'primary' : 'medium'"
+            (click)="cambiarPagina(i + 1)"
+            size="small">
+            {{ i + 1 }}
+          </ion-button>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+
+<!-- Modal de Detalle de Reciclaje -->
+<ion-modal [isOpen]="showDetalleModal" (didDismiss)="cerrarDetalleModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Detalle de Reciclaje</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarDetalleModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding" *ngIf="reciclajeSeleccionado">
+      <div class="detalle-reciclaje">
+        <!-- Foto en el modal -->
+        <ion-card *ngIf="tieneFoto(reciclajeSeleccionado)" class="foto-card">
+          <ion-card-header>
+            <ion-card-title>Foto del Reciclaje</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <img 
+              [src]="obtenerRutaFoto(reciclajeSeleccionado)" 
+              [alt]="'Foto del reciclaje ' + reciclajeSeleccionado._id"
+              class="foto-modal"
+              (click)="verFoto(obtenerRutaFoto(reciclajeSeleccionado))">
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Información General</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="hash-outline"></ion-icon>
+              <span><strong>ID:</strong> {{ reciclajeSeleccionado._id }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="swap-horizontal-outline"></ion-icon>
+              <span><strong>Tipo:</strong> {{ reciclajeSeleccionado.tipo === 'entrega' ? 'Entrega de Residuo' : 'Canje de Reciclaje' }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span><strong>Fecha:</strong> {{ formatearFecha(reciclajeSeleccionado.fecha || reciclajeSeleccionado.fechaInicio) }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+              <span><strong>Estado:</strong> 
+                <ion-badge [color]="getEstadoColor(reciclajeSeleccionado.estado)">
+                  {{ getEstadoTexto(reciclajeSeleccionado.estado) }}
+                </ion-badge>
+              </span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Usuario</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="person-outline"></ion-icon>
+              <span><strong>Nombre:</strong> {{ reciclajeSeleccionado.usuario?.nombre }} {{ reciclajeSeleccionado.usuario?.apellido }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="mail-outline"></ion-icon>
+              <span><strong>Email:</strong> {{ reciclajeSeleccionado.usuario?.email }}</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Ecopunto</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="location-outline"></ion-icon>
+              <span><strong>Nombre:</strong> {{ reciclajeSeleccionado.ecopunto?.nombre }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="navigate-outline"></ion-icon>
+              <span><strong>Dirección:</strong> {{ reciclajeSeleccionado.ecopunto?.direccion }}</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Residuo</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="leaf-outline"></ion-icon>
+              <span><strong>Tipo:</strong> {{ reciclajeSeleccionado.tipoResiduo?.nombre }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="scale-outline"></ion-icon>
+              <span><strong>Peso:</strong> {{ formatearPeso(reciclajeSeleccionado.pesoKg) }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon [name]="reciclajeSeleccionado.tipo === 'entrega' ? 'card-outline' : 'add-circle-outline'"></ion-icon>
+              <span><strong>{{ reciclajeSeleccionado.tipo === 'entrega' ? 'Cupones Generados' : 'Tokens Generados' }}:</strong> {{ reciclajeSeleccionado.tipo === 'entrega' ? reciclajeSeleccionado.cuponesGenerados : reciclajeSeleccionado.tokensGenerados }}</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card *ngIf="reciclajeSeleccionado.observaciones">
+          <ion-card-header>
+            <ion-card-title>Observaciones</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <p>{{ reciclajeSeleccionado.observaciones }}</p>
+          </ion-card-content>
+        </ion-card>
+
+        <div class="modal-actions">
+          <ion-button (click)="cerrarDetalleModal()" fill="clear" expand="block">
+            Cerrar
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Modal de Foto -->
+<ion-modal [isOpen]="showFotoModal" (didDismiss)="cerrarFotoModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Foto del Reciclaje</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarFotoModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding" *ngIf="fotoSeleccionada">
+      <div class="foto-fullscreen">
+        <img 
+          [src]="fotoSeleccionada" 
+          alt="Foto del reciclaje"
+          class="foto-completa">
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

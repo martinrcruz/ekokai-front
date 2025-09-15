@@ -84,4 +84,14 @@ export class UsuariosService {
     
     return this.http.get<any[]>(`${this.apiUrl}/buscar-vecinos?${params.toString()}`);
   }
+
+  // ✅ Obtener solo usuarios vecinos
+  getVecinos(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/vecinos`);
+  }
+
+  // ✅ Obtener usuarios que no son vecinos (encargados y administradores)
+  getUsuariosNoVecinos(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/no-vecinos`);
+  }
 }

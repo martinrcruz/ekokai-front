@@ -1,6 +1,15 @@
 <ion-app>
+  <!-- Loading inicial para prevenir flash del sidebar -->
+  <div class="initial-loading" *ngIf="isInitializing">
+    <div class="loading-container">
+      <img src="assets/icon/logo-ekokai.jpeg" alt="Logo" class="loading-logo" />
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Cargando...</p>
+    </div>
+  </div>
+
   <!-- DESKTOP LAYOUT: Header y sidebar personalizados -->
-  <div class="desktop-layout" *ngIf="!isMobile && showMenu">
+  <div class="desktop-layout" *ngIf="!isInitializing && !isMobile && showMenu">
     <!-- Header principal para desktop -->
     <ion-header class="main-header desktop-header" [class.sidebar-closed]="sidebarOpen">
       <ion-toolbar>
@@ -118,7 +127,7 @@
   </div>
 
   <!-- MOBILE LAYOUT: Header nativo de Ionic con menú hamburguesa -->
-  <div class="mobile-layout" *ngIf="isMobile && showMenu">
+  <div class="mobile-layout" *ngIf="!isInitializing && isMobile && showMenu">
     <!-- Header nativo de Ionic para mobile -->
     <ion-header class="mobile-header">
       <ion-toolbar>
@@ -221,5 +230,5 @@
 
   <!-- Si showMenu === false, igual se muestra la pantalla de login
        mediante <ion-router-outlet>, pero sin el menú. -->
-  <ion-router-outlet *ngIf="!showMenu"></ion-router-outlet>
+  <ion-router-outlet *ngIf="!isInitializing && !showMenu"></ion-router-outlet>
 </ion-app>

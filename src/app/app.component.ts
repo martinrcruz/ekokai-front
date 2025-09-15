@@ -28,12 +28,21 @@ export class AppComponent implements OnInit, OnDestroy {
   public userRole: string = '';  // almacenar el rol
   public sidebarOpen = false;  // Controla si el sidebar está abierto (solo para desktop)
   public isMobile = false;  // Detecta si estamos en móvil
+  public isInitializing = true;  // Controla el estado de carga inicial
 
   // Definimos un conjunto completo de opciones
   private fullAppPages: AppPage[] = [
     { title: 'Dashboard', url: '/administrador/home',  icon: 'bi-speedometer2' },
     { title: 'Ecopuntos', url: '/administrador/ecopuntos',  icon: 'bi-geo-alt' },
-    { title: 'Usuarios', url: '/administrador/usuarios-gestion',  icon: 'bi-people' },
+    { 
+      title: 'Usuarios', 
+      icon: 'bi-people',
+      subpages: [
+        { title: 'Gestión General', url: '/administrador/usuarios-gestion', icon: 'bi-people' },
+        { title: 'Vecinos', url: '/administrador/usuarios-vecinos', icon: 'bi-person' },
+        { title: 'Staff', url: '/administrador/usuarios-staff', icon: 'bi-person-badge' }
+      ]
+    },
     { title: 'Premios', url: '/administrador/premios', icon: 'bi-gift' },
     { title: 'Historial de Reciclaje', url: '/administrador/historial-reciclaje', icon: 'bi-clock-history' },
     // { title: 'Marketplace', url: '/administrador/marketplace',  icon: 'bi-shop' },
@@ -97,6 +106,14 @@ export class AppComponent implements OnInit, OnDestroy {
       });
 
     registerLocaleData(localeEs, 'es');
+
+    // Suscribirse al estado de inicialización del AuthService
+    this.authService.isInitialized$.subscribe(isInitialized => {
+      if (isInitialized) {
+        console.log('[AppComponent] AuthService inicializado');
+        this.isInitializing = false;
+      }
+    });
 
     // Suscribirse a un observable del AuthService que retorne la info del usuario
     this.authService.user$.subscribe(async user => {
@@ -226,45 +243,53 @@ export class AppComponent implements OnInit, OnDestroy {
    * Verifica el rol al iniciar la aplicación y redirige si es necesario
    */
   private async checkInitialRole() {
-    // Verificar la URL actual antes de procesar cualquier lógica
-    const currentUrl = this.router.url;
-    
-    // Si estamos en el catálogo, NO procesar redirecciones
-    if (currentUrl.startsWith('/catalogo')) {
-      console.log('[AppComponent] checkInitialRole - En catálogo, saltando lógica de redirección');
-      return;
-    }
-    
-    await this.authService.ensureUserFromToken();
-    const user = this.authService.getUser();
-    if (!user) return;
-    
-    console.log('[AppComponent] checkInitialRole - Usuario:', user.rol, 'en ruta:', currentUrl);
-    
-    // NO redirigir si no se debe permitir
-    if (!this.shouldAllowRedirect(currentUrl)) {
-      console.log('[AppComponent] checkInitialRole - Redirección no permitida para esta URL');
-      return;
-    }
-    
-    console.log('[AppComponent] checkInitialRole - Verificando redirección...');
-    
-    if (user.rol === 'worker') {
-      if (!currentUrl.includes('worker-dashboard')) {
-        console.log('[AppComponent] checkInitialRole - Redirigiendo worker a dashboard');
-        this.router.navigate(['/worker-dashboard']);
+    try {
+      // Verificar la URL actual antes de procesar cualquier lógica
+      const currentUrl = this.router.url;
+      
+      // Si estamos en el catálogo, NO procesar redirecciones
+      if (currentUrl.startsWith('/catalogo')) {
+        console.log('[AppComponent] checkInitialRole - En catálogo, saltando lógica de redirección');
+        return;
       }
-    } else if (user.rol === 'encargado') {
-      if (!currentUrl.startsWith('/encargado')) {
-        console.log('[AppComponent] checkInitialRole - Redirigiendo encargado a home');
-        this.router.navigate(['/encargado/home']);
+      
+      await this.authService.ensureUserFromToken();
+      const user = this.authService.getUser();
+      
+      if (!user) {
+        console.log('[AppComponent] checkInitialRole - No hay usuario');
+        return;
       }
-    } else if (user.rol === 'admin' || user.rol === 'administrador') {
-      // Solo redirigir si no está en ninguna ruta válida para admin
-      if (!currentUrl.includes('worker-dashboard') && !currentUrl.startsWith('/encargado') && !currentUrl.startsWith('/administrador')) {
-        console.log('[AppComponent] checkInitialRole - Redirigiendo admin a home');
-        this.router.navigate(['/administrador/home']);
+      
+      console.log('[AppComponent] checkInitialRole - Usuario:', user.rol, 'en ruta:', currentUrl);
+      
+      // NO redirigir si no se debe permitir
+      if (!this.shouldAllowRedirect(currentUrl)) {
+        console.log('[AppComponent] checkInitialRole - Redirección no permitida para esta URL');
+        return;
       }
+      
+      console.log('[AppComponent] checkInitialRole - Verificando redirección...');
+      
+      if (user.rol === 'worker') {
+        if (!currentUrl.includes('worker-dashboard')) {
+          console.log('[AppComponent] checkInitialRole - Redirigiendo worker a dashboard');
+          this.router.navigate(['/worker-dashboard']);
+        }
+      } else if (user.rol === 'encargado') {
+        if (!currentUrl.startsWith('/encargado')) {
+          console.log('[AppComponent] checkInitialRole - Redirigiendo encargado a home');
+          this.router.navigate(['/encargado/home']);
+        }
+      } else if (user.rol === 'admin' || user.rol === 'administrador') {
+        // Solo redirigir si no está en ninguna ruta válida para admin
+        if (!currentUrl.includes('worker-dashboard') && !currentUrl.startsWith('/encargado') && !currentUrl.startsWith('/administrador')) {
+          console.log('[AppComponent] checkInitialRole - Redirigiendo admin a home');
+          this.router.navigate(['/administrador/home']);
+        }
+      }
+    } catch (error) {
+      console.error('[AppComponent] checkInitialRole - Error:', error);
     }
   }
 

@@ -1,0 +1,372 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Cupones Activos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="showFiltros = !showFiltros" fill="clear" class="filter-toggle-btn">
+        <ion-icon name="filter-outline"></ion-icon>
+        {{ showFiltros ? 'Ocultar' : 'Mostrar' }} Filtros
+      </ion-button>
+      <ion-button (click)="refrescarCupones()" fill="clear" color="primary">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="cupones-container">
+    <!-- Header de la página -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-icon">
+          <ion-icon name="ticket-outline"></ion-icon>
+        </div>
+        <div class="header-text">
+          <h1>Cupones Activos</h1>
+          <p>Gestiona y administra los cupones disponibles para canje</p>
+        </div>
+        <div class="header-stats">
+          <div class="stat-item">
+            <div class="stat-number">{{ getTotalCupones() }}</div>
+            <div class="stat-label">Total Cupones</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ getCuponesActivos() }}</div>
+            <div class="stat-label">Activos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pestanas principales -->
+    <ion-segment [(ngModel)]="pestanaActiva" (ionChange)="cambiarPestana($event.detail.value?.toString())" class="main-segment">
+      <ion-segment-button value="activos" class="segment-btn">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <ion-label>Activos</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="expirados" class="segment-btn">
+        <ion-icon name="time-outline"></ion-icon>
+        <ion-label>Expirados</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="todos" class="segment-btn">
+        <ion-icon name="list-outline"></ion-icon>
+        <ion-label>Todos</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- Mensaje de error -->
+    <ion-card *ngIf="error" class="error-card">
+      <ion-card-content class="error-content">
+        <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+        <p>{{ error }}</p>
+        <ion-button (click)="cargarCuponesActivos()" fill="outline" color="primary" size="small">
+          Reintentar
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Filtros -->
+    <ion-card *ngIf="showFiltros" class="filtros-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="filter-outline"></ion-icon>
+          Filtros de Búsqueda
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="12" size-md="4">
+              <ion-item>
+                <ion-label position="stacked">Buscar cupón</ion-label>
+                <ion-input 
+                  [(ngModel)]="filtroBusqueda" 
+                  (ionInput)="aplicarFiltros()"
+                  placeholder="Nombre o descripción">
+                </ion-input>
+              </ion-item>
+            </ion-col>
+            <ion-col size="12" size-md="4">
+              <ion-item>
+                <ion-label position="stacked">Estado</ion-label>
+                <ion-select 
+                  [(ngModel)]="filtroEstado" 
+                  (ionChange)="aplicarFiltros()"
+                  placeholder="Seleccionar estado">
+                  <ion-select-option value="">Todos los estados</ion-select-option>
+                  <ion-select-option value="activo">Activo</ion-select-option>
+                  <ion-select-option value="inactivo">Inactivo</ion-select-option>
+                  <ion-select-option value="expirado">Expirado</ion-select-option>
+                </ion-select>
+              </ion-item>
+            </ion-col>
+            <ion-col size="12" size-md="4">
+              <ion-item>
+                <ion-label position="stacked">Expira antes de</ion-label>
+                <ion-input 
+                  type="date"
+                  [(ngModel)]="filtroFechaExpiracion" 
+                  (ionInput)="aplicarFiltros()">
+                </ion-input>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <ion-button (click)="limpiarFiltros()" fill="clear" color="medium">
+                <ion-icon name="refresh-outline"></ion-icon>
+                Limpiar Filtros
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Estadísticas rápidas -->
+    <ion-card class="stats-card">
+      <ion-card-header class="stats-header">
+        <ion-card-title style="color: white;">
+          <ion-icon name="analytics-outline"></ion-icon>
+          Estadísticas de Cupones
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-icon">
+              <ion-icon name="ticket-outline"></ion-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ getTotalCupones() }}</div>
+              <div class="stat-label">Total Cupones</div>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-icon">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ getCuponesActivos() }}</div>
+              <div class="stat-label">Activos</div>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-icon">
+              <ion-icon name="time-outline"></ion-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ getCuponesExpirados() }}</div>
+              <div class="stat-label">Expirados</div>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-icon">
+              <ion-icon name="diamond-outline"></ion-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ getTotalTokensRequeridos() }}</div>
+              <div class="stat-label">Tokens Requeridos</div>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Lista de cupones -->
+    <ion-card class="cupones-list-card">
+      <ion-card-header class="list-header">
+        <ion-card-title style="color: white;">
+          <ion-icon name="ticket-outline"></ion-icon>
+          Cupones Disponibles
+        </ion-card-title>
+        <ion-card-subtitle>{{ cuponesFiltrados.length }} cupón{{ cuponesFiltrados.length !== 1 ? 'es' : '' }} encontrado{{ cuponesFiltrados.length !== 1 ? 's' : '' }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="cupones-grid">
+          <ion-card *ngFor="let cupon of cuponesPaginados" class="cupon-card">
+            <ion-card-header class="cupon-header">
+              <div class="cupon-title">
+                <ion-icon name="ticket-outline" class="cupon-icon"></ion-icon>
+                <h3>{{ cupon.nombre }}</h3>
+              </div>
+              <ion-badge [color]="getEstadoColor(cupon.activo, cupon.fechaExpiracion)" class="status-badge">
+                <ion-icon [name]="getEstadoIcon(cupon.activo, cupon.fechaExpiracion)"></ion-icon>
+                {{ getEstadoTexto(cupon.activo, cupon.fechaExpiracion) }}
+              </ion-badge>
+            </ion-card-header>
+            
+            <ion-card-content class="cupon-content">
+              <div class="cupon-info">
+                <div class="info-item" *ngIf="cupon.descripcion">
+                  <ion-icon name="document-text-outline"></ion-icon>
+                  <span><strong>Descripción:</strong> {{ cupon.descripcion }}</span>
+                </div>
+                
+                <div class="info-item">
+                  <ion-icon name="diamond-outline"></ion-icon>
+                  <span><strong>Tokens Requeridos:</strong> {{ cupon.tokensRequeridos }}</span>
+                </div>
+                
+                <div class="info-item" *ngIf="cupon.fechaExpiracion">
+                  <ion-icon name="calendar-outline"></ion-icon>
+                  <span><strong>Expira:</strong> {{ formatearFecha(cupon.fechaExpiracion) }}</span>
+                </div>
+                
+                <div class="info-item" *ngIf="!cupon.fechaExpiracion">
+                  <ion-icon name="infinite-outline"></ion-icon>
+                  <span><strong>Expiración:</strong> Sin fecha límite</span>
+                </div>
+              </div>
+
+              <div class="cupon-actions">
+                <ion-button fill="clear" (click)="verDetalle(cupon)" class="action-btn detail">
+                  <ion-icon name="eye-outline"></ion-icon>
+                  <span>Ver Detalle</span>
+                </ion-button>
+                
+                <ion-button 
+                  *ngIf="cupon.activo" 
+                  fill="clear" 
+                  (click)="desactivarCupon(cupon)" 
+                  class="action-btn deactivate"
+                  color="warning">
+                  <ion-icon name="pause-circle-outline"></ion-icon>
+                  <span>Desactivar</span>
+                </ion-button>
+                
+                <ion-button 
+                  *ngIf="!cupon.activo" 
+                  fill="clear" 
+                  (click)="activarCupon(cupon)" 
+                  class="action-btn activate"
+                  color="success">
+                  <ion-icon name="play-circle-outline"></ion-icon>
+                  <span>Activar</span>
+                </ion-button>
+                
+                <ion-button 
+                  fill="clear" 
+                  (click)="eliminarCupon(cupon)" 
+                  class="action-btn delete"
+                  color="danger">
+                  <ion-icon name="trash-outline"></ion-icon>
+                  <span>Eliminar</span>
+                </ion-button>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </div>
+
+        <!-- Paginación -->
+        <ion-item *ngIf="totalPaginas > 1" class="pagination-item">
+          <ion-button 
+            *ngFor="let pagina of [].constructor(totalPaginas); let i = index"
+            [fill]="paginaActual === (i + 1) ? 'solid' : 'clear'"
+            [color]="paginaActual === (i + 1) ? 'primary' : 'medium'"
+            (click)="cambiarPagina(i + 1)"
+            size="small">
+            {{ i + 1 }}
+          </ion-button>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+
+<!-- Modal de Detalle de Cupón -->
+<ion-modal [isOpen]="showDetalleModal" (didDismiss)="cerrarDetalleModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Detalle de Cupón</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarDetalleModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding" *ngIf="cuponSeleccionado">
+      <div class="detalle-cupon">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Información General</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="hash-outline"></ion-icon>
+              <span><strong>ID:</strong> {{ cuponSeleccionado._id }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="ticket-outline"></ion-icon>
+              <span><strong>Nombre:</strong> {{ cuponSeleccionado.nombre }}</span>
+            </div>
+            <div class="detalle-item" *ngIf="cuponSeleccionado.descripcion">
+              <ion-icon name="document-text-outline"></ion-icon>
+              <span><strong>Descripción:</strong> {{ cuponSeleccionado.descripcion }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="diamond-outline"></ion-icon>
+              <span><strong>Tokens Requeridos:</strong> {{ cuponSeleccionado.tokensRequeridos }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+              <span><strong>Estado:</strong> 
+                <ion-badge [color]="getEstadoColor(cuponSeleccionado.activo, cuponSeleccionado.fechaExpiracion)">
+                  {{ getEstadoTexto(cuponSeleccionado.activo, cuponSeleccionado.fechaExpiracion) }}
+                </ion-badge>
+              </span>
+            </div>
+            <div class="detalle-item" *ngIf="cuponSeleccionado.fechaExpiracion">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span><strong>Fecha de Expiración:</strong> {{ formatearFecha(cuponSeleccionado.fechaExpiracion) }}</span>
+            </div>
+            <div class="detalle-item" *ngIf="cuponSeleccionado.fechaCreacion">
+              <ion-icon name="time-outline"></ion-icon>
+              <span><strong>Fecha de Creación:</strong> {{ formatearFecha(cuponSeleccionado.fechaCreacion) }}</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <div class="modal-actions">
+          <ion-button 
+            *ngIf="cuponSeleccionado.activo" 
+            (click)="desactivarCupon(cuponSeleccionado)" 
+            fill="outline" 
+            color="warning"
+            expand="block">
+            <ion-icon name="pause-circle-outline"></ion-icon>
+            Desactivar Cupón
+          </ion-button>
+          
+          <ion-button 
+            *ngIf="!cuponSeleccionado.activo" 
+            (click)="activarCupon(cuponSeleccionado)" 
+            fill="outline" 
+            color="success"
+            expand="block">
+            <ion-icon name="play-circle-outline"></ion-icon>
+            Activar Cupón
+          </ion-button>
+          
+          <ion-button 
+            (click)="eliminarCupon(cuponSeleccionado)" 
+            fill="outline" 
+            color="danger"
+            expand="block">
+            <ion-icon name="trash-outline"></ion-icon>
+            Eliminar Cupón
+          </ion-button>
+          
+          <ion-button (click)="cerrarDetalleModal()" fill="clear" expand="block">
+            Cerrar
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

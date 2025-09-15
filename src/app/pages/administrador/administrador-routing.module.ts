@@ -7,12 +7,18 @@ import { AdminGuard } from '../../guards/admin.guard';
 import { ConfiguracionComponent } from './configuracion/configuracion.component';
 import{PremiosGestionComponent as PremiosComponent} from './premios-gestion/premios-gestion.component';
 import { HistorialReciclajeComponent } from './historial-reciclaje/historial-reciclaje.component';
+import { HistorialCanjesComponent } from './historial-canjes/historial-canjes.component';
+import { CuponesActivosComponent } from './cupones-activos/cupones-activos.component';
+import { ReciclajesFotosComponent } from './reciclajes-fotos/reciclajes-fotos.component';
+import { TrazabilidadComponent } from './trazabilidad/trazabilidad.component';
 import { EcopuntosComponent } from './ecopuntos/ecopuntos.component';
 import { MarketplaceComponent as AdminMarketplaceComponent } from './marketplace/marketplace.component';
 import { ReciclarComponent as AdminReciclarComponent } from './reciclar/reciclar.component';
 import { TiposResiduoGestionComponent as AdminTiposResiduosComponent } from './tipos-residuo-gestion/tipos-residuo-gestion.component';
 //import { UsuariosComponent } from './usuarios/usuarios.component';
 import { UsuariosGestionComponent } from './usuarios-gestion/usuarios-gestion.component';
+import { UsuariosVecinosComponent } from './usuarios-vecinos/usuarios-vecinos.component';
+import { UsuariosStaffComponent } from './usuarios-staff/usuarios-staff.component';
 import { HomeComponent } from '../home/home.component';
 
 const routes: Routes = [
@@ -44,6 +50,26 @@ const routes: Routes = [
     canActivate: [AdminGuard]
   },
   { 
+    path: 'historial-canjes', 
+    component: HistorialCanjesComponent,
+    canActivate: [AdminGuard]
+  },
+  { 
+    path: 'cupones-activos', 
+    component: CuponesActivosComponent,
+    canActivate: [AdminGuard]
+  },
+  { 
+    path: 'reciclajes-fotos', 
+    component: ReciclajesFotosComponent,
+    canActivate: [AdminGuard]
+  },
+  { 
+    path: 'trazabilidad', 
+    component: TrazabilidadComponent,
+    canActivate: [AdminGuard]
+  },
+  { 
     path: 'ecopuntos', 
     component: EcopuntosComponent,
     canActivate: [AdminGuard]
@@ -67,6 +93,16 @@ const routes: Routes = [
   { 
     path: 'usuarios-gestion', 
     component: UsuariosGestionComponent,
+    canActivate: [AdminGuard]
+  },
+  { 
+    path: 'usuarios-vecinos', 
+    component: UsuariosVecinosComponent,
+    canActivate: [AdminGuard]
+  },
+  { 
+    path: 'usuarios-staff', 
+    component: UsuariosStaffComponent,
     canActivate: [AdminGuard]
   },
   { 

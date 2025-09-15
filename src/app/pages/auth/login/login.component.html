@@ -65,10 +65,11 @@
         type="submit"
         expand="block"
         class="login-button"
-        [disabled]="loginForm.invalid"
+        [disabled]="loginForm.invalid || isLoading"
       >
-        <ion-icon name="log-in-outline" slot="start"></ion-icon>
-        Iniciar Sesión
+        <ion-spinner *ngIf="isLoading" name="crescent" slot="start"></ion-spinner>
+        <ion-icon *ngIf="!isLoading" name="log-in-outline" slot="start"></ion-icon>
+        {{ isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
       </ion-button>
     </form>
   </div>

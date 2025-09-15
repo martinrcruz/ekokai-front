@@ -22,8 +22,10 @@ export class AuthService {
   private _storage: Storage | null = null;
   private isLoggedInSubject = new BehaviorSubject<boolean>(false);
   private userSubject = new BehaviorSubject<any>(null);
+  private initializationSubject = new BehaviorSubject<boolean>(false);
 
   public user$ = this.userSubject.asObservable();
+  public isInitialized$ = this.initializationSubject.asObservable();
 
   constructor(
     private http: HttpClient,
@@ -41,6 +43,9 @@ export class AuthService {
       await this.checkToken();
     } catch (error) {
       console.error('Error initializing storage', error);
+    } finally {
+      // Marcar como inicializado independientemente del resultado
+      this.initializationSubject.next(true);
     }
   }
 
@@ -235,16 +240,6 @@ export class AuthService {
   }
 
   async getHeaders() {
-    const token = await this.getToken();
-    if (token) {
-      return {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'x-token': token,
-          'Accept': 'application/json'
-        })
-      };
-    }
     return {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',

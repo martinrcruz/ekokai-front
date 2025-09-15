@@ -1,0 +1,390 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Trazabilidad</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="showFiltros = !showFiltros" fill="clear" class="filter-toggle-btn">
+        <ion-icon name="filter-outline"></ion-icon>
+        {{ showFiltros ? 'Ocultar' : 'Mostrar' }} Filtros
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="trazabilidad-container">
+    <!-- Header de la página -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-icon">
+          <ion-icon name="analytics-outline"></ion-icon>
+        </div>
+        <div class="header-text">
+          <h1>Sistema de Trazabilidad</h1>
+          <p>Monitorea y analiza el flujo completo de reciclaje</p>
+        </div>
+        <div class="header-stats">
+          <div class="stat-item">
+            <div class="stat-number">{{ getTotalEventos() }}</div>
+            <div class="stat-label">Total Eventos</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ getUsuariosUnicos() }}</div>
+            <div class="stat-label">Usuarios Únicos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pestanas principales -->
+    <ion-segment [(ngModel)]="pestanaActiva" (ionChange)="cambiarPestana($event.detail.value?.toString())" class="main-segment">
+      <ion-segment-button value="eventos" class="segment-btn">
+        <ion-icon name="list-outline"></ion-icon>
+        <ion-label>Eventos</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="estadisticas" class="segment-btn">
+        <ion-icon name="bar-chart-outline"></ion-icon>
+        <ion-label>Estadísticas</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- Mensaje de error -->
+    <ion-card *ngIf="error" class="error-card">
+      <ion-card-content class="error-content">
+        <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+        <p>{{ error }}</p>
+        <ion-button (click)="cargarEventos()" fill="outline" color="primary" size="small">
+          Reintentar
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+    
+    <!-- Filtros estandarizados -->
+    <app-filtros-estandarizados
+      *ngIf="showFiltros"
+      [filtros]="filtrosConfig"
+      titulo="Filtros de Búsqueda"
+      subtitulo="Refina los resultados según tus criterios"
+      (filtroCambiado)="onFiltroChange($event)"
+      (limpiarFiltros)="onLimpiarFiltros()">
+    </app-filtros-estandarizados>
+
+    <!-- Pestana de Eventos -->
+    <div *ngIf="pestanaActiva === 'eventos'" class="eventos-tab">
+      <!-- Estadísticas rápidas -->
+      <ion-card class="stats-card">
+        <ion-card-header class="stats-header">
+          <ion-card-title style="color: white;">
+            <ion-icon name="analytics-outline"></ion-icon>
+            Resumen de Eventos
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-icon">
+                <ion-icon name="list-outline"></ion-icon>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value">{{ getTotalEventos() }}</div>
+                <div class="stat-label">Total Eventos</div>
+              </div>
+            </div>
+            
+            <div class="stat-item">
+              <div class="stat-icon">
+                <ion-icon name="person-outline"></ion-icon>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value">{{ getUsuariosUnicos() }}</div>
+                <div class="stat-label">Usuarios Únicos</div>
+              </div>
+            </div>
+            
+            <div class="stat-item">
+              <div class="stat-icon">
+                <ion-icon name="phone-outline"></ion-icon>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value">{{ getTelefonosUnicos() }}</div>
+                <div class="stat-label">Teléfonos Únicos</div>
+              </div>
+            </div>
+            
+            <div class="stat-item">
+              <div class="stat-icon">
+                <ion-icon name="qr-code-outline"></ion-icon>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value">{{ getQRsUnicos() }}</div>
+                <div class="stat-label">QRs Únicos</div>
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Lista de eventos -->
+      <ion-card class="eventos-list-card">
+        <ion-card-header class="list-header">
+          <ion-card-title style="color: white;">
+            <ion-icon name="list-outline"></ion-icon>
+            Eventos de Trazabilidad
+          </ion-card-title>
+          <ion-card-subtitle>{{ eventosFiltrados.length }} evento{{ eventosFiltrados.length !== 1 ? 's' : '' }} encontrado{{ eventosFiltrados.length !== 1 ? 's' : '' }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="eventos-grid">
+            <ion-card *ngFor="let evento of eventosPaginados" class="evento-card">
+              <ion-card-header class="evento-header">
+                <div class="evento-title">
+                  <ion-icon [name]="getStepIcon(evento.step)" class="evento-icon"></ion-icon>
+                  <h3>{{ getStepTexto(evento.step) }}</h3>
+                </div>
+                <ion-badge [color]="getStepColor(evento.step)" class="step-badge">
+                  {{ evento.step }}
+                </ion-badge>
+              </ion-card-header>
+              
+              <ion-card-content class="evento-content">
+                <div class="evento-info">
+                  <div class="info-item">
+                    <ion-icon name="person-outline"></ion-icon>
+                    <span><strong>Usuario:</strong> {{ evento.userId || 'N/A' }}</span>
+                  </div>
+                  
+                  <div class="info-item">
+                    <ion-icon name="phone-outline"></ion-icon>
+                    <span><strong>Teléfono:</strong> {{ evento.phoneNumber || 'N/A' }}</span>
+                  </div>
+                  
+                  <div class="info-item" *ngIf="evento.qr_code">
+                    <ion-icon name="qr-code-outline"></ion-icon>
+                    <span><strong>QR:</strong> {{ evento.qr_code }}</span>
+                  </div>
+                  
+                  <div class="info-item">
+                    <ion-icon name="time-outline"></ion-icon>
+                    <span><strong>Fecha:</strong> {{ formatearFecha(evento.timestamp) }}</span>
+                  </div>
+                  
+                  <div class="info-item" *ngIf="evento.image_path">
+                    <ion-icon name="camera-outline"></ion-icon>
+                    <span><strong>Imagen:</strong> {{ evento.image_path }}</span>
+                  </div>
+                  
+                  <div class="info-item" *ngIf="evento.error_info">
+                    <ion-icon name="warning-outline"></ion-icon>
+                    <span><strong>Error:</strong> {{ evento.error_info }}</span>
+                  </div>
+                </div>
+
+                <div class="evento-actions">
+                  <ion-button fill="clear" (click)="verDetalle(evento)" class="action-btn detail">
+                    <ion-icon name="eye-outline"></ion-icon>
+                    <span>Ver Detalle</span>
+                  </ion-button>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          </div>
+
+          <!-- Paginación -->
+          <ion-item *ngIf="totalPaginas > 1" class="pagination-item">
+            <ion-button 
+              *ngFor="let pagina of [].constructor(totalPaginas); let i = index"
+              [fill]="paginaActual === (i + 1) ? 'solid' : 'clear'"
+              [color]="paginaActual === (i + 1) ? 'primary' : 'medium'"
+              (click)="cambiarPagina(i + 1)"
+              size="small">
+              {{ i + 1 }}
+            </ion-button>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Pestana de Estadísticas -->
+    <div *ngIf="pestanaActiva === 'estadisticas'" class="estadisticas-tab">
+      <ion-card *ngIf="estadisticas" class="estadisticas-card">
+        <ion-card-header class="estadisticas-header">
+          <ion-card-title style="color: white;">
+            <ion-icon name="bar-chart-outline"></ion-icon>
+            Estadísticas Generales
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="estadisticas-grid">
+            <div class="estadistica-item">
+              <div class="estadistica-icon">
+                <ion-icon name="list-outline"></ion-icon>
+              </div>
+              <div class="estadistica-content">
+                <div class="estadistica-value">{{ estadisticas.resumen.totalEventos }}</div>
+                <div class="estadistica-label">Total Eventos</div>
+              </div>
+            </div>
+            
+            <div class="estadistica-item">
+              <div class="estadistica-icon">
+                <ion-icon name="person-outline"></ion-icon>
+              </div>
+              <div class="estadistica-content">
+                <div class="estadistica-value">{{ estadisticas.resumen.usuariosUnicos }}</div>
+                <div class="estadistica-label">Usuarios Únicos</div>
+              </div>
+            </div>
+            
+            <div class="estadistica-item">
+              <div class="estadistica-icon">
+                <ion-icon name="qr-code-outline"></ion-icon>
+              </div>
+              <div class="estadistica-content">
+                <div class="estadistica-value">{{ estadisticas.resumen.qrsUnicos }}</div>
+                <div class="estadistica-label">QRs Únicos</div>
+              </div>
+            </div>
+            
+            <div class="estadistica-item">
+              <div class="estadistica-icon">
+                <ion-icon name="phone-outline"></ion-icon>
+              </div>
+              <div class="estadistica-content">
+                <div class="estadistica-value">{{ estadisticas.resumen.telefonosUnicos }}</div>
+                <div class="estadistica-label">Teléfonos Únicos</div>
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Estadísticas por paso -->
+      <ion-card class="pasos-card">
+        <ion-card-header class="pasos-header">
+          <ion-card-title style="color: white;">
+            <ion-icon name="trending-up-outline"></ion-icon>
+            Eventos por Paso
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="pasos-grid">
+            <div *ngFor="let paso of estadisticas?.porStep" class="paso-item">
+              <div class="paso-info">
+                <ion-icon [name]="getStepIcon(paso._id)" class="paso-icon"></ion-icon>
+                <div class="paso-details">
+                  <div class="paso-name">{{ getStepTexto(paso._id) }}</div>
+                  <div class="paso-count">{{ paso.count }} eventos</div>
+                </div>
+              </div>
+              <ion-badge [color]="getStepColor(paso._id)" class="paso-badge">
+                {{ paso.count }}
+              </ion-badge>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+</ion-content>
+
+<!-- Modal de Detalle de Evento -->
+<ion-modal [isOpen]="showDetalleModal" (didDismiss)="cerrarDetalleModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Detalle de Evento</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarDetalleModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding" *ngIf="eventoSeleccionado">
+      <div class="detalle-evento">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Información General</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="hash-outline"></ion-icon>
+              <span><strong>ID:</strong> {{ eventoSeleccionado._id }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon [name]="getStepIcon(eventoSeleccionado.step)"></ion-icon>
+              <span><strong>Paso:</strong> {{ getStepTexto(eventoSeleccionado.step) }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="time-outline"></ion-icon>
+              <span><strong>Timestamp:</strong> {{ formatearFecha(eventoSeleccionado.timestamp) }}</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Información del Usuario</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="person-outline"></ion-icon>
+              <span><strong>Usuario ID:</strong> {{ eventoSeleccionado.userId }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="phone-outline"></ion-icon>
+              <span><strong>Teléfono:</strong> {{ eventoSeleccionado.phoneNumber }}</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card *ngIf="eventoSeleccionado.qr_code">
+          <ion-card-header>
+            <ion-card-title>Código QR</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="qr-code-outline"></ion-icon>
+              <span><strong>Código:</strong> {{ eventoSeleccionado.qr_code }}</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card *ngIf="eventoSeleccionado.image_path">
+          <ion-card-header>
+            <ion-card-title>Imagen</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="camera-outline"></ion-icon>
+              <span><strong>Ruta:</strong> {{ eventoSeleccionado.image_path }}</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card *ngIf="eventoSeleccionado.metadata">
+          <ion-card-header>
+            <ion-card-title>Metadatos</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <pre>{{ eventoSeleccionado.metadata | json }}</pre>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card *ngIf="eventoSeleccionado.error_info">
+          <ion-card-header>
+            <ion-card-title>Información de Error</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <pre>{{ eventoSeleccionado.error_info | json }}</pre>
+          </ion-card-content>
+        </ion-card>
+
+        <div class="modal-actions">
+          <ion-button (click)="cerrarDetalleModal()" fill="clear" expand="block">
+            Cerrar
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

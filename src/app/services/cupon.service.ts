@@ -5,6 +5,9 @@ import { AuthService } from './auth.service';
 import { Cupon, Canje } from '../models/cupon.model';
 import { BaseService } from './base.service';
 
+// Re-exportar las interfaces para que estén disponibles
+export { Cupon, Canje } from '../models/cupon.model';
+
 @Injectable({ providedIn: 'root' })
 export class CuponService extends BaseService {
   private readonly endpoint = '/cupones';

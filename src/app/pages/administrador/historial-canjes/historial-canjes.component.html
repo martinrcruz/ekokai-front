@@ -1,0 +1,342 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Historial de Canjes</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="showFiltros = !showFiltros" fill="clear" class="filter-toggle-btn">
+        <ion-icon name="filter-outline"></ion-icon>
+        {{ showFiltros ? 'Ocultar' : 'Mostrar' }} Filtros
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="historial-container">
+    <!-- Header de la página -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-icon">
+          <ion-icon name="swap-horizontal-outline"></ion-icon>
+        </div>
+        <div class="header-text">
+          <h1>Historial de Canjes</h1>
+          <p>Gestiona y analiza el historial de canjes de reciclaje y recompensas</p>
+        </div>
+        <div class="header-stats">
+          <div class="stat-item">
+            <div class="stat-number">{{ getTotalCanjes() }}</div>
+            <div class="stat-label">Total Canjes</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ getTotalTokensGenerados() }}</div>
+            <div class="stat-label">Tokens Generados</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pestanas principales -->
+    <ion-segment [(ngModel)]="pestanaActiva" (ionChange)="cambiarPestana($event.detail.value?.toString())" class="main-segment">
+      <ion-segment-button value="reciclaje" class="segment-btn">
+        <ion-icon name="leaf-outline"></ion-icon>
+        <ion-label>Reciclaje</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="recompensa" class="segment-btn">
+        <ion-icon name="gift-outline"></ion-icon>
+        <ion-label>Recompensas</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="todos" class="segment-btn">
+        <ion-icon name="list-outline"></ion-icon>
+        <ion-label>Todos</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- Mensaje de error -->
+    <ion-card *ngIf="error" class="error-card">
+      <ion-card-content class="error-content">
+        <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+        <p>{{ error }}</p>
+        <ion-button (click)="cargarHistorial()" fill="outline" color="primary" size="small">
+          Reintentar
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+    
+    <!-- Filtros estandarizados -->
+    <app-filtros-estandarizados
+      *ngIf="showFiltros"
+      [filtros]="filtrosConfig"
+      titulo="Filtros de Búsqueda"
+      subtitulo="Refina los resultados según tus criterios"
+      (filtroCambiado)="onFiltroChange($event)"
+      (limpiarFiltros)="onLimpiarFiltros()">
+    </app-filtros-estandarizados>
+
+    <!-- Estadísticas rápidas -->
+    <ion-card class="stats-card">
+      <ion-card-header class="stats-header">
+        <ion-card-title style="color: white;">
+          <ion-icon name="analytics-outline"></ion-icon>
+          Estadísticas Rápidas
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-icon">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ getCanjesCompletados() }}</div>
+              <div class="stat-label">Completados</div>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-icon">
+              <ion-icon name="time-outline"></ion-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ getCanjesPendientes() }}</div>
+              <div class="stat-label">Pendientes</div>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-icon">
+              <ion-icon name="leaf-outline"></ion-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ getTotalTokensGenerados() }}</div>
+              <div class="stat-label">Tokens Generados</div>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-icon">
+              <ion-icon name="gift-outline"></ion-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ getTotalTokensGastados() }}</div>
+              <div class="stat-label">Tokens Gastados</div>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Lista de canjes -->
+    <ion-card class="canjes-list-card">
+      <ion-card-header class="list-header">
+        <ion-card-title style="color: white;">
+          <ion-icon name="list-outline"></ion-icon>
+          Registros de Canjes
+        </ion-card-title>
+        <ion-card-subtitle>{{ canjesFiltrados.length }} registro{{ canjesFiltrados.length !== 1 ? 's' : '' }} encontrado{{ canjesFiltrados.length !== 1 ? 's' : '' }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="canjes-grid">
+          <ion-card *ngFor="let canje of canjesPaginados" class="canje-card">
+            <ion-card-header class="canje-header">
+              <div class="canje-title">
+                <ion-icon [name]="canje.tipo === 'reciclaje' ? 'leaf-outline' : 'gift-outline'" class="canje-icon"></ion-icon>
+                <h3>{{ canje.tipo === 'reciclaje' ? 'Canje Reciclaje' : 'Canje Recompensa' }} #{{ canje._id?.slice(-6) || 'N/A' }}</h3>
+              </div>
+              <ion-badge [color]="getEstadoColor(canje.estado)" class="status-badge">
+                <ion-icon [name]="getEstadoIcon(canje.estado)"></ion-icon>
+                {{ getEstadoTexto(canje.estado) }}
+              </ion-badge>
+            </ion-card-header>
+            
+            <ion-card-content class="canje-content">
+              <div class="canje-info">
+                <div class="info-item">
+                  <ion-icon name="person-outline"></ion-icon>
+                  <span><strong>Usuario:</strong> {{ canje.usuario?.nombre || 'N/A' }} {{ canje.usuario?.apellido || '' }}</span>
+                </div>
+                
+                <div class="info-item" *ngIf="canje.tipo === 'reciclaje'">
+                  <ion-icon name="location-outline"></ion-icon>
+                  <span><strong>Ecopunto:</strong> {{ canje.ecopunto?.nombre || 'N/A' }}</span>
+                </div>
+                
+                <div class="info-item" *ngIf="canje.tipo === 'reciclaje'">
+                  <ion-icon name="leaf-outline"></ion-icon>
+                  <span><strong>Tipo:</strong> {{ canje.tipoResiduo?.nombre || 'N/A' }}</span>
+                </div>
+                
+                <div class="info-item" *ngIf="canje.tipo === 'reciclaje'">
+                  <ion-icon name="scale-outline"></ion-icon>
+                  <span><strong>Peso:</strong> {{ formatearPeso(canje.pesoKg || 0) }}</span>
+                </div>
+                
+                <div class="info-item" *ngIf="canje.tipo === 'recompensa'">
+                  <ion-icon name="gift-outline"></ion-icon>
+                  <span><strong>Premio:</strong> {{ canje.premio?.nombre || 'N/A' }}</span>
+                </div>
+                
+                <div class="info-item">
+                  <ion-icon [name]="canje.tipo === 'reciclaje' ? 'add-circle-outline' : 'remove-circle-outline'"></ion-icon>
+                  <span><strong>{{ canje.tipo === 'reciclaje' ? 'Tokens Generados' : 'Tokens Gastados' }}:</strong> {{ canje.tipo === 'reciclaje' ? canje.tokensGenerados : canje.tokensGastados }}</span>
+                </div>
+                
+                <div class="info-item">
+                  <ion-icon name="calendar-outline"></ion-icon>
+                  <span><strong>Fecha:</strong> {{ formatearFecha(canje.fechaInicio || canje.fechaCanje) }}</span>
+                </div>
+                
+                <div class="info-item" *ngIf="canje.observaciones">
+                  <ion-icon name="document-text-outline"></ion-icon>
+                  <span><strong>Observaciones:</strong> {{ canje.observaciones }}</span>
+                </div>
+              </div>
+
+              <div class="canje-actions">
+                <ion-button fill="clear" (click)="verDetalle(canje)" class="action-btn detail">
+                  <ion-icon name="eye-outline"></ion-icon>
+                  <span>Ver Detalle</span>
+                </ion-button>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </div>
+
+        <!-- Paginación -->
+        <ion-item *ngIf="totalPaginas > 1" class="pagination-item">
+          <ion-button 
+            *ngFor="let pagina of [].constructor(totalPaginas); let i = index"
+            [fill]="paginaActual === (i + 1) ? 'solid' : 'clear'"
+            [color]="paginaActual === (i + 1) ? 'primary' : 'medium'"
+            (click)="cambiarPagina(i + 1)"
+            size="small">
+            {{ i + 1 }}
+          </ion-button>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+
+<!-- Modal de Detalle de Canje -->
+<ion-modal [isOpen]="showDetalleModal" (didDismiss)="cerrarDetalleModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Detalle de Canje</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarDetalleModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding" *ngIf="canjeSeleccionado">
+      <div class="detalle-canje">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Información General</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="hash-outline"></ion-icon>
+              <span><strong>ID:</strong> {{ canjeSeleccionado._id }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="swap-horizontal-outline"></ion-icon>
+              <span><strong>Tipo:</strong> {{ canjeSeleccionado.tipo === 'reciclaje' ? 'Canje de Reciclaje' : 'Canje de Recompensa' }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span><strong>Fecha:</strong> {{ formatearFecha(canjeSeleccionado.fechaInicio || canjeSeleccionado.fechaCanje) }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+              <span><strong>Estado:</strong> 
+                <ion-badge [color]="getEstadoColor(canjeSeleccionado.estado)">
+                  {{ getEstadoTexto(canjeSeleccionado.estado) }}
+                </ion-badge>
+              </span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Usuario</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="person-outline"></ion-icon>
+              <span><strong>Nombre:</strong> {{ canjeSeleccionado.usuario?.nombre }} {{ canjeSeleccionado.usuario?.apellido }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="mail-outline"></ion-icon>
+              <span><strong>Email:</strong> {{ canjeSeleccionado.usuario?.email }}</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Información específica de reciclaje -->
+        <ion-card *ngIf="canjeSeleccionado.tipo === 'reciclaje'">
+          <ion-card-header>
+            <ion-card-title>Detalles de Reciclaje</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="location-outline"></ion-icon>
+              <span><strong>Ecopunto:</strong> {{ canjeSeleccionado.ecopunto?.nombre }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="leaf-outline"></ion-icon>
+              <span><strong>Tipo de Residuo:</strong> {{ canjeSeleccionado.tipoResiduo?.nombre }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="scale-outline"></ion-icon>
+              <span><strong>Peso:</strong> {{ formatearPeso(canjeSeleccionado.pesoKg) }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="add-circle-outline"></ion-icon>
+              <span><strong>Tokens Generados:</strong> {{ canjeSeleccionado.tokensGenerados }}</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Información específica de recompensa -->
+        <ion-card *ngIf="canjeSeleccionado.tipo === 'recompensa'">
+          <ion-card-header>
+            <ion-card-title>Detalles de Recompensa</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="gift-outline"></ion-icon>
+              <span><strong>Premio:</strong> {{ canjeSeleccionado.premio?.nombre }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="document-text-outline"></ion-icon>
+              <span><strong>Descripción:</strong> {{ canjeSeleccionado.premio?.descripcion }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="remove-circle-outline"></ion-icon>
+              <span><strong>Tokens Gastados:</strong> {{ canjeSeleccionado.tokensGastados }}</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card *ngIf="canjeSeleccionado.observaciones">
+          <ion-card-header>
+            <ion-card-title>Observaciones</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <p>{{ canjeSeleccionado.observaciones }}</p>
+          </ion-card-content>
+        </ion-card>
+
+        <div class="modal-actions">
+          <ion-button (click)="cerrarDetalleModal()" fill="clear" expand="block">
+            Cerrar
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

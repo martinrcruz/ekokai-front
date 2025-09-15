@@ -12,6 +12,7 @@ export class LoginComponent {
   email: string = '';
   password: string = '';
   rememberMe: boolean = false;
+  isLoading: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -20,6 +21,8 @@ export class LoginComponent {
 
   async onLogin() {
     console.log('🔐 Iniciando login con:', this.email);
+    
+    this.isLoading = true;
 
     try {
       const response: any = await this.authService
@@ -59,6 +62,8 @@ export class LoginComponent {
     } catch (error: any) {
       const mensaje = error?.error?.error || 'Error desconocido en login';
       console.error('❌ Error en login (catch):', mensaje);
+    } finally {
+      this.isLoading = false;
     }
   }
 

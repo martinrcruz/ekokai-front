@@ -1,0 +1,654 @@
+// Variables de color para vecinos
+:root {
+  --vecino-primary: #28b463;
+  --vecino-secondary: #2ecc71;
+  --vecino-light: #d5f4e6;
+  --vecino-dark: #1e8449;
+}
+
+.usuarios-container {
+  padding: 16px;
+  background: var(--color-background);
+  min-height: 100vh;
+
+  // Header de la página
+  .page-header {
+    background: linear-gradient(135deg, var(--ekokai-primary), var(--ekokai-primary-dark));
+    border-radius: var(--border-radius-lg);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-medium);
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+
+      .header-icon {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        ion-icon {
+          font-size: 32px;
+          color: white;
+        }
+      }
+
+      .header-text {
+        flex: 1;
+        color: white;
+
+        h1 {
+          margin: 0 0 8px 0;
+          font-size: 28px;
+          font-weight: 700;
+        }
+
+        p {
+          margin: 0;
+          font-size: 16px;
+          opacity: 0.9;
+        }
+      }
+
+      .header-stats {
+        display: flex;
+        gap: 20px;
+
+        .stat-item {
+          text-align: center;
+          background: rgba(255, 255, 255, 0.15);
+          border-radius: var(--border-radius-md);
+          padding: 16px;
+          min-width: 80px;
+
+          .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 4px;
+          }
+
+          .stat-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+        }
+      }
+    }
+  }
+}
+
+  // Card de lista de usuarios
+  .usuarios-list-card {
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--color-border-light);
+    overflow: hidden;
+
+    .list-header {
+      background: linear-gradient(135deg, var(--ekokai-secondary), #1b5e20);
+      color: white;
+      padding: 20px;
+
+      ion-card-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin: 0 0 8px 0;
+
+        ion-icon {
+          font-size: 24px;
+        }
+      }
+
+      ion-card-subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.95rem;
+        margin: 0;
+      }
+    }
+
+    .usuarios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      padding: 20px;
+
+      .usuario-card {
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-light);
+        border: 1px solid var(--color-border-light);
+        transition: all 0.3s ease;
+        overflow: hidden;
+
+        &:hover {
+          box-shadow: var(--shadow-medium);
+          transform: translateY(-2px);
+        }
+
+        .usuario-header {
+          background: var(--color-gray-light);
+          border-bottom: 1px solid var(--color-border-light);
+          padding: 16px;
+
+          .usuario-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+
+            .usuario-avatar {
+              width: 50px;
+              height: 50px;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: bold;
+              font-size: 1rem;
+              color: white;
+              flex-shrink: 0;
+              
+              &.avatar-vecino {
+                background: linear-gradient(135deg, var(--vecino-primary) 0%, var(--vecino-secondary) 100%);
+              }
+              
+              &.avatar-encargado {
+                background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
+              }
+              
+              &.avatar-admin {
+                background: linear-gradient(135deg, #e74c3c 0%, #ec7063 100%);
+              }
+              
+              &.avatar-default {
+                background: linear-gradient(135deg, #95a5a6 0%, #bdc3c7 100%);
+              }
+            }
+
+            .usuario-name-info {
+              flex: 1;
+
+              h3 {
+                margin: 0 0 4px 0;
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: var(--color-text);
+              }
+
+              .role-badge {
+                font-size: 0.7rem;
+                font-weight: 500;
+              }
+            }
+          }
+
+          .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: var(--border-radius-sm);
+
+            ion-icon {
+              font-size: 14px;
+            }
+          }
+        }
+
+        .usuario-content {
+          padding: 20px;
+
+          .usuario-info {
+            margin-bottom: 20px;
+
+            .info-item {
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              margin-bottom: 12px;
+              padding: 8px 0;
+
+              ion-icon {
+                color: var(--ekokai-primary);
+                font-size: 18px;
+                min-width: 20px;
+              }
+
+              span {
+                color: var(--color-text);
+                font-size: 14px;
+              }
+            }
+          }
+
+          .usuario-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+
+            .stat-card {
+              background: var(--color-gray-light);
+              border-radius: var(--border-radius-md);
+              padding: 16px;
+              text-align: center;
+              border: 1px solid var(--color-border-light);
+
+              .stat-icon {
+                background: var(--ekokai-primary);
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 12px;
+
+                ion-icon {
+                  color: white;
+                  font-size: 20px;
+                }
+              }
+
+              .stat-content {
+                .stat-value {
+                  font-size: 14px;
+                  font-weight: 700;
+                  color: var(--color-text);
+                  margin-bottom: 4px;
+                }
+
+                .stat-label {
+                  font-size: 12px;
+                  color: var(--color-text-light);
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+                }
+              }
+            }
+          }
+
+          .usuario-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+
+            .action-btn {
+              --border-radius: var(--border-radius-sm);
+              height: 40px;
+              font-size: 12px;
+              font-weight: 600;
+              transition: all 0.2s ease;
+
+              ion-icon {
+                margin-right: 6px;
+                font-size: 16px;
+              }
+
+              &.history {
+                --color: var(--color-info);
+
+                &:hover {
+                  --background: var(--color-info);
+                  --color: white;
+                }
+              }
+
+              &.edit {
+                --color: var(--ekokai-primary);
+
+                &:hover {
+                  --background: var(--ekokai-primary);
+                  --color: white;
+                }
+              }
+
+              &.toggle {
+                --color: var(--color-warning);
+
+                &:hover {
+                  --background: var(--color-warning);
+                  --color: white;
+                }
+              }
+
+              &.delete {
+                --color: var(--color-danger);
+
+                &:hover {
+                  --background: var(--color-danger);
+                  --color: white;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+
+// Estado vacío
+.empty-state {
+  text-align: center;
+  padding: 48px 16px;
+  color: #7f8c8d;
+  
+  i {
+    font-size: 4rem;
+    color: var(--vecino-primary);
+    margin-bottom: 16px;
+    display: block;
+  }
+  
+  h3 {
+    margin: 0 0 8px 0;
+    color: #2c3e50;
+  }
+  
+  p {
+    margin: 0 0 24px 0;
+  }
+}
+
+// Loading
+.loading-container {
+  text-align: center;
+  padding: 48px 16px;
+  color: #7f8c8d;
+  
+  ion-spinner {
+    margin-bottom: 16px;
+  }
+}
+
+// Modal
+.modal-content {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #ecf0f1;
+  }
+}
+
+// Botón flotante para crear vecino
+.floating-action-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--ekokai-primary);
+  color: white;
+  border: none;
+  box-shadow: var(--shadow-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1000;
+
+  &:hover {
+    background: var(--ekokai-primary-dark);
+    transform: scale(1.1);
+    box-shadow: var(--shadow-large);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  i {
+    font-size: 1.5rem;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .usuarios-container {
+    padding: 12px;
+
+    .page-header {
+      padding: 20px;
+      margin-bottom: 20px;
+
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+
+        .header-icon {
+          width: 50px;
+          height: 50px;
+
+          ion-icon {
+            font-size: 28px;
+          }
+        }
+
+        .header-text {
+          h1 {
+            font-size: 24px;
+          }
+
+          p {
+            font-size: 14px;
+          }
+        }
+
+        .header-stats {
+          justify-content: center;
+          gap: 16px;
+
+          .stat-item {
+            min-width: 70px;
+            padding: 12px;
+
+            .stat-number {
+              font-size: 20px;
+            }
+
+            .stat-label {
+              font-size: 11px;
+            }
+          }
+        }
+      }
+    }
+
+    .usuarios-list-card {
+      .usuarios-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 16px;
+
+        .usuario-card {
+          .usuario-content {
+            padding: 16px;
+
+            .usuario-stats {
+              grid-template-columns: repeat(2, 1fr);
+              gap: 12px;
+
+              .stat-card {
+                padding: 12px;
+
+                .stat-icon {
+                  width: 36px;
+                  height: 36px;
+
+                  ion-icon {
+                    font-size: 18px;
+                  }
+                }
+
+                .stat-content {
+                  .stat-value {
+                    font-size: 14px;
+                  }
+
+                  .stat-label {
+                    font-size: 11px;
+                  }
+                }
+              }
+            }
+
+            .usuario-actions {
+              grid-template-columns: repeat(2, 1fr);
+              gap: 8px;
+
+              .action-btn {
+                height: 44px;
+                font-size: 13px;
+
+                ion-icon {
+                  font-size: 18px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Botón flotante en mobile
+  .floating-action-button {
+    bottom: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+
+    i {
+      font-size: 1.3rem;
+    }
+  }
+}
+
+// Badges de estado
+ion-badge {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+// Iconos Bootstrap
+.bi {
+  font-family: "bootstrap-icons";
+}
+
+// Estilos para iconos Bootstrap
+.bi {
+  font-size: 1.2em;
+  vertical-align: middle;
+}
+
+// Header icon
+.header-icon {
+  .bi {
+    font-size: 2.5rem;
+    color: var(--ekokai-primary);
+  }
+}
+
+// Card header icons
+.list-header {
+  ion-card-title {
+    .bi {
+      margin-right: 8px;
+      font-size: 1.3rem;
+    }
+  }
+}
+
+// Usuario card icons
+.usuario-card {
+  .usuario-header {
+    .usuario-title {
+      .usuario-avatar {
+        .bi {
+          font-size: 1rem;
+        }
+      }
+    }
+    
+    .status-badge {
+      .bi {
+        font-size: 1rem;
+        margin-right: 4px;
+      }
+    }
+  }
+  
+  .usuario-content {
+    .usuario-info {
+      .info-item {
+        .bi {
+          font-size: 1.2rem;
+          color: var(--ekokai-primary);
+          margin-right: 8px;
+        }
+      }
+    }
+    
+    .usuario-stats {
+      .stat-card {
+        .stat-icon {
+          .bi {
+            font-size: 1.2rem;
+            color: var(--ekokai-primary);
+          }
+        }
+      }
+    }
+    
+    .usuario-actions {
+      .action-btn {
+        .bi {
+          margin-right: 6px;
+          font-size: 1.2rem;
+        }
+      }
+    }
+  }
+}
+
+// Animaciones
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.usuario-card {
+  animation: fadeIn 0.3s ease-out;
+}
