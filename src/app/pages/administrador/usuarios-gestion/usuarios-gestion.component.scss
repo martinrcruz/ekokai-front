@@ -1,3 +1,6 @@
+// Importar estilos compartidos para botones de agregar
+@import '../shared/add-buttons.scss';
+
 .usuarios-container {
   padding: 16px;
   background: var(--color-background);

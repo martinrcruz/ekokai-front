@@ -127,9 +127,9 @@
     <div *ngIf="selectedTab === 'cupones'" class="products-grid">
       <div class="section-header">
         <h2>Gestión de Cupones</h2>
-        <ion-button (click)="crearCupon()" class="add-btn">
-          <i class="bi bi-plus-lg"></i>
-          Crear Cupón
+        <ion-button (click)="crearCupon()" style="--background: #2d5016; --color: white;" fill="solid" class="add-btn">
+          <ion-icon name="add-outline" slot="start"></ion-icon>
+          Agregar Cupón
         </ion-button>
       </div>
       
@@ -196,7 +196,10 @@
     <div *ngIf="selectedTab === 'productos'" class="products-grid">
       <div class="section-header">
         <h2>Gestión de Productos</h2>
-        <!-- Botón removido - reemplazado por botón flotante -->
+        <ion-button (click)="crearProducto()" style="--background: #2d5016; --color: white;" fill="solid" class="add-btn">
+          <ion-icon name="add-outline" slot="start"></ion-icon>
+          Agregar Producto
+        </ion-button>
       </div>
       
       <div class="grid-container">
@@ -264,7 +267,10 @@
       <i class="bi bi-search"></i>
       <h3>No se encontraron resultados</h3>
       <p>Intenta ajustar los filtros o crear un nuevo {{ selectedTab === 'cupones' ? 'cupón' : 'producto' }}</p>
-      <!-- Botón removido - reemplazado por botón flotante -->
+      <ion-button (click)="selectedTab === 'cupones' ? crearCupon() : crearProducto()" style="--background: #2d5016; --color: white;" fill="solid">
+        <ion-icon name="add-outline" slot="start"></ion-icon>
+        Agregar {{ selectedTab === 'cupones' ? 'Cupón' : 'Producto' }}
+      </ion-button>
     </div>
 
     <!-- Loading State -->

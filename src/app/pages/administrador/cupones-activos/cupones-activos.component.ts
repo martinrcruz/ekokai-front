@@ -322,4 +322,11 @@ export class CuponesActivosComponent implements OnInit {
   refrescarCupones() {
     this.cargarCuponesActivos();
   }
+
+  crearCupon() {
+    // TODO: Implementar navegación al formulario de crear cupón
+    // O abrir modal de creación de cupón
+    console.log('Crear cupón - funcionalidad por implementar');
+    this.mostrarAlerta('Información', 'Funcionalidad de crear cupón en desarrollo');
+  }
 }

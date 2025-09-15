@@ -32,6 +32,18 @@
           </div>
         </div>
       </div>
+      
+      <!-- Botones para agregar usuarios - CENTRADOS Y ANCHO COMPLETO -->
+      <div class="header-actions">
+        <ion-button (click)="crearUsuario('vecino')" style="--background: #2d5016; --color: white;" fill="solid" class="add-button">
+          <ion-icon name="person-add-outline" slot="start"></ion-icon>
+          Agregar Vecino
+        </ion-button>
+        <ion-button (click)="crearUsuario('encargado')" style="--background: #2d5016; --color: white;" fill="solid" class="add-button">
+          <ion-icon name="person-add-outline" slot="start"></ion-icon>
+          Agregar Encargado
+        </ion-button>
+      </div>
     </div>
 
     <!-- Filtros estandarizados -->
