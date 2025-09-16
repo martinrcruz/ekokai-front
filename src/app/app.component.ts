@@ -48,7 +48,7 @@ export class AppComponent implements OnInit, OnDestroy {
     // { title: 'Marketplace', url: '/administrador/marketplace',  icon: 'bi-shop' },
     { title: 'Tipos de Residuo', url: '/administrador/tiposresiduos', icon: 'bi-recycle' },
     // { title: 'Configuración', url: '/administrador/configuracion',  icon: 'bi-gear' },
-    { title: 'Reciclar', url: '/administrador/reciclar', icon: 'bi-recycle' }
+    // { title: 'Reciclar', url: '/administrador/reciclar', icon: 'bi-recycle' }
   ];
 
   // Para el rol worker, solo dejamos Calendario

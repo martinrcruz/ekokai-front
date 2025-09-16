@@ -79,11 +79,11 @@ const routes: Routes = [
     component: AdminMarketplaceComponent,
     canActivate: [AdminGuard]
   },
-  { 
-    path: 'reciclar', 
-    component: AdminReciclarComponent,
-    canActivate: [AdminGuard]
-  },
+  // { 
+  //   path: 'reciclar', 
+  //   component: AdminReciclarComponent,
+  //   canActivate: [AdminGuard]
+  // },
   { 
     path: 'tiposresiduos', 
     component: AdminTiposResiduosComponent,
