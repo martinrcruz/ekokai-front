@@ -125,13 +125,6 @@
                     </div>
                   </div>
                   
-                  <div class="stat-item">
-                    <i class="bi bi-list"></i>
-                    <div class="stat-content">
-                      <span class="stat-label">Orden</span>
-                      <span class="stat-value">{{ premio.orden }}</span>
-                    </div>
-                  </div>
                   
                   <div class="stat-item">
                     <i class="bi bi-calendar"></i>
@@ -300,7 +293,21 @@
         
         <ion-item>
           <ion-label position="stacked">Cupones Requeridos *</ion-label>
-          <ion-input [(ngModel)]="premioForm.cuponesRequeridos" name="cuponesRequeridos" type="number" min="0" required></ion-input>
+          <ion-input [(ngModel)]="premioForm.cuponesRequeridos" name="cuponesRequeridos" type="number" min="1" value="1" required></ion-input>
+        </ion-item>
+        
+        <ion-item>
+          <ion-label position="stacked">Imagen del Premio</ion-label>
+          <ion-button fill="outline" (click)="seleccionarImagen()" class="image-button">
+            <ion-icon name="camera-outline" slot="start"></ion-icon>
+            {{ premioForm.imagen ? 'Cambiar Imagen' : 'Seleccionar Imagen' }}
+          </ion-button>
+          <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;">
+        </ion-item>
+        
+        <ion-item *ngIf="premioForm.imagen" class="image-preview">
+          <ion-label>Vista Previa:</ion-label>
+          <img [src]="premioForm.imagen" alt="Vista previa" class="preview-image">
         </ion-item>
         
         <ion-item>
@@ -313,10 +320,6 @@
           <ion-input [(ngModel)]="premioForm.categoria" name="categoria" required></ion-input>
         </ion-item>
         
-        <ion-item>
-          <ion-label position="stacked">Orden</ion-label>
-          <ion-input [(ngModel)]="premioForm.orden" name="orden" type="number" min="0"></ion-input>
-        </ion-item>
         
         <ion-item>
           <ion-checkbox [(ngModel)]="premioForm.activo" name="activo"></ion-checkbox>
@@ -367,7 +370,21 @@
         
         <ion-item>
           <ion-label position="stacked">Cupones Requeridos *</ion-label>
-          <ion-input [(ngModel)]="premioEditando.cuponesRequeridos" name="cuponesRequeridos" type="number" min="0" required></ion-input>
+          <ion-input [(ngModel)]="premioEditando.cuponesRequeridos" name="cuponesRequeridos" type="number" min="1" required></ion-input>
+        </ion-item>
+        
+        <ion-item>
+          <ion-label position="stacked">Imagen del Premio</ion-label>
+          <ion-button fill="outline" (click)="seleccionarImagenEditar()" class="image-button">
+            <ion-icon name="camera-outline" slot="start"></ion-icon>
+            {{ premioEditando.imagen ? 'Cambiar Imagen' : 'Seleccionar Imagen' }}
+          </ion-button>
+          <input type="file" #fileInputEdit (change)="onFileSelectedEdit($event)" accept="image/*" style="display: none;">
+        </ion-item>
+        
+        <ion-item *ngIf="premioEditando.imagen" class="image-preview">
+          <ion-label>Vista Previa:</ion-label>
+          <img [src]="premioEditando.imagen" alt="Vista previa" class="preview-image">
         </ion-item>
         
         <ion-item>
@@ -380,10 +397,6 @@
           <ion-input [(ngModel)]="premioEditando.categoria" name="categoria" required></ion-input>
         </ion-item>
         
-        <ion-item>
-          <ion-label position="stacked">Orden</ion-label>
-          <ion-input [(ngModel)]="premioEditando.orden" name="orden" type="number" min="0"></ion-input>
-        </ion-item>
         
         <ion-item>
           <ion-checkbox [(ngModel)]="premioEditando.activo" name="activo"></ion-checkbox>

@@ -81,10 +81,6 @@
                   <span>{{ ecopunto.direccion }}</span>
                 </div>
                 
-                <div class="info-item">
-                  <i class="bi bi-map"></i>
-                  <span>{{ ecopunto.zona || 'Sin zona' }}</span>
-                </div>
                 
                 <div class="info-item">
                   <i class="bi bi-clock"></i>
@@ -113,15 +109,6 @@
                   </div>
                 </div>
                 
-                <div class="stat-card">
-                  <div class="stat-icon">
-                    <i class="bi bi-archive-fill" style="color:white"></i>
-                  </div>
-                  <div class="stat-content">
-                    <div class="stat-value">{{ ecopunto.capacidadMaxima || 1000 }}</div>
-                    <div class="stat-label">Capacidad KG</div>
-                  </div>
-                </div>
               </div>
 
               <div *ngIf="ecopunto.encargado" class="encargado-info">
@@ -143,10 +130,10 @@
                   <span class="button-text">Estadísticas</span>
                 </ion-button>
                 
-                <ion-button fill="clear" (click)="abrirModalMetas(ecopunto)" class="action-btn metas">
+                <!-- <ion-button fill="clear" (click)="abrirModalMetas(ecopunto)" class="action-btn metas">
                   <i class="bi bi-trophy-fill"></i>
                   <span class="button-text">Metas</span>
-                </ion-button>
+                </ion-button> -->
                 
                 <ion-button fill="clear" (click)="editarEcopunto(ecopunto)" class="action-btn edit">
                   <i class="bi bi-pencil-fill"></i>
@@ -209,13 +196,6 @@
             <ion-input [(ngModel)]="nuevoEcopunto.direccion" name="direccion" placeholder="Ej: Calle Norte 456, Recoleta" required class="form-input"></ion-input>
           </ion-item>
 
-          <ion-item class="form-item">
-            <ion-label position="stacked">
-              <i class="bi bi-map"></i>
-              Zona *
-            </ion-label>
-            <ion-input [(ngModel)]="nuevoEcopunto.zona" name="zona" placeholder="Ej: Norte, Sur, Centro" required class="form-input"></ion-input>
-          </ion-item>
 
           <ion-item class="form-item">
             <ion-label position="stacked">
@@ -252,17 +232,9 @@
         <div class="form-section">
           <h3 class="section-title">
             <i class="bi bi-gear-fill"></i>
-            Configuración Técnica
+            Configuración
           </h3>
           
-          <ion-item class="form-item">
-            <ion-label position="stacked">
-              <i class="bi bi-scale-fill"></i>
-              Capacidad Máxima (kg)
-            </ion-label>
-            <ion-input [(ngModel)]="nuevoEcopunto.capacidadMaxima" name="capacidadMaxima" type="number" placeholder="1000" class="form-input"></ion-input>
-          </ion-item>
-
           <ion-item class="form-item toggle-item">
             <ion-label>
               <div class="toggle-label">
@@ -369,13 +341,6 @@
         </ion-card-header>
         <ion-card-content>
           <div class="detail-grid">
-            <div class="detail-item">
-              <i class="bi bi-map"></i>
-              <div class="detail-content">
-                <span class="detail-label">Zona</span>
-                <span class="detail-value">{{ ecopuntoDetalle.zona || 'Sin zona' }}</span>
-              </div>
-            </div>
             
             <div class="detail-item">
               <i class="bi bi-check-circle-fill"></i>

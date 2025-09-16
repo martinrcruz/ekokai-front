@@ -882,3 +882,23 @@ ion-modal ion-checkbox {
     color: var(--ekokai-primary);
   }
 }
+
+// Estilos para manejo de imágenes
+.image-button {
+  margin-top: 8px;
+  --border-color: var(--ekokai-primary);
+  --color: var(--ekokai-primary);
+}
+
+.image-preview {
+  margin-top: 16px;
+  
+  .preview-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: var(--border-radius-md);
+    border: 2px solid var(--ekokai-primary);
+    margin-top: 8px;
+  }
+}

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +13,9 @@ import { FiltrosEstandarizadosComponent, FiltroConfig } from '../../../shared/co
   standalone: false
 })
 export class PremiosGestionComponent implements OnInit {
+  @ViewChild('fileInput') fileInput!: ElementRef;
+  @ViewChild('fileInputEdit') fileInputEdit!: ElementRef;
+  
   premios: Premio[] = [];
   loading = false;
   filtroNombre = '';
@@ -97,12 +100,12 @@ export class PremiosGestionComponent implements OnInit {
     this.premioForm = {
       nombre: '',
       descripcion: '',
-      cuponesRequeridos: 0,
+      cuponesRequeridos: 1,
       stock: 0,
       categoria: '',
       activo: true,
       destacado: false,
-      orden: 0
+      imagen: ''
     };
     this.showCrearModal = true;
   }
@@ -360,5 +363,36 @@ export class PremiosGestionComponent implements OnInit {
     if (rank === 2) return 'medal';
     if (rank === 3) return 'ribbon';
     return 'star';
+  }
+
+  // Métodos para manejo de imágenes
+  seleccionarImagen() {
+    this.fileInput.nativeElement.click();
+  }
+
+  seleccionarImagenEditar() {
+    this.fileInputEdit.nativeElement.click();
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.premioForm.imagen = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  onFileSelectedEdit(event: any) {
+    const file = event.target.files[0];
+    if (file && this.premioEditando) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.premioEditando!.imagen = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
   }
 }

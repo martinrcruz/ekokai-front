@@ -12,18 +12,14 @@ import { FiltrosEstandarizadosComponent, FiltroConfig } from '../../../shared/co
 })
 export class EcopuntosComponent {
   filtroNombre = '';
-  filtroZona = '';
   filtroEstado = '';
-  zonas: string[] = [];
 
   ecopuntos: any[] = [];
   get ecopuntosFiltrados(): any[] {
     const nombre = this.filtroNombre.trim().toLowerCase();
-    const zona = this.filtroZona.trim().toLowerCase();
     const estado = this.filtroEstado.trim().toLowerCase();
     return this.ecopuntos.filter(e =>
       (!nombre || (e?.nombre || '').toLowerCase().includes(nombre)) &&
-      (!zona || (e?.zona || '').toLowerCase() === zona) &&
       (!estado || (e?.activo ? 'activo' : 'inactivo') === estado)
     );
   }
@@ -80,15 +76,6 @@ export class EcopuntosComponent {
     },
     {
       tipo: 'select',
-      icono: 'bi-map',
-      titulo: 'Filtrar por zona',
-      placeholder: 'Todas las zonas',
-      opciones: [],
-      valor: '',
-      nombre: 'zona'
-    },
-    {
-      tipo: 'select',
       icono: 'bi-check-circle',
       titulo: 'Filtrar por estado',
       placeholder: 'Todos los estados',
@@ -110,8 +97,6 @@ export class EcopuntosComponent {
     this.ecopuntosService.getEcopuntos().subscribe({
       next: (list) => {
         this.ecopuntos = Array.isArray(list) ? list : [];
-        this.zonas = Array.from(new Set(this.ecopuntos.map(e => e?.zona).filter(Boolean))).sort();
-        this.actualizarOpcionesFiltros();
         this.actualizarChart();
       }
     });
@@ -123,7 +108,6 @@ export class EcopuntosComponent {
 
   limpiarFiltros() {
     this.filtroNombre = '';
-    this.filtroZona = '';
     this.filtroEstado = '';
   }
 
@@ -138,11 +122,9 @@ export class EcopuntosComponent {
     this.nuevoEcopunto = { 
       nombre: '', 
       direccion: '', 
-      zona: '', 
       descripcion: '', 
       horarioApertura: '08:00', 
       horarioCierre: '20:00', 
-      capacidadMaxima: 1000,
       activo: true 
     };
     this.showCreateModal = true;
@@ -377,23 +359,13 @@ export class EcopuntosComponent {
   }
 
   private actualizarOpcionesFiltros() {
-    // Actualizar opciones de zonas
-    const filtroZona = this.filtrosConfig.find((f: FiltroConfig) => f.nombre === 'zona');
-    if (filtroZona && this.zonas) {
-      filtroZona.opciones = this.zonas.map(zona => ({
-        valor: zona,
-        etiqueta: zona
-      }));
-    }
+    // No hay opciones dinámicas que actualizar
   }
 
   onFiltroChange(evento: any) {
     switch (evento.nombre) {
       case 'nombre':
         this.filtroNombre = evento.valor;
-        break;
-      case 'zona':
-        this.filtroZona = evento.valor;
         break;
       case 'estado':
         this.filtroEstado = evento.valor;
