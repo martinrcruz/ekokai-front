@@ -40,7 +40,7 @@ export interface Ruta {
     brand: string;
     photo: string;
     matricula: string;
-    createdDate: string;
+    createdAt: string;
     __v: number;
   };
   comentarios: string;

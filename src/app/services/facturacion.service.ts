@@ -17,7 +17,7 @@ export interface Facturacion {
     description: string;
   };
   facturacion: number;
-  createdDate: string;
+  createdAt: string;
 }
 
 export interface FacturacionResponse {

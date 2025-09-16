@@ -32,5 +32,5 @@ export interface Parte {
     tipo: string;
     fecha: Date;
   }>;
-  createdDate: Date;
+  createdAt: Date;
 } 

@@ -9,7 +9,7 @@ export interface Facturacion {
     title: string;
     description: string;
   };
-  createdDate: Date;
+  createdAt: Date;
 }
 
 export interface FacturacionResponse {

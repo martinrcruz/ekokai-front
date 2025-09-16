@@ -35,8 +35,8 @@ export interface EntregaResiduo {
   };
   estado: string;
   observaciones: string;
-  createdDate: Date;
-  updatedDate: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface HistorialResponse {

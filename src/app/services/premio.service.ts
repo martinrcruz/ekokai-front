@@ -16,8 +16,8 @@ export interface Premio {
   activo: boolean;
   destacado: boolean;
   orden: number;
-  createdDate?: Date;
-  updatedDate?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface PremiosResponse {

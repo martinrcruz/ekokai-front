@@ -333,9 +333,9 @@
               <ion-icon name="calendar-outline"></ion-icon>
               <span><strong>Fecha de Expiración:</strong> {{ formatearFecha(cuponSeleccionado.fechaExpiracion) }}</span>
             </div>
-            <div class="detalle-item" *ngIf="cuponSeleccionado.fechaCreacion">
+            <div class="detalle-item" *ngIf="cuponSeleccionado.createdAt">
               <ion-icon name="time-outline"></ion-icon>
-              <span><strong>Fecha de Creación:</strong> {{ formatearFecha(cuponSeleccionado.fechaCreacion) }}</span>
+              <span><strong>Fecha de Creación:</strong> {{ formatearFecha(cuponSeleccionado.createdAt) }}</span>
             </div>
           </ion-card-content>
         </ion-card>

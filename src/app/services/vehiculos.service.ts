@@ -23,7 +23,7 @@ export interface Vehicle {
   };
   status?: string;
   eliminado?: boolean;
-  createdDate?: string;
+  createdAt?: string;
   __v?: number;
 }
 

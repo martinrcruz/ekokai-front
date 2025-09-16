@@ -13,8 +13,8 @@ export interface Zona {
     _id: string;
     name: string;
   }>;
-  createdDate?: Date;
-  updatedDate?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
   eliminado?: boolean;
   __v?: number;
 } 

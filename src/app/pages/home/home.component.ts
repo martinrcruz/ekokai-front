@@ -168,9 +168,9 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     this.usuariosService.getUsuarios().subscribe(usuarios => {
       console.log('[Ecopard] Usuarios recibidos:', usuarios);
       this.totalUsuarios = usuarios.length;
-      // Ordenar por fechaCreacion descendente y tomar los 5 más recientes
+      // Ordenar por createdAt descendente y tomar los 5 más recientes
       this.usuariosRecientes = usuarios
-        .sort((a, b) => new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime())
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         .slice(0, 5)
         .map(u => ({
           ...u,
@@ -230,8 +230,8 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
       // Filtro por mes de creación
       let cumpleMes = true;
       if (this.filtroMes) {
-        const fechaCreacion = new Date(usuario.fechaCreacion);
-        const mesUsuario = fechaCreacion.getMonth() + 1; // getMonth() retorna 0-11
+        const createdAt = new Date(usuario.createdAt);
+        const mesUsuario = createdAt.getMonth() + 1; // getMonth() retorna 0-11
         cumpleMes = mesUsuario === this.filtroMes;
       }
 

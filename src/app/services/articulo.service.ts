@@ -14,8 +14,8 @@ export interface Articulo {
   familia: string;
   descripcionArticulo: string;
   precioVenta: number;
-  createdDate?: Date;
-  updatedDate?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
   eliminado?: boolean;
 }
 

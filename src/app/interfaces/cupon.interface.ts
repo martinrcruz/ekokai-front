@@ -5,5 +5,5 @@ export interface Cupon {
   tokensRequeridos: number;
   fechaExpiracion?: Date | string;
   activo?: boolean;
-  fechaCreacion?: Date | string;
+  createdAt?: Date | string;
 } 

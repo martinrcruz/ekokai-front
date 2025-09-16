@@ -5,7 +5,7 @@ export interface Cupon {
   tokensRequeridos: number;
   fechaExpiracion?: Date | string;
   activo?: boolean;
-  fechaCreacion?: Date | string;
+  createdAt?: Date | string;
   // Nuevos campos para funcionalidades avanzadas
   codigo?: string;
   tipo?: 'general' | 'personalizado' | 'masivo';
