@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { BaseService } from './base.service';
 
 export interface Premio {
-  _id?: string;
+  id?: string;
   nombre: string;
   descripcion: string;
   imagen?: string;

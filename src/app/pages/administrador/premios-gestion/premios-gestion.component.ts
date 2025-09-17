@@ -138,9 +138,9 @@ export class PremiosGestionComponent implements OnInit {
   }
 
   guardarEdicion() {
-    if (!this.premioEditando?._id) return;
+    if (!this.premioEditando?.id) return;
     this.guardando = true;
-    this.premioService.updatePremio(this.premioEditando._id, this.premioEditando).subscribe({
+    this.premioService.updatePremio(this.premioEditando.id!, this.premioEditando).subscribe({
       next: (response: any) => { 
         this.cargarPremios(); 
         this.cerrarEditarModal(); 
@@ -151,9 +151,8 @@ export class PremiosGestionComponent implements OnInit {
   }
 
   eliminarPremio(premio: Premio) {
-    if (!premio._id) return;
     if (!confirm('¿Seguro que deseas eliminar este premio?')) return;
-    this.premioService.deletePremio(premio._id).subscribe((response: any) => {
+    this.premioService.deletePremio(premio.id!).subscribe((response: any) => {
       this.cargarPremios();
       this.cargarEstadisticas();
     });
