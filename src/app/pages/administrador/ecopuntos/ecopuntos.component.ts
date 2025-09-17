@@ -156,8 +156,34 @@ export class EcopuntosComponent {
   }
 
   eliminarEcopunto(e: any) {
-    if (!e?._id) return;
-    this.ecopuntosService.eliminarEcopunto(e._id).subscribe({ next: () => this.cargarEcopuntos() });
+    
+    // Confirmar eliminación
+    if (!confirm(`¿Estás seguro de que deseas eliminar el ecopunto "${e.nombre}"? Esta acción no se puede deshacer.`)) {
+      return;
+    }
+    
+    this.ecopuntosService.eliminarEcopunto(e.id).subscribe({ 
+      next: () => {
+        console.log('✅ Ecopunto eliminado exitosamente');
+        this.cargarEcopuntos();
+      },
+      error: (error) => {
+        console.error('❌ Error al eliminar ecopunto:', error);
+        let mensaje = 'Error al eliminar el ecopunto';
+        
+        if (error.status === 401) {
+          mensaje = 'No tienes permisos para eliminar ecopuntos. Inicia sesión como administrador.';
+        } else if (error.status === 403) {
+          mensaje = 'No tienes permisos para realizar esta acción.';
+        } else if (error.status === 404) {
+          mensaje = 'El ecopunto no fue encontrado.';
+        } else if (error.status === 500) {
+          mensaje = 'Error interno del servidor. Intenta nuevamente.';
+        }
+        
+        alert(mensaje);
+      }
+    });
   }
 
   toggleEstado(e: any) {

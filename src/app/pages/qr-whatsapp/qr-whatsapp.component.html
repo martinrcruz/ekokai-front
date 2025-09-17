@@ -1,0 +1,164 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Códigos QR WhatsApp</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="crearQR()">
+        <ion-icon name="add"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Estadísticas -->
+  <ion-card *ngIf="estadisticas">
+    <ion-card-header>
+      <ion-card-title>Estadísticas</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6">
+            <div class="stat-item">
+              <h3>{{ estadisticas.totalQRs }}</h3>
+              <p>Total QRs</p>
+            </div>
+          </ion-col>
+          <ion-col size="6">
+            <div class="stat-item">
+              <h3>{{ estadisticas.qrsActivos }}</h3>
+              <p>Activos</p>
+            </div>
+          </ion-col>
+          <ion-col size="6">
+            <div class="stat-item">
+              <h3>{{ estadisticas.qrsExpirados }}</h3>
+              <p>Expirados</p>
+            </div>
+          </ion-col>
+          <ion-col size="6">
+            <div class="stat-item">
+              <h3>{{ estadisticas.qrsEsteMes }}</h3>
+              <p>Este Mes</p>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Filtros y acciones -->
+  <ion-card>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="8">
+            <ion-item>
+              <ion-label>Solo activos</ion-label>
+              <ion-toggle [(ngModel)]="filtroActivos" (ionChange)="cambiarFiltro()"></ion-toggle>
+            </ion-item>
+          </ion-col>
+          <ion-col size="4">
+            <ion-button expand="block" fill="outline" color="warning" (click)="limpiarExpirados()">
+              <ion-icon name="trash" slot="start"></ion-icon>
+              Limpiar
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Lista de códigos QR -->
+  <ion-card *ngFor="let qr of qrs" class="qr-card">
+    <ion-card-header>
+      <ion-card-title>{{ qr.nombre }}</ion-card-title>
+      <ion-card-subtitle>
+        <ion-chip [color]="isExpirado(qr.fechaExpiracion) ? 'danger' : 'success'">
+          <ion-icon [name]="isExpirado(qr.fechaExpiracion) ? 'time' : 'checkmark-circle'"></ion-icon>
+          <ion-label>{{ isExpirado(qr.fechaExpiracion) ? 'Expirado' : 'Activo' }}</ion-label>
+        </ion-chip>
+      </ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <!-- Información básica -->
+      <div class="qr-info">
+        <p><strong>Mensaje:</strong> {{ qr.mensaje }}</p>
+        <p><strong>Creado:</strong> {{ formatearFecha(qr.fechaCreacion) }}</p>
+        <p><strong>Expira:</strong> {{ formatearFecha(qr.fechaExpiracion) }}</p>
+        <p *ngIf="qr.descripcion"><strong>Descripción:</strong> {{ qr.descripcion }}</p>
+        <p *ngIf="qr.numeroWhatsapp"><strong>WhatsApp:</strong> {{ qr.numeroWhatsapp }}</p>
+      </div>
+
+      <!-- Código QR -->
+      <div class="qr-image-container" *ngIf="qr.qrDataUrl">
+        <img [src]="qr.qrDataUrl" alt="Código QR" class="qr-image">
+      </div>
+
+      <!-- Botones de acción -->
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6">
+            <ion-button expand="block" fill="outline" (click)="verDetalles(qr)">
+              <ion-icon name="eye" slot="start"></ion-icon>
+              Ver
+            </ion-button>
+          </ion-col>
+          <ion-col size="6">
+            <ion-button expand="block" fill="outline" (click)="editarQR(qr)">
+              <ion-icon name="create" slot="start"></ion-icon>
+              Editar
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4">
+            <ion-button expand="block" fill="outline" color="secondary" (click)="descargarQR(qr)">
+              <ion-icon name="download" slot="start"></ion-icon>
+              Descargar
+            </ion-button>
+          </ion-col>
+          <ion-col size="4">
+            <ion-button expand="block" fill="outline" color="tertiary" (click)="copiarEnlace(qr)">
+              <ion-icon name="copy" slot="start"></ion-icon>
+              Copiar
+            </ion-button>
+          </ion-col>
+          <ion-col size="4">
+            <ion-button expand="block" fill="outline" color="danger" (click)="desactivarQR(qr)">
+              <ion-icon name="close-circle" slot="start"></ion-icon>
+              Desactivar
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Mensaje cuando no hay códigos QR -->
+  <ion-card *ngIf="!loading && qrs.length === 0">
+    <ion-card-content class="text-center">
+      <ion-icon name="qr-code-outline" size="large" color="medium"></ion-icon>
+      <h3>No hay códigos QR</h3>
+      <p>Crea tu primer código QR de WhatsApp</p>
+      <ion-button (click)="crearQR()" color="primary">
+        <ion-icon name="add" slot="start"></ion-icon>
+        Crear QR
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner></ion-spinner>
+    <p>Cargando códigos QR...</p>
+  </div>
+</ion-content>
+
+<!-- Botón flotante para crear QR -->
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button (click)="crearQR()" color="primary">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

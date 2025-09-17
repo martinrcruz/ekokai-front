@@ -301,10 +301,11 @@ export class UsuariosGestionComponent implements OnInit {
   // ✅ Eliminar usuario
   async eliminarUsuario(usuario: any) {
     console.log('🗑️ Eliminando usuario:', usuario);
+    console.log('🔍 [UsuariosGestion] ID del usuario:', usuario.id || usuario._id);
     const confirmacion = await this.presentAlert(usuario);
     
     if (confirmacion) {
-      this.usuariosService.eliminarUsuario(usuario._id).subscribe({
+      this.usuariosService.eliminarUsuario(usuario.id || usuario._id).subscribe({
         next: async () => {
           console.log('✅ Usuario eliminado correctamente');
           

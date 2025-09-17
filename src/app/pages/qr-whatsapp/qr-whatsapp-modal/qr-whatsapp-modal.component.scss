@@ -1,0 +1,187 @@
+.qr-details {
+  margin-bottom: 20px;
+}
+
+.detail-item {
+  margin-bottom: 16px;
+  
+  strong {
+    display: block;
+    font-weight: 600;
+    color: var(--ion-color-primary);
+    margin-bottom: 4px;
+  }
+  
+  p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--ion-color-dark);
+  }
+}
+
+.qr-image-container {
+  text-align: center;
+  margin: 20px 0;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.qr-image {
+  max-width: 250px;
+  max-height: 250px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.error-message {
+  color: var(--ion-color-danger);
+  font-size: 12px;
+  margin-top: 4px;
+  margin-left: 16px;
+}
+
+.char-count {
+  text-align: right;
+  font-size: 12px;
+  color: var(--ion-color-medium);
+  margin-top: 4px;
+  margin-right: 16px;
+}
+
+.help-text {
+  font-size: 12px;
+  color: var(--ion-color-medium);
+  margin-top: 4px;
+  margin-left: 16px;
+  font-style: italic;
+}
+
+.whatsapp-preview {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 16px;
+}
+
+.message-bubble {
+  background: #dcf8c6;
+  padding: 12px 16px;
+  border-radius: 18px;
+  max-width: 80%;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #000;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 12px;
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 8px solid #dcf8c6;
+  }
+}
+
+// Estilos para el formulario
+ion-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  margin-bottom: 8px;
+}
+
+ion-label {
+  font-weight: 500;
+  color: var(--ion-color-dark);
+}
+
+ion-input, ion-textarea {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  border: 1px solid var(--ion-color-light);
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+ion-datetime {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  border: 1px solid var(--ion-color-light);
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+// Estilos para botones
+ion-button {
+  --border-radius: 8px;
+  font-weight: 500;
+  
+  ion-spinner {
+    margin-right: 8px;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .qr-image {
+    max-width: 200px;
+    max-height: 200px;
+  }
+  
+  .message-bubble {
+    max-width: 90%;
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .qr-image-container {
+    background: var(--ion-color-dark);
+  }
+  
+  .message-bubble {
+    background: #2a2a2a;
+    color: #fff;
+    
+    &::before {
+      border-right-color: #2a2a2a;
+    }
+  }
+  
+  .detail-item p {
+    color: var(--ion-color-light);
+  }
+}
+
+// Animaciones
+.qr-image {
+  transition: transform 0.2s ease-in-out;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.message-bubble {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

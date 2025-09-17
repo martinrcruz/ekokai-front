@@ -47,6 +47,7 @@ export class AppComponent implements OnInit, OnDestroy {
     { title: 'Historial de Reciclaje', url: '/administrador/historial-reciclaje', icon: 'bi-clock-history' },
     // { title: 'Marketplace', url: '/administrador/marketplace',  icon: 'bi-shop' },
     { title: 'Tipos de Residuo', url: '/administrador/tiposresiduos', icon: 'bi-recycle' },
+    { title: 'Codigo QR', url: '/administrador/qr-whatsapp', icon: 'bi-qr-code' },
     // { title: 'Configuración', url: '/administrador/configuracion',  icon: 'bi-gear' },
     // { title: 'Reciclar', url: '/administrador/reciclar', icon: 'bi-recycle' }
   ];

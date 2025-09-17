@@ -29,7 +29,12 @@ export class EcopuntosService {
   }
 
   eliminarEcopunto(id: string): Observable<any> {
+    console.log(`[EcopuntosService] DELETE ecopunto → ${this.apiUrl}/${id}`);
     return this.http.delete<any>(`${this.apiUrl}/${id}`).pipe(
+      tap({
+        next: (resp) => console.log('[EcopuntosService] DELETE response:', resp),
+        error: (err) => console.error('[EcopuntosService] DELETE error:', err)
+      }),
       map((response: any) => response.data || response)
     );
   }

@@ -204,7 +204,9 @@ export class UsuariosVecinosComponent implements OnInit {
   }
 
   private ejecutarEliminacion(vecino: any) {
-    this.usuariosService.eliminarUsuario(vecino._id).subscribe({
+    console.log('🔍 [UsuariosVecinos] Datos del vecino a eliminar:', vecino);
+    console.log('🔍 [UsuariosVecinos] ID del vecino:', vecino.id || vecino._id);
+    this.usuariosService.eliminarUsuario(vecino.id || vecino._id).subscribe({
       next: (response) => {
         console.log('✅ [UsuariosVecinos] Vecino eliminado:', response);
         this.mostrarToast('Vecino eliminado exitosamente', 'success');

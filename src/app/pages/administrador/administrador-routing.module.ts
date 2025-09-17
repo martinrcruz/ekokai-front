@@ -109,6 +109,11 @@ const routes: Routes = [
     path: 'usuarios', 
     loadChildren: () => import('./usuarios/usuarios.module').then(m => m.UsuariosModule),
     canActivate: [AdminGuard]
+  },
+  { 
+    path: 'qr-whatsapp', 
+    loadChildren: () => import('../qr-whatsapp/qr-whatsapp.module').then(m => m.QRWhatsappModule),
+    canActivate: [AdminGuard]
   }
 ];
 

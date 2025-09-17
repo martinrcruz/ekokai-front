@@ -211,7 +211,9 @@ export class UsuariosStaffComponent implements OnInit {
   }
 
   private ejecutarEliminacion(usuario: any) {
-    this.usuariosService.eliminarUsuario(usuario._id).subscribe({
+    console.log('🔍 [UsuariosStaff] Datos del usuario a eliminar:', usuario);
+    console.log('🔍 [UsuariosStaff] ID del usuario:', usuario.id || usuario._id);
+    this.usuariosService.eliminarUsuario(usuario.id || usuario._id).subscribe({
       next: (response) => {
         console.log('✅ [UsuariosStaff] Usuario eliminado:', response);
         this.mostrarToast('Usuario eliminado exitosamente', 'success');

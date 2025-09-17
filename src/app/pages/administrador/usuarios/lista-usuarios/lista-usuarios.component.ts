@@ -153,10 +153,12 @@ export class ListaUsuariosComponent implements OnInit {
 
   private async ejecutarEliminacion(usuario: any) {
     try {
-      this.usuariosService.eliminarUsuario(usuario._id).subscribe({
+      console.log('🔍 [ListaUsuarios] Datos del usuario a eliminar:', usuario);
+      console.log('🔍 [ListaUsuarios] ID del usuario:', usuario.id || usuario._id);
+      this.usuariosService.eliminarUsuario(usuario.id || usuario._id).subscribe({
         next: (response) => {
           if (response.ok) {
-            this.usuarios = this.usuarios.filter(u => u._id !== usuario._id);
+            this.usuarios = this.usuarios.filter(u => (u.id || u._id) !== (usuario.id || usuario._id));
             this.showToast('Usuario eliminado exitosamente', 'success');
           } else {
             this.showToast('Error al eliminar el usuario', 'danger');

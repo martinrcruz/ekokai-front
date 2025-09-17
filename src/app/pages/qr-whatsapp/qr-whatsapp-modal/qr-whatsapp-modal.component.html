@@ -1,0 +1,192 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ modo === 'crear' ? 'Crear QR' : modo === 'editar' ? 'Editar QR' : 'Detalles QR' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrar()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Modo visualización -->
+  <div *ngIf="modo === 'ver' && qr">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ qr.nombre }}</ion-card-title>
+        <ion-card-subtitle>
+          <ion-chip [color]="isExpirado() ? 'danger' : 'success'">
+            <ion-icon [name]="isExpirado() ? 'time' : 'checkmark-circle'"></ion-icon>
+            <ion-label>{{ isExpirado() ? 'Expirado' : 'Activo' }}</ion-label>
+          </ion-chip>
+        </ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <!-- Información del QR -->
+        <div class="qr-details">
+          <div class="detail-item">
+            <strong>Mensaje:</strong>
+            <p>{{ qr.mensaje }}</p>
+          </div>
+
+          <div class="detail-item">
+            <strong>Fecha de creación:</strong>
+            <p>{{ formatearFecha(qr.fechaCreacion) }}</p>
+          </div>
+
+          <div class="detail-item">
+            <strong>Fecha de expiración:</strong>
+            <p>{{ formatearFecha(qr.fechaExpiracion) }}</p>
+          </div>
+
+          <div class="detail-item" *ngIf="qr.descripcion">
+            <strong>Descripción:</strong>
+            <p>{{ qr.descripcion }}</p>
+          </div>
+
+          <div class="detail-item" *ngIf="qr.numeroWhatsapp">
+            <strong>Número WhatsApp:</strong>
+            <p>{{ qr.numeroWhatsapp }}</p>
+          </div>
+        </div>
+
+        <!-- Código QR -->
+        <div class="qr-image-container" *ngIf="qr.qrDataUrl">
+          <img [src]="qr.qrDataUrl" alt="Código QR" class="qr-image">
+        </div>
+
+        <!-- Botones de acción -->
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6">
+              <ion-button expand="block" fill="outline" color="secondary" (click)="descargarQR()">
+                <ion-icon name="download" slot="start"></ion-icon>
+                Descargar
+              </ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button expand="block" fill="outline" color="tertiary" (click)="copiarEnlace()">
+                <ion-icon name="copy" slot="start"></ion-icon>
+                Copiar Enlace
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Modo creación/edición -->
+  <div *ngIf="modo === 'crear' || modo === 'editar'">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Información del Código QR</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <form (ngSubmit)="guardar()">
+          <!-- Nombre -->
+          <ion-item>
+            <ion-label position="stacked">Nombre *</ion-label>
+            <ion-input
+              [(ngModel)]="formData.nombre"
+              name="nombre"
+              placeholder="Ej: Promoción Navidad 2024"
+              maxlength="100"
+              [disabled]="loading">
+            </ion-input>
+          </ion-item>
+          <div class="error-message" *ngIf="errors.nombre">{{ errors.nombre }}</div>
+
+          <!-- Mensaje -->
+          <ion-item>
+            <ion-label position="stacked">Mensaje de WhatsApp *</ion-label>
+            <ion-textarea
+              [(ngModel)]="formData.mensaje"
+              name="mensaje"
+              placeholder="Escribe el mensaje que aparecerá en WhatsApp..."
+              rows="4"
+              maxlength="1000"
+              [disabled]="loading">
+            </ion-textarea>
+          </ion-item>
+          <div class="error-message" *ngIf="errors.mensaje">{{ errors.mensaje }}</div>
+          <div class="char-count">{{ formData.mensaje.length }}/1000</div>
+
+          <!-- Descripción -->
+          <ion-item>
+            <ion-label position="stacked">Descripción (opcional)</ion-label>
+            <ion-textarea
+              [(ngModel)]="formData.descripcion"
+              name="descripcion"
+              placeholder="Descripción adicional del código QR..."
+              rows="2"
+              [disabled]="loading">
+            </ion-textarea>
+          </ion-item>
+
+          <!-- Número de WhatsApp -->
+          <ion-item>
+            <ion-label position="stacked">Número de WhatsApp (opcional)</ion-label>
+            <ion-input
+              [(ngModel)]="formData.numeroWhatsapp"
+              name="numeroWhatsapp"
+              placeholder="Ej: +573001234567"
+              type="tel"
+              [disabled]="loading">
+            </ion-input>
+          </ion-item>
+          <div class="error-message" *ngIf="errors.numeroWhatsapp">{{ errors.numeroWhatsapp }}</div>
+          <div class="help-text">Si no especificas un número, el usuario podrá elegir a quién enviar el mensaje</div>
+
+          <!-- Fecha de expiración -->
+          <ion-item>
+            <ion-label position="stacked">Fecha de expiración *</ion-label>
+            <ion-datetime
+              [(ngModel)]="formData.fechaExpiracion"
+              name="fechaExpiracion"
+              display-format="DD/MM/YYYY HH:mm"
+              picker-format="DD/MM/YYYY HH:mm"
+              [min]="fechaMinima"
+              [disabled]="loading">
+            </ion-datetime>
+          </ion-item>
+          <div class="error-message" *ngIf="errors.fechaExpiracion">{{ errors.fechaExpiracion }}</div>
+
+          <!-- Botones -->
+          <ion-grid>
+            <ion-row>
+              <ion-col size="6">
+                <ion-button expand="block" fill="outline" (click)="cerrar()" [disabled]="loading">
+                  Cancelar
+                </ion-button>
+              </ion-col>
+              <ion-col size="6">
+                <ion-button expand="block" type="submit" [disabled]="loading">
+                  <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+                  <span *ngIf="!loading">{{ modo === 'crear' ? 'Crear' : 'Actualizar' }}</span>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </form>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Vista previa del mensaje -->
+    <ion-card *ngIf="formData.mensaje">
+      <ion-card-header>
+        <ion-card-title>Vista previa del mensaje</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="whatsapp-preview">
+          <div class="message-bubble">
+            {{ formData.mensaje }}
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
