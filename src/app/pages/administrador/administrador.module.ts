@@ -16,6 +16,7 @@ import { HistorialCanjesComponent } from './historial-canjes/historial-canjes.co
 import { CuponesActivosComponent } from './cupones-activos/cupones-activos.component';
 import { ReciclajesFotosComponent } from './reciclajes-fotos/reciclajes-fotos.component';
 import { TrazabilidadComponent } from './trazabilidad/trazabilidad.component';
+import { TrazabilidadReciclajeComponent } from './trazabilidad-reciclaje/trazabilidad-reciclaje.component';
 import { EcopuntosComponent } from './ecopuntos/ecopuntos.component';
 import { MarketplaceComponent as AdminMarketplaceComponent } from './marketplace/marketplace.component';
 import { ReciclarComponent as AdminReciclarComponent } from './reciclar/reciclar.component';
@@ -37,6 +38,7 @@ import { AdminGuard } from '../../guards/admin.guard';
     CuponesActivosComponent,
     ReciclajesFotosComponent,
     TrazabilidadComponent,
+    TrazabilidadReciclajeComponent,
     EcopuntosComponent,
     AdminMarketplaceComponent,
     AdminTiposResiduosComponent,

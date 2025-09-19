@@ -1,0 +1,511 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Trazabilidad de Reciclaje</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="showFiltros = !showFiltros" fill="clear" class="filter-toggle-btn">
+        <ion-icon name="filter-outline"></ion-icon>
+        {{ showFiltros ? 'Ocultar' : 'Mostrar' }} Filtros
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="trazabilidad-reciclaje-container">
+    <!-- Header de la página -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-icon">
+          <ion-icon name="leaf-outline"></ion-icon>
+        </div>
+        <div class="header-text">
+          <h1>Trazabilidad de Reciclaje</h1>
+          <p>Monitorea el proceso completo de reciclaje con WhatsApp</p>
+        </div>
+        <div class="header-stats">
+          <div class="stat-item">
+            <div class="stat-number">{{ getTotalSesiones() }}</div>
+            <div class="stat-label">Sesiones</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ getTasaExito() }}%</div>
+            <div class="stat-label">Tasa Éxito</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pestanas principales -->
+    <ion-segment [(ngModel)]="pestanaActiva" (ionChange)="cambiarPestana($event.detail.value?.toString())" class="main-segment">
+      <ion-segment-button value="sesiones" class="segment-btn">
+        <ion-icon name="list-outline"></ion-icon>
+        <ion-label>Sesiones</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="estadisticas" class="segment-btn">
+        <ion-icon name="bar-chart-outline"></ion-icon>
+        <ion-label>Estadísticas</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- Mensaje de error -->
+    <ion-card *ngIf="error" class="error-card">
+      <ion-card-content class="error-content">
+        <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+        <p>{{ error }}</p>
+        <ion-button (click)="cargarSesionesReciclaje()" fill="outline" color="primary" size="small">
+          Reintentar
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+    
+    <!-- Filtros estandarizados -->
+    <app-filtros-estandarizados
+      *ngIf="showFiltros"
+      [filtros]="filtrosConfig"
+      titulo="Filtros de Búsqueda"
+      subtitulo="Refina los resultados según tus criterios"
+      (filtroCambiado)="onFiltroChange($event)"
+      (limpiarFiltros)="onLimpiarFiltros()">
+    </app-filtros-estandarizados>
+
+    <!-- Pestana de Sesiones -->
+    <div *ngIf="pestanaActiva === 'sesiones'" class="sesiones-tab">
+      <!-- Estadísticas rápidas -->
+      <ion-card class="stats-card">
+        <ion-card-header class="stats-header">
+          <ion-card-title style="color: white;">
+            <ion-icon name="analytics-outline"></ion-icon>
+            Resumen de Sesiones
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-icon">
+                <ion-icon name="list-outline"></ion-icon>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value">{{ getTotalSesiones() }}</div>
+                <div class="stat-label">Total Sesiones</div>
+              </div>
+            </div>
+            
+            <div class="stat-item">
+              <div class="stat-icon">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value">{{ getSesionesExitosas() }}</div>
+                <div class="stat-label">Exitosas</div>
+              </div>
+            </div>
+            
+            <div class="stat-item">
+              <div class="stat-icon">
+                <ion-icon name="close-circle-outline"></ion-icon>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value">{{ getSesionesFallidas() }}</div>
+                <div class="stat-label">Fallidas</div>
+              </div>
+            </div>
+            
+            <div class="stat-item">
+              <div class="stat-icon">
+                <ion-icon name="person-outline"></ion-icon>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value">{{ getUsuariosUnicos() }}</div>
+                <div class="stat-label">Usuarios Únicos</div>
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Lista de sesiones -->
+      <ion-card class="sesiones-list-card">
+        <ion-card-header class="list-header">
+          <ion-card-title style="color: white;">
+            <ion-icon name="list-outline"></ion-icon>
+            Sesiones de Reciclaje
+          </ion-card-title>
+          <ion-card-subtitle>{{ sesionesFiltradas.length }} sesión{{ sesionesFiltradas.length !== 1 ? 'es' : '' }} encontrada{{ sesionesFiltradas.length !== 1 ? 's' : '' }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="sesiones-grid">
+            <ion-card *ngFor="let sesion of sesionesPaginadas" class="sesion-card">
+              <ion-card-header class="sesion-header">
+                <div class="sesion-title">
+                  <ion-icon [name]="getEstadoIcon(sesion.estado)" class="sesion-icon"></ion-icon>
+                  <h3>{{ getEstadoTexto(sesion.estado) }}</h3>
+                </div>
+                <ion-badge [color]="getEstadoColor(sesion.estado)" class="estado-badge">
+                  {{ sesion.estado }}
+                </ion-badge>
+              </ion-card-header>
+              
+              <ion-card-content class="sesion-content">
+                <div class="sesion-info">
+                  <div class="info-item">
+                    <ion-icon name="person-outline"></ion-icon>
+                    <span><strong>Usuario:</strong> {{ sesion.userId || 'N/A' }}</span>
+                  </div>
+                  
+                  <div class="info-item">
+                    <ion-icon name="phone-outline"></ion-icon>
+                    <span><strong>Teléfono:</strong> {{ sesion.phoneNumber }}</span>
+                  </div>
+                  
+                  <div class="info-item" *ngIf="sesion.qrCode">
+                    <ion-icon name="qr-code-outline"></ion-icon>
+                    <span><strong>QR:</strong> {{ sesion.qrCode }}</span>
+                  </div>
+                  
+                  <div class="info-item">
+                    <ion-icon name="time-outline"></ion-icon>
+                    <span><strong>Inicio:</strong> {{ formatearFecha(sesion.fechaInicio) }}</span>
+                  </div>
+                  
+                  <div class="info-item" *ngIf="sesion.fechaCompletado">
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                    <span><strong>Completado:</strong> {{ formatearFecha(sesion.fechaCompletado) }}</span>
+                  </div>
+                  
+                  <div class="info-item">
+                    <ion-icon name="camera-outline"></ion-icon>
+                    <span><strong>Intentos:</strong> {{ sesion.intentos.length }}/3</span>
+                  </div>
+                  
+                  <div class="info-item" *ngIf="sesion.tokensGenerados">
+                    <ion-icon name="diamond-outline"></ion-icon>
+                    <span><strong>Tokens:</strong> {{ sesion.tokensGenerados }}</span>
+                  </div>
+                </div>
+
+                <!-- Resumen de intentos -->
+                <div class="intentos-resumen" *ngIf="sesion.intentos.length > 0">
+                  <div class="intentos-header">
+                    <ion-icon name="camera-outline"></ion-icon>
+                    <span>Resumen de Intentos</span>
+                  </div>
+                  <div class="intentos-stats">
+                    <div class="intento-stat success">
+                      <ion-icon name="checkmark-circle-outline"></ion-icon>
+                      <span>{{ getIntentosExitosos(sesion) }} exitosos</span>
+                    </div>
+                    <div class="intento-stat danger">
+                      <ion-icon name="close-circle-outline"></ion-icon>
+                      <span>{{ getIntentosFallidos(sesion) }} fallidos</span>
+                    </div>
+                    <div class="intento-stat info" *ngIf="getConfianzaPromedio(sesion) > 0">
+                      <ion-icon name="trending-up-outline"></ion-icon>
+                      <span>{{ getConfianzaPromedio(sesion) }}% confianza</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Razón de fallo si aplica -->
+                <div class="razon-fallo" *ngIf="sesion.estado === 'fallido'">
+                  <ion-icon name="warning-outline" color="danger"></ion-icon>
+                  <span><strong>Razón:</strong> {{ getRazonFallo(sesion) }}</span>
+                </div>
+
+                <div class="sesion-actions">
+                  <ion-button fill="clear" (click)="verDetalle(sesion)" class="action-btn detail">
+                    <ion-icon name="eye-outline"></ion-icon>
+                    <span>Ver Detalle Completo</span>
+                  </ion-button>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          </div>
+
+          <!-- Paginación -->
+          <ion-item *ngIf="totalPaginas > 1" class="pagination-item">
+            <ion-button 
+              *ngFor="let pagina of [].constructor(totalPaginas); let i = index"
+              [fill]="paginaActual === (i + 1) ? 'solid' : 'clear'"
+              [color]="paginaActual === (i + 1) ? 'primary' : 'medium'"
+              (click)="cambiarPagina(i + 1)"
+              size="small">
+              {{ i + 1 }}
+            </ion-button>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Pestana de Estadísticas -->
+    <div *ngIf="pestanaActiva === 'estadisticas'" class="estadisticas-tab">
+      <ion-card class="estadisticas-card">
+        <ion-card-header class="estadisticas-header">
+          <ion-card-title style="color: white;">
+            <ion-icon name="bar-chart-outline"></ion-icon>
+            Estadísticas Generales
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="estadisticas-grid">
+            <div class="estadistica-item">
+              <div class="estadistica-icon">
+                <ion-icon name="list-outline"></ion-icon>
+              </div>
+              <div class="estadistica-content">
+                <div class="estadistica-value">{{ getTotalSesiones() }}</div>
+                <div class="estadistica-label">Total Sesiones</div>
+              </div>
+            </div>
+            
+            <div class="estadistica-item">
+              <div class="estadistica-icon">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+              </div>
+              <div class="estadistica-content">
+                <div class="estadistica-value">{{ getSesionesExitosas() }}</div>
+                <div class="estadistica-label">Sesiones Exitosas</div>
+              </div>
+            </div>
+            
+            <div class="estadistica-item">
+              <div class="estadistica-icon">
+                <ion-icon name="close-circle-outline"></ion-icon>
+              </div>
+              <div class="estadistica-content">
+                <div class="estadistica-value">{{ getSesionesFallidas() }}</div>
+                <div class="estadistica-label">Sesiones Fallidas</div>
+              </div>
+            </div>
+            
+            <div class="estadistica-item">
+              <div class="estadistica-icon">
+                <ion-icon name="person-outline"></ion-icon>
+              </div>
+              <div class="estadistica-content">
+                <div class="estadistica-value">{{ getUsuariosUnicos() }}</div>
+                <div class="estadistica-label">Usuarios Únicos</div>
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Estadísticas por estado -->
+      <ion-card class="estados-card">
+        <ion-card-header class="estados-header">
+          <ion-card-title style="color: white;">
+            <ion-icon name="trending-up-outline"></ion-icon>
+            Sesiones por Estado
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="estados-grid">
+            <div class="estado-item">
+              <div class="estado-info">
+                <ion-icon name="play-circle-outline" class="estado-icon"></ion-icon>
+                <div class="estado-details">
+                  <div class="estado-name">Iniciadas</div>
+                  <div class="estado-count">{{ getSesionesPorEstado('iniciado') }} sesiones</div>
+                </div>
+              </div>
+              <ion-badge color="primary" class="estado-badge">
+                {{ getSesionesPorEstado('iniciado') }}
+              </ion-badge>
+            </div>
+
+            <div class="estado-item">
+              <div class="estado-info">
+                <ion-icon name="checkmark-circle-outline" class="estado-icon"></ion-icon>
+                <div class="estado-details">
+                  <div class="estado-name">Primera Imagen Validada</div>
+                  <div class="estado-count">{{ getSesionesPorEstado('primera_imagen_validada') }} sesiones</div>
+                </div>
+              </div>
+              <ion-badge color="secondary" class="estado-badge">
+                {{ getSesionesPorEstado('primera_imagen_validada') }}
+              </ion-badge>
+            </div>
+
+            <div class="estado-item">
+              <div class="estado-info">
+                <ion-icon name="checkmark-done-circle-outline" class="estado-icon"></ion-icon>
+                <div class="estado-details">
+                  <div class="estado-name">Completadas</div>
+                  <div class="estado-count">{{ getSesionesPorEstado('completado') }} sesiones</div>
+                </div>
+              </div>
+              <ion-badge color="success" class="estado-badge">
+                {{ getSesionesPorEstado('completado') }}
+              </ion-badge>
+            </div>
+
+            <div class="estado-item">
+              <div class="estado-info">
+                <ion-icon name="close-circle-outline" class="estado-icon"></ion-icon>
+                <div class="estado-details">
+                  <div class="estado-name">Fallidas</div>
+                  <div class="estado-count">{{ getSesionesPorEstado('fallido') }} sesiones</div>
+                </div>
+              </div>
+              <ion-badge color="danger" class="estado-badge">
+                {{ getSesionesPorEstado('fallido') }}
+              </ion-badge>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+</ion-content>
+
+<!-- Modal de Detalle de Sesión -->
+<ion-modal [isOpen]="showDetalleModal" (didDismiss)="cerrarDetalleModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Detalle de Sesión de Reciclaje</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarDetalleModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding" *ngIf="sesionSeleccionada">
+      <div class="detalle-sesion">
+        <!-- Información general -->
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Información General</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="hash-outline"></ion-icon>
+              <span><strong>ID Sesión:</strong> {{ sesionSeleccionada.sessionId }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon [name]="getEstadoIcon(sesionSeleccionada.estado)"></ion-icon>
+              <span><strong>Estado:</strong> {{ getEstadoTexto(sesionSeleccionada.estado) }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="time-outline"></ion-icon>
+              <span><strong>Fecha Inicio:</strong> {{ formatearFecha(sesionSeleccionada.fechaInicio) }}</span>
+            </div>
+            <div class="detalle-item" *ngIf="sesionSeleccionada.fechaCompletado">
+              <ion-icon name="checkmark-outline"></ion-icon>
+              <span><strong>Fecha Completado:</strong> {{ formatearFecha(sesionSeleccionada.fechaCompletado) }}</span>
+            </div>
+            <div class="detalle-item" *ngIf="sesionSeleccionada.tokensGenerados">
+              <ion-icon name="diamond-outline"></ion-icon>
+              <span><strong>Tokens Generados:</strong> {{ sesionSeleccionada.tokensGenerados }}</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Información del usuario -->
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Información del Usuario</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="person-outline"></ion-icon>
+              <span><strong>Usuario ID:</strong> {{ sesionSeleccionada.userId || 'N/A' }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="phone-outline"></ion-icon>
+              <span><strong>Teléfono:</strong> {{ sesionSeleccionada.phoneNumber }}</span>
+            </div>
+            <div class="detalle-item" *ngIf="sesionSeleccionada.qrCode">
+              <ion-icon name="qr-code-outline"></ion-icon>
+              <span><strong>Código QR:</strong> {{ sesionSeleccionada.qrCode }}</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Historial de intentos -->
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Historial de Intentos ({{ sesionSeleccionada.intentos.length }}/3)</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="intentos-detalle" *ngFor="let intento of sesionSeleccionada.intentos; let i = index">
+              <div class="intento-item">
+                <div class="intento-header">
+                  <div class="intento-numero">
+                    <ion-icon name="camera-outline"></ion-icon>
+                    <span>Intento {{ intento.numeroIntento }}</span>
+                  </div>
+                  <div class="intento-timestamp">
+                    {{ formatearFecha(intento.timestamp) }}
+                  </div>
+                </div>
+                
+                <div class="intento-content">
+                  <div class="intento-resultado" *ngIf="intento.validation_result">
+                    <div class="resultado-item">
+                      <ion-icon [name]="intento.validation_result.esBolsaBasura ? 'checkmark-circle-outline' : 'close-circle-outline'" 
+                                [color]="intento.validation_result.esBolsaBasura ? 'success' : 'danger'"></ion-icon>
+                      <span><strong>Resultado:</strong> {{ intento.validation_result.esBolsaBasura ? 'Bolsa de basura detectada' : 'No es una bolsa de basura' }}</span>
+                    </div>
+                    <div class="resultado-item" *ngIf="intento.validation_result.confianza">
+                      <ion-icon name="trending-up-outline"></ion-icon>
+                      <span><strong>Confianza:</strong> {{ intento.validation_result.confianza }}%</span>
+                    </div>
+                    <div class="resultado-item" *ngIf="intento.validation_result.razon">
+                      <ion-icon name="information-circle-outline"></ion-icon>
+                      <span><strong>Razón:</strong> {{ intento.validation_result.razon }}</span>
+                    </div>
+                  </div>
+                  
+                  <div class="intento-imagen" *ngIf="intento.image_path">
+                    <ion-icon name="image-outline"></ion-icon>
+                    <span><strong>Imagen:</strong> {{ intento.image_path }}</span>
+                  </div>
+                  
+                  <div class="intento-error" *ngIf="intento.error_info">
+                    <ion-icon name="warning-outline" color="danger"></ion-icon>
+                    <span><strong>Error:</strong> {{ intento.error_info }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Ubicación -->
+        <ion-card *ngIf="sesionSeleccionada.ubicacion">
+          <ion-card-header>
+            <ion-card-title>Ubicación</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-item">
+              <ion-icon name="location-outline"></ion-icon>
+              <span><strong>Latitud:</strong> {{ sesionSeleccionada.ubicacion.lat }}</span>
+            </div>
+            <div class="detalle-item">
+              <ion-icon name="location-outline"></ion-icon>
+              <span><strong>Longitud:</strong> {{ sesionSeleccionada.ubicacion.lng }}</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Metadatos -->
+        <ion-card *ngIf="sesionSeleccionada.metadata">
+          <ion-card-header>
+            <ion-card-title>Metadatos</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <pre>{{ sesionSeleccionada.metadata | json }}</pre>
+          </ion-card-content>
+        </ion-card>
+
+        <div class="modal-actions">
+          <ion-button (click)="cerrarDetalleModal()" fill="clear" expand="block">
+            Cerrar
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

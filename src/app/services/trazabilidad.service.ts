@@ -235,4 +235,72 @@ export class TrazabilidadService extends BaseService {
       })
     );
   }
+
+  // Obtener sesiones de reciclaje con trazabilidad completa
+  obtenerSesionesReciclaje(filtros: {
+    phoneNumber?: string;
+    userId?: string;
+    qrCode?: string;
+    estado?: string;
+    fechaInicio?: Date;
+    fechaFin?: Date;
+    limite?: number;
+    pagina?: number;
+  } = {}): Observable<{
+    data: any[];
+    estadisticas: {
+      totalSesiones: number;
+      sesionesExitosas: number;
+      sesionesFallidas: number;
+      sesionesIniciadas: number;
+      usuariosUnicos: number;
+      telefonosUnicos: number;
+      tasaExito: number;
+    };
+    pagination: {
+      total: number;
+      pagina: number;
+      limite: number;
+      totalPaginas: number;
+    };
+  }> {
+    console.log('[TrazabilidadService] Obteniendo sesiones de reciclaje con filtros:', filtros);
+    const params = new URLSearchParams();
+    
+    Object.keys(filtros).forEach(key => {
+      const value = filtros[key as keyof typeof filtros];
+      if (value !== undefined && value !== null) {
+        if (value instanceof Date) {
+          params.append(key, value.toISOString());
+        } else {
+          params.append(key, value.toString());
+        }
+      }
+    });
+    
+    return this.get<{
+      data: any[];
+      estadisticas: {
+        totalSesiones: number;
+        sesionesExitosas: number;
+        sesionesFallidas: number;
+        sesionesIniciadas: number;
+        usuariosUnicos: number;
+        telefonosUnicos: number;
+        tasaExito: number;
+      };
+      pagination: {
+        total: number;
+        pagina: number;
+        limite: number;
+        totalPaginas: number;
+      };
+    }>(`${this.endpoint}/reciclaje/sesiones?${params.toString()}`).pipe(
+      tap(response => console.log('[TrazabilidadService] Sesiones de reciclaje obtenidas:', response.data?.length || 0, 'sesiones')),
+      catchError(error => {
+        console.error('[TrazabilidadService] Error al obtener sesiones de reciclaje:', error);
+        return throwError(() => error);
+      })
+    );
+  }
 }

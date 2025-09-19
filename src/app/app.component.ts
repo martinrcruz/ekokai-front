@@ -39,12 +39,14 @@ export class AppComponent implements OnInit, OnDestroy {
       icon: 'bi-people',
       subpages: [
         { title: 'Gestión General', url: '/administrador/usuarios-gestion', icon: 'bi-people' },
+        
         { title: 'Vecinos', url: '/administrador/usuarios-vecinos', icon: 'bi-person' },
         { title: 'Staff', url: '/administrador/usuarios-staff', icon: 'bi-person-badge' }
       ]
     },
     { title: 'Premios', url: '/administrador/premios', icon: 'bi-gift' },
     { title: 'Historial de Reciclaje', url: '/administrador/historial-reciclaje', icon: 'bi-clock-history' },
+    { title: 'Trazabilidad de Reciclaje', url: '/administrador/trazabilidad-reciclaje', icon: 'bi-clock-history' },
     // { title: 'Marketplace', url: '/administrador/marketplace',  icon: 'bi-shop' },
     // { title: 'Tipos de Residuo', url: '/administrador/tiposresiduos', icon: 'bi-recycle' },
     { title: 'Codigo QR', url: '/administrador/qr-whatsapp', icon: 'bi-qr-code' },
