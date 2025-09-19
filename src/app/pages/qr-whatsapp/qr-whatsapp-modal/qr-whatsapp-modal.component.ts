@@ -231,6 +231,13 @@ export class QRWhatsappModalComponent implements OnInit {
   }
 
   /**
+   * Obtiene el número de WhatsApp a mostrar (por defecto o el especificado)
+   */
+  obtenerNumeroWhatsapp(): string {
+    return this.qr?.numeroWhatsapp || '+17017604112';
+  }
+
+  /**
    * Verifica si el código QR está expirado
    */
   isExpirado(): boolean {

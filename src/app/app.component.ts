@@ -46,7 +46,7 @@ export class AppComponent implements OnInit, OnDestroy {
     { title: 'Premios', url: '/administrador/premios', icon: 'bi-gift' },
     { title: 'Historial de Reciclaje', url: '/administrador/historial-reciclaje', icon: 'bi-clock-history' },
     // { title: 'Marketplace', url: '/administrador/marketplace',  icon: 'bi-shop' },
-    { title: 'Tipos de Residuo', url: '/administrador/tiposresiduos', icon: 'bi-recycle' },
+    // { title: 'Tipos de Residuo', url: '/administrador/tiposresiduos', icon: 'bi-recycle' },
     { title: 'Codigo QR', url: '/administrador/qr-whatsapp', icon: 'bi-qr-code' },
     // { title: 'Configuración', url: '/administrador/configuracion',  icon: 'bi-gear' },
     // { title: 'Reciclar', url: '/administrador/reciclar', icon: 'bi-recycle' }
@@ -61,7 +61,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private encargadoAppPages: AppPage[] = [
     { title: 'Dashboard', url: '/encargado/home', icon: 'bi-speedometer2' },
     // { title: 'Marketplace', url: '/encargado/marketplace', icon: 'bi-shop' },
-    { title: 'Tipos de Residuo', url: '/encargado/tiposresiduos', icon: 'bi-recycle' },
+    // { title: 'Tipos de Residuo', url: '/encargado/tiposresiduos', icon: 'bi-recycle' },
     { title: 'Crear Vecino', url: '/encargado/vecinos', icon: 'bi-person-plus' },
     { title: 'Reciclar', url: '/encargado/reciclar', icon: 'bi-recycle' }
   ];

@@ -46,9 +46,9 @@
             <p>{{ qr.descripcion }}</p>
           </div>
 
-          <div class="detail-item" *ngIf="qr.numeroWhatsapp">
+          <div class="detail-item">
             <strong>Número WhatsApp:</strong>
-            <p>{{ qr.numeroWhatsapp }}</p>
+            <p>{{ obtenerNumeroWhatsapp() }}</p>
           </div>
         </div>
 
@@ -139,7 +139,7 @@
             </ion-input>
           </ion-item>
           <div class="error-message" *ngIf="errors.numeroWhatsapp">{{ errors.numeroWhatsapp }}</div>
-          <div class="help-text">Si no especificas un número, el usuario podrá elegir a quién enviar el mensaje</div>
+          <div class="help-text">Si no especificas un número, se usará automáticamente el número del asistente: +17017604112</div>
 
           <!-- Fecha de expiración -->
           <ion-item>

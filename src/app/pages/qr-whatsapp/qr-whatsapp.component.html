@@ -1,11 +1,11 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Códigos QR WhatsApp</ion-title>
+  <ion-toolbar>
+    <!-- <ion-title>Códigos QR WhatsApp</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="crearQR()">
         <ion-icon name="add"></ion-icon>
       </ion-button>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-toolbar>
 </ion-header>
 
@@ -88,7 +88,7 @@
         <p><strong>Creado:</strong> {{ formatearFecha(qr.fechaCreacion) }}</p>
         <p><strong>Expira:</strong> {{ formatearFecha(qr.fechaExpiracion) }}</p>
         <p *ngIf="qr.descripcion"><strong>Descripción:</strong> {{ qr.descripcion }}</p>
-        <p *ngIf="qr.numeroWhatsapp"><strong>WhatsApp:</strong> {{ qr.numeroWhatsapp }}</p>
+        <p><strong>WhatsApp:</strong> {{ obtenerNumeroWhatsapp(qr) }}</p>
       </div>
 
       <!-- Código QR -->

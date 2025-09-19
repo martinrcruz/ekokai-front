@@ -276,6 +276,13 @@ export class QRWhatsappComponent implements OnInit {
   }
 
   /**
+   * Obtiene el número de WhatsApp a mostrar (por defecto o el especificado)
+   */
+  obtenerNumeroWhatsapp(qr: QRWhatsapp): string {
+    return qr.numeroWhatsapp || '+17017604112';
+  }
+
+  /**
    * Muestra una alerta
    */
   private async mostrarAlerta(header: string, message: string) {

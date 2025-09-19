@@ -95,14 +95,14 @@ ion-button:not(.edit-btn):not(.delete-btn):not(.cerrar-sesion-btn) {
   @media (min-width: 769px) {
     /* Cuando sidebar está cerrado, contenido ocupa todo el ancho */
     .sidebar-closed {
-      margin-left: 21%;
+      margin-left: 24vh;
     }
   }
 
   /* Mobile: contenido sin margen */
   @media (max-width: 768px) {
     .sidebar-closed {
-      margin-left: 21%;
+      margin-left: 24vh;
     }
   }
 }
@@ -205,6 +205,39 @@ ion-button:not(.edit-btn):not(.delete-btn):not(.cerrar-sesion-btn) {
   font-size: 20px;
   font-weight: 700;
   margin: 0;
+}
+
+/* Botón de cerrar sidebar para mobile */
+.close-sidebar-btn {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  z-index: 1000;
+}
+
+.close-btn {
+  --background: rgba(255, 255, 255, 0.2);
+  --background-hover: rgba(255, 255, 255, 0.3);
+  --color: #fff;
+  --border-radius: 50%;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  --background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.close-icon {
+  font-size: 20px;
+  color: #fff;
 }
 
 /* Contenido del sidebar */
@@ -616,11 +649,37 @@ ion-button:not(.edit-btn):not(.delete-btn):not(.cerrar-sesion-btn) {
       --transform: translateX(0) !important;
     }
     
-    /* Asegurar que el sidebar esté visible cuando esté abierto en mobile */
-    ion-menu.menu-enabled .logout-section {
-      transform: translateX(0) !important;
-      --transform: translateX(0) !important;
-    }
+  /* Asegurar que el sidebar esté visible cuando esté abierto en mobile */
+  ion-menu.menu-enabled .logout-section {
+    transform: translateX(0) !important;
+    --transform: translateX(0) !important;
+  }
+  
+  /* Estilos específicos para el botón de cerrar en mobile */
+  .close-sidebar-btn {
+    position: absolute !important;
+    top: 50% !important;
+    right: 16px !important;
+    transform: translateY(-50%) !important;
+    z-index: 10001 !important;
+  }
+  
+  .close-btn {
+    --background: rgba(255, 255, 255, 0.2) !important;
+    --background-hover: rgba(255, 255, 255, 0.3) !important;
+    --color: #fff !important;
+    --border-radius: 50% !important;
+    width: 40px !important;
+    height: 40px !important;
+    margin: 0 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  .close-icon {
+    font-size: 20px !important;
+    color: #fff !important;
+  }
   }
 }
 

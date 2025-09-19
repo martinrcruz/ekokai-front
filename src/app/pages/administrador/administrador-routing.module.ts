@@ -84,11 +84,11 @@ const routes: Routes = [
   //   component: AdminReciclarComponent,
   //   canActivate: [AdminGuard]
   // },
-  { 
-    path: 'tiposresiduos', 
-    component: AdminTiposResiduosComponent,
-    canActivate: [AdminGuard]
-  },
+  // { 
+  //   path: 'tiposresiduos', 
+  //   component: AdminTiposResiduosComponent,
+  //   canActivate: [AdminGuard]
+  // },
   //{ path: 'usuarios', component: UsuariosComponent },
   { 
     path: 'usuarios-gestion', 

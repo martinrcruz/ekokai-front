@@ -156,7 +156,10 @@ export class QRWhatsappService {
    */
   generarEnlaceWhatsapp(mensaje: string, numero?: string): string {
     const mensajeCodificado = encodeURIComponent(mensaje);
-    const numeroFormateado = numero ? numero.replace(/\D/g, '') : '';
+    // Si no se proporciona número, usar el número del asistente por defecto
+    const numeroPorDefecto = '+17017604112';
+    const numeroAUsar = numero || numeroPorDefecto;
+    const numeroFormateado = numeroAUsar.replace(/\D/g, '');
     return `https://wa.me/${numeroFormateado}?text=${mensajeCodificado}`;
   }
 

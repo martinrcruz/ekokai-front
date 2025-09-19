@@ -149,6 +149,12 @@
             </div>
             <ion-title class="brand-title">EKOKAI</ion-title>
           </div>
+          <!-- Botón de cerrar para mobile -->
+          <ion-buttons slot="end" class="close-sidebar-btn" *ngIf="isMobile">
+            <ion-button (click)="closeSidebarOnMobile()" class="close-btn">
+              <ion-icon name="close" class="close-icon"></ion-icon>
+            </ion-button>
+          </ion-buttons>
         </ion-toolbar>
       </ion-header>
 
