@@ -148,10 +148,10 @@ export class CatalogoPremiosComponent implements OnInit {
     const numeroWhatsApp = environment.whatsappNumber;
     
     // Generar código único para el premio
-    const codigoPremio = premio.id ? premio.id.substring(premio.id.length - 8) : 'PREMIO' + Math.random().toString(36).substr(2, 6).toUpperCase();
+    // const codigoPremio = premio.id ? premio.id.substring(premio.id.length - 8) : 'PREMIO' + Math.random().toString(36).substr(2, 6).toUpperCase();
     
     // Mensaje predefinido para WhatsApp - ahora siempre 1 cupón
-    const mensaje = encodeURIComponent(`¡Hola! Estaba viendo el catalogo de EKOKAI y quiero canjear el premio "${premio.nombre}" (Código: ${codigoPremio}) por 1 cupón.`);
+    const mensaje = encodeURIComponent(`¡Hola! Estaba viendo el catalogo de EKOKAI y quiero canjear el premio "${premio.nombre}" (Código: ${premio.id}) por 1 cupón.`);
     
     // Crear URL de WhatsApp
     const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${mensaje}`;
